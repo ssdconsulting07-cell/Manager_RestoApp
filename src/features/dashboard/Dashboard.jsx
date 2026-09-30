@@ -70,7 +70,6 @@ export default function Dashboard() {
           <Link className="dashboard-stat-card" key={label} to={path}>
             <div className="dashboard-stat-head">
               <span className="dashboard-stat-label">{label}</span>
-              <span className="dashboard-stat-trend">KPI</span>
             </div>
             <div className="dashboard-stat-body">
               <strong>{value}</strong>

@@ -21,29 +21,29 @@
   display: flex;
   width: var(--manager-sidebar-width);
   flex-direction: column;
-  border-right: 1px solid #3a222a;
-  background: #1f1013;
+  border-right: 1px solid #271519;
+  background: #140b0c;
   transition: width 200ms ease, transform 200ms ease;
 }
 
 .manager-shell.is-collapsed { --manager-sidebar-width: 82px; }
-.manager-sidebar-brand { position: relative; display: flex; height: 78px; align-items: center; padding: 0 22px; border-bottom: 1px solid #3a222a; }
+.manager-sidebar-brand { position: relative; display: flex; height: 78px; align-items: center; padding: 0 22px; border-bottom: 1px solid #271519; }
 .manager-brand-full, .manager-brand-short { color: #f2f2f2; font-size: 19px; font-weight: 800; letter-spacing: 1px; white-space: nowrap; }
-.manager-brand-full span { color: #e0344f; }
-.manager-brand-short { display: none; color: #e0344f; }
-.manager-collapse-button { position: absolute; top: 50%; right: -14px; display: grid; width: 28px; height: 28px; transform: translateY(-50%); place-items: center; border: 1px solid #3a222a; border-radius: 50%; color: #c7adb3; background: #2c161c; box-shadow: 0 3px 10px rgb(0 0 0 / 30%); cursor: pointer; font-size: 20px; line-height: 1; }
+.manager-brand-full span { color: #a6192e; }
+.manager-brand-short { display: none; color: #a6192e; }
+.manager-collapse-button { position: absolute; top: 50%; right: -14px; display: grid; width: 28px; height: 28px; transform: translateY(-50%); place-items: center; border: 1px solid #271519; border-radius: 50%; color: #a8898f; background: #1f1215; box-shadow: 0 3px 10px rgb(0 0 0 / 30%); cursor: pointer; font-size: 20px; line-height: 1; }
 .manager-role-block { padding: 27px 24px 18px; }
 .manager-role-block p, .manager-eyebrow { margin: 0 0 5px; color: #a6192e; font-size: 10px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; }
-.manager-role-block strong { color: #c7adb3; font-size: 13px; font-weight: 500; }
+.manager-role-block strong { color: #a8898f; font-size: 13px; font-weight: 500; }
 .manager-nav { display: flex; flex: 1; flex-direction: column; gap: 5px; padding: 12px 14px; }
-.manager-nav-link { position: relative; display: flex; min-height: 46px; align-items: center; gap: 14px; border: 0; border-radius: 8px; padding: 0 13px; color: #c7adb3; background: transparent; cursor: pointer; font: inherit; font-size: 13px; text-decoration: none; }
-.manager-nav-link:hover { color: #fff; background: #331b21; }
-.manager-nav-link.is-active { color: #f3b0bb; background: #3d2027; font-weight: 700; }
+.manager-nav-link { position: relative; display: flex; min-height: 46px; align-items: center; gap: 14px; border: 0; border-radius: 8px; padding: 0 13px; color: #a8898f; background: transparent; cursor: pointer; font: inherit; font-size: 13px; text-decoration: none; }
+.manager-nav-link:hover { color: #f0e9ea; background: #241417; }
+.manager-nav-link.is-active { color: #cf98a0; background: #2c171b; font-weight: 700; }
 .manager-nav-icon { width: 24px; flex: 0 0 24px; text-align: center; font-size: 21px; }
 .manager-nav-label { white-space: nowrap; }
 .manager-nav-badge { display: grid; min-width: 18px; height: 18px; box-sizing: border-box; margin-left: auto; place-items: center; border-radius: 999px; padding: 0 5px; color: #fff; background: #a6192e; font-size: 10px; font-weight: 800; line-height: 1; }
-.manager-sidebar-footer { border-top: 1px solid #3a222a; padding: 14px; }
-.manager-logout-link { width: 100%; color: #f3b0bb; }
+.manager-sidebar-footer { border-top: 1px solid #271519; padding: 14px; }
+.manager-logout-link { width: 100%; color: #cf98a0; }
 .manager-main { display: flex; width: calc(100% - var(--manager-sidebar-width)); min-height: 100vh; flex-direction: column; margin-left: var(--manager-sidebar-width); transition: margin-left 200ms ease, width 200ms ease; }
 .manager-header { position: sticky; z-index: 5; top: 0; display: flex; height: 78px; align-items: center; justify-content: space-between; border-bottom: 1px solid #e5e5e3; padding: 0 32px; background: rgb(255 255 255 / 94%); backdrop-filter: blur(12px); }
 .manager-header-context { display: flex; align-items: center; gap: 18px; color: #141414; font-size: 12px; }

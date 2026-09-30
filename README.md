@@ -10,7 +10,7 @@ npm install
 npm run dev
 ```
 
-L'app tourne sur `http://localhost:5174` (ou le port suivant si 5173 est déjà pris par Client_RestoApp). Elle attend le backend sur `http://localhost:8080/api/v1` (voir `VITE_API_BASE_URL` dans `.env`) — lancez `Backend_RestoApp` en local (`docker compose up --build`), ou demandez à l'équipe Backend un environnement partagé.
+L'app tourne sur `http://localhost:5174` par défaut (voir `vite.config.js`) — `5173` reste réservé à `Client_RestoApp`. Si ce port est déjà pris (un ancien serveur de dev encore ouvert, par exemple), Vite bascule sur le premier port libre suivant — le terminal de `npm run dev` affiche toujours le port réellement utilisé. Elle attend le backend sur `http://localhost:8080/api/v1` (voir `VITE_API_BASE_URL` dans `.env`) — lancez `Backend_RestoApp` en local (`docker compose up --build`), ou demandez à l'équipe Backend un environnement partagé.
 
 Autres scripts : `npm run build` (build de prod), `npm run preview` (prévisualiser le build).
 

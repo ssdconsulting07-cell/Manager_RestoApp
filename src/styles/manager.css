@@ -173,7 +173,7 @@
 .manager-shell.is-dark .page-skeleton-panel { border-color: #2a2a2e; background-color: #1c1c20; }
 .manager-shell.is-dark .page-skeleton-panel.is-muted { background-color: #17171a; }
 .manager-modal-backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; border: 0; padding: 20px; background: rgb(20 20 20 / 45%); cursor: default; }
-.manager-modal { box-sizing: border-box; width: min(100%, 440px); min-width: 0; border-radius: 12px; padding: 26px; background: #fff; box-shadow: 0 22px 60px rgb(20 20 20 / 25%); }
+.manager-modal { box-sizing: border-box; width: min(100%, 440px); min-width: 0; max-height: calc(100vh - 40px); overflow-y: auto; border-radius: 12px; padding: 26px; background: #fff; box-shadow: 0 22px 60px rgb(20 20 20 / 25%); }
 .manager-modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
 .manager-modal-header h2 { margin: 0; font-size: 22px; line-height: 1.15; }
 .manager-icon-button { border: 0; color: #6b6b6b; background: transparent; cursor: pointer; font-size: 24px; line-height: 1; }
@@ -323,7 +323,7 @@
 .crud-pagination-controls { display: flex; align-items: center; gap: 10px; }
 .crud-pagination-page { color: #141414; font-size: 12px; font-weight: 700; }
 
-.manager-modal-wide { width: min(100%, 560px); }
+.manager-modal-wide { width: min(100%, 680px); }
 .manager-button-danger { color: #fff; background: #b3261e; }
 .manager-button-danger:hover { background: #8c1d17; }
 .manager-button-warning { color: #fff; background: #9c6b0c; }
@@ -336,7 +336,12 @@
 .manager-modal-confirm h2 { margin: 0 0 10px; font-size: 19px; }
 .crud-confirm-message { margin: 0 0 20px; color: #6b6b6b; font-size: 13px; line-height: 1.6; }
 
-.crud-product-form-grid { display: flex; flex-direction: column; gap: 16px; }
+.crud-product-form-grid { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 20px; align-items: start; }
+.crud-product-form-photo { min-width: 0; }
+.crud-product-form-fields { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+@media (max-width: 640px) {
+  .crud-product-form-grid { grid-template-columns: 1fr; }
+}
 .crud-product-form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .manager-modal-form textarea { resize: vertical; border: 1px solid #d8d8d8; border-radius: 6px; padding: 12px; font: inherit; font-size: 13px; outline: none; }
 .manager-modal-form textarea:focus { border-color: #a6192e; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
@@ -418,6 +423,8 @@
 .manager-shell.is-dark .crud-empty,
 .manager-shell.is-dark .crud-apercu-empty { color: #9a9a9e; }
 .manager-shell.is-dark .crud-confirm-icon { color: #9a9a9e; background: #232327; }
+.manager-shell.is-dark .crud-confirm-icon.is-danger { color: #f2a19b; background: rgb(179 38 30 / 22%); }
+.manager-shell.is-dark .crud-confirm-icon.is-warning { color: #e0b45c; background: rgb(156 107 12 / 22%); }
 .manager-shell.is-dark .client-product-card,
 .manager-shell.is-dark .crud-apercu-card { border-color: #2a2a2e; background: #1c1c20; }
 .manager-shell.is-dark .client-product-body h3,

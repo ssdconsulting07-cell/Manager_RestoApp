@@ -60,109 +60,113 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
         </div>
         <form className="manager-modal-form crud-product-form" onSubmit={submit}>
           <div className="crud-product-form-grid">
-            <div className="crud-dropzone-field">
-              <span>Photo</span>
-              <div
-                className={`crud-dropzone ${photoUrl ? 'has-image' : ''} ${isDragOver ? 'is-dragover' : ''}`}
-                onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
-                onDragLeave={() => setIsDragOver(false)}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {photoUrl ? (
-                  <div className="crud-dropzone-preview">
-                    <img src={photoUrl} alt="" />
-                    <button
-                      className="crud-dropzone-remove"
-                      type="button"
-                      aria-label="Retirer la photo"
-                      onClick={handleRemovePhoto}
-                    >
-                      <i className="fa-solid fa-xmark" aria-hidden="true" />
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-cloud-arrow-up crud-dropzone-icon" aria-hidden="true" />
-                    <span className="crud-dropzone-text">
-                      <strong>Glissez-déposez une image</strong>
-                      <span>ou cliquez pour parcourir — JPG, PNG</span>
-                    </span>
-                  </>
-                )}
-                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleInputChange} />
+            <div className="crud-product-form-photo">
+              <div className="crud-dropzone-field">
+                <span>Photo</span>
+                <div
+                  className={`crud-dropzone ${photoUrl ? 'has-image' : ''} ${isDragOver ? 'is-dragover' : ''}`}
+                  onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
+                  onDragLeave={() => setIsDragOver(false)}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {photoUrl ? (
+                    <div className="crud-dropzone-preview">
+                      <img src={photoUrl} alt="" />
+                      <button
+                        className="crud-dropzone-remove"
+                        type="button"
+                        aria-label="Retirer la photo"
+                        onClick={handleRemovePhoto}
+                      >
+                        <i className="fa-solid fa-xmark" aria-hidden="true" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <i className="fa-solid fa-cloud-arrow-up crud-dropzone-icon" aria-hidden="true" />
+                      <span className="crud-dropzone-text">
+                        <strong>Glissez-déposez une image</strong>
+                        <span>ou cliquez pour parcourir — JPG, PNG</span>
+                      </span>
+                    </>
+                  )}
+                  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleInputChange} />
+                </div>
               </div>
             </div>
 
-            <label>
-              Nom du produit
-              <input
-                type="text"
-                value={nom}
-                onChange={(e) => setNom(e.target.value)}
-                placeholder="Ex : Ketchup Burger Classique"
-                required
-              />
-            </label>
-
-            <label>
-              Description
-              <textarea
-                rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ingrédients, accompagnement, ce qui rend ce produit spécial…"
-              />
-            </label>
-
-            <div className="crud-product-form-row">
+            <div className="crud-product-form-fields">
               <label>
-                Prix (F CFA)
+                Nom du produit
                 <input
-                  type="number"
-                  min="0"
-                  step="50"
-                  value={prix}
-                  onChange={(e) => setPrix(e.target.value)}
-                  placeholder="3500"
+                  type="text"
+                  value={nom}
+                  onChange={(e) => setNom(e.target.value)}
+                  placeholder="Ex : Ketchup Burger Classique"
                   required
                 />
               </label>
 
               <label>
-                Catégorie
-                <select value={categorieId} onChange={(e) => setCategorieId(e.target.value)} required>
-                  {categories.length === 0 && <option value="">Aucune catégorie disponible</option>}
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>{cat.nom}</option>
-                  ))}
-                </select>
+                Description
+                <textarea
+                  rows={2}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Ingrédients, accompagnement, ce qui rend ce produit spécial…"
+                />
               </label>
-            </div>
 
-            <fieldset className="crud-availability-field">
-              <legend>Disponibilité</legend>
-              <label className={`crud-radio-pill ${disponibilite === 'EN_STOCK' ? 'is-checked' : ''}`}>
-                <input
-                  type="radio"
-                  name="disponibilite"
-                  value="EN_STOCK"
-                  checked={disponibilite === 'EN_STOCK'}
-                  onChange={() => setDisponibilite('EN_STOCK')}
-                />
-                <i className="fa-solid fa-check" aria-hidden="true" /> En stock
-              </label>
-              <label className={`crud-radio-pill is-rupture ${disponibilite === 'RUPTURE' ? 'is-checked' : ''}`}>
-                <input
-                  type="radio"
-                  name="disponibilite"
-                  value="RUPTURE"
-                  checked={disponibilite === 'RUPTURE'}
-                  onChange={() => setDisponibilite('RUPTURE')}
-                />
-                <i className="fa-solid fa-ban" aria-hidden="true" /> Rupture
-              </label>
-            </fieldset>
+              <div className="crud-product-form-row">
+                <label>
+                  Prix (F CFA)
+                  <input
+                    type="number"
+                    min="0"
+                    step="50"
+                    value={prix}
+                    onChange={(e) => setPrix(e.target.value)}
+                    placeholder="3500"
+                    required
+                  />
+                </label>
+
+                <label>
+                  Catégorie
+                  <select value={categorieId} onChange={(e) => setCategorieId(e.target.value)} required>
+                    {categories.length === 0 && <option value="">Aucune catégorie disponible</option>}
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>{cat.nom}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <fieldset className="crud-availability-field">
+                <legend>Disponibilité</legend>
+                <label className={`crud-radio-pill ${disponibilite === 'EN_STOCK' ? 'is-checked' : ''}`}>
+                  <input
+                    type="radio"
+                    name="disponibilite"
+                    value="EN_STOCK"
+                    checked={disponibilite === 'EN_STOCK'}
+                    onChange={() => setDisponibilite('EN_STOCK')}
+                  />
+                  <i className="fa-solid fa-check" aria-hidden="true" /> En stock
+                </label>
+                <label className={`crud-radio-pill is-rupture ${disponibilite === 'RUPTURE' ? 'is-checked' : ''}`}>
+                  <input
+                    type="radio"
+                    name="disponibilite"
+                    value="RUPTURE"
+                    checked={disponibilite === 'RUPTURE'}
+                    onChange={() => setDisponibilite('RUPTURE')}
+                  />
+                  <i className="fa-solid fa-ban" aria-hidden="true" /> Rupture
+                </label>
+              </fieldset>
+            </div>
           </div>
 
           <div className="manager-modal-actions">

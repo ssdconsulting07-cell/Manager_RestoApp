@@ -367,7 +367,7 @@
 .crud-preview-modal { width: min(100%, 420px); }
 .client-product-card { overflow: hidden; border: 1px solid #e5e5e3; border-radius: 14px; }
 .client-product-photo { position: relative; display: grid; height: 160px; place-items: center; color: #c6c2bd; background: #f4f2f0; font-size: 30px; }
-.client-product-photo img { width: 100%; height: 100%; object-fit: cover; }
+.client-product-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .client-product-rupture { position: absolute; top: 10px; right: 10px; border-radius: 999px; padding: 4px 10px; color: #fff; background: rgb(20 20 20 / 78%); font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .client-product-body { padding: 16px; }
 .client-product-category { color: #a6192e; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
@@ -386,7 +386,7 @@
 .crud-apercu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
 .crud-apercu-card { overflow: hidden; border: 1px solid #e5e5e3; border-radius: 12px; background: #fff; }
 .crud-apercu-photo { position: relative; display: grid; height: 110px; place-items: center; color: #c6c2bd; background: #f4f2f0; font-size: 22px; }
-.crud-apercu-photo img { width: 100%; height: 100%; object-fit: cover; }
+.crud-apercu-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .crud-apercu-rupture-badge { position: absolute; top: 8px; right: 8px; border-radius: 999px; padding: 3px 8px; color: #fff; background: rgb(20 20 20 / 78%); font-size: 9px; font-weight: 800; text-transform: uppercase; }
 .crud-apercu-body { padding: 12px 14px; }
 .crud-apercu-body h4 { margin: 0 0 4px; font-size: 13px; }
@@ -429,7 +429,7 @@
 .crud-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; margin-bottom: 18px; }
 .crud-grid-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e5e5e3; border-radius: 16px; background: #fff; box-shadow: 0 10px 24px rgb(20 20 20 / 4%); }
 .crud-grid-photo { position: relative; display: grid; height: 150px; place-items: center; overflow: hidden; color: #c6c2bd; background: #f4f2f0; font-size: 26px; }
-.crud-grid-photo img { width: 100%; height: 100%; object-fit: cover; }
+.crud-grid-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .crud-grid-photo > .crud-status-badge { position: absolute; top: 10px; left: 10px; }
 .crud-grid-availability-chip { position: absolute; top: 10px; right: 10px; display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 10px; color: #fff; background: rgb(20 20 20 / 65%); font-size: 10px; font-weight: 800; letter-spacing: .02em; }
 .crud-grid-availability-chip.is-rupture { background: rgb(179 38 30 / 85%); }

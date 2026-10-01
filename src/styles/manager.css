@@ -301,7 +301,7 @@
 .crud-action:hover { background: #e7e7e5; color: #141414; }
 .crud-action.is-publish { color: #fff; background: #a6192e; }
 .crud-action.is-publish:hover { background: #8a1526; color: #fff; }
-.crud-action.is-warning { color: #9c6b0c; background: #f6ecd9; }
+.crud-action.is-warning { color: #86590a; background: #f6ecd9; }
 .crud-action.is-warning:hover { background: #efe2c4; }
 .crud-action.is-stock { color: #1f6f57; background: #e2f2ec; }
 .crud-action.is-stock:hover { background: #d3ebe1; }
@@ -309,6 +309,14 @@
 .crud-action.is-archive:hover { background: #e2e2df; }
 .crud-action.is-danger { color: #b3261e; background: #fbe4e2; }
 .crud-action.is-danger:hover { color: #8c1d17; background: #f6d2ce; }
+.crud-action.is-accent-green { color: #fff; background: #1f6f57; }
+.crud-action.is-accent-green:hover { background: #185943; }
+.crud-action.is-accent-yellow { color: #141414; background: #e8b923; }
+.crud-action.is-accent-yellow:hover { background: #d1a61e; }
+.crud-action.is-accent-orange { color: #141414; background: #e8822b; }
+.crud-action.is-accent-orange:hover { background: #d17420; }
+.crud-action.is-accent-red { color: #fff; background: #b3261e; }
+.crud-action.is-accent-red:hover { background: #8c1d17; }
 .crud-action-spacer { flex: 1; }
 
 .crud-status-badge { display: inline-flex; align-self: flex-start; border-radius: 999px; padding: 4px 11px; font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
@@ -424,6 +432,7 @@
 .crud-apercu-empty { padding: 30px; color: #6b6b6b; text-align: center; font-size: 13px; }
 
 .manager-shell.is-dark .crud-filter-card { border-color: #2a2a2e; background: linear-gradient(180deg, #1c1c20 0%, #151518 100%); color: #f2f2f2; box-shadow: 0 10px 24px rgb(0 0 0 / 40%); }
+.manager-shell.is-dark .crud-filter-card.is-selected { border-color: var(--stat-accent); border-width: 2px; padding: 15px 17px; background: color-mix(in srgb, var(--stat-accent) 22%, #1c1c20 78%); box-shadow: 0 0 0 1px var(--stat-accent), 0 10px 24px rgb(0 0 0 / 40%); }
 .manager-shell.is-dark .crud-filter-label { color: #9a9a9e; }
 .manager-shell.is-dark .crud-search input { border-color: #2f2f33; color: #f2f2f2; background: #121214; }
 .manager-shell.is-dark .crud-card { border-color: #2a2a2e; background: #1c1c20; }
@@ -437,8 +446,26 @@
 .manager-shell.is-dark .crud-dropzone-text strong,
 .manager-shell.is-dark .crud-dropzone-field > span:first-child { color: #f2f2f2; }
 .manager-shell.is-dark .crud-crop-zoom { color: #9a9a9e; }
-.manager-shell.is-dark .crud-action { color: #9a9a9e; }
-.manager-shell.is-dark .crud-action:hover { color: #f2f2f2; }
+.manager-shell.is-dark .crud-action { color: #9a9a9e; background: #232327; }
+.manager-shell.is-dark .crud-action:hover { color: #f2f2f2; background: #2a2a2e; }
+.manager-shell.is-dark .crud-action.is-publish { color: #fff; background: #a6192e; }
+.manager-shell.is-dark .crud-action.is-publish:hover { color: #fff; background: #8a1526; }
+.manager-shell.is-dark .crud-action.is-accent-green { color: #fff; background: #1f6f57; }
+.manager-shell.is-dark .crud-action.is-accent-green:hover { background: #185943; }
+.manager-shell.is-dark .crud-action.is-accent-yellow { color: #141414; background: #e8b923; }
+.manager-shell.is-dark .crud-action.is-accent-yellow:hover { background: #d1a61e; }
+.manager-shell.is-dark .crud-action.is-accent-orange { color: #141414; background: #e8822b; }
+.manager-shell.is-dark .crud-action.is-accent-orange:hover { background: #d17420; }
+.manager-shell.is-dark .crud-action.is-accent-red { color: #fff; background: #b3261e; }
+.manager-shell.is-dark .crud-action.is-accent-red:hover { background: #8c1d17; }
+.manager-shell.is-dark .crud-action.is-warning { color: #e0b45c; background: rgb(156 107 12 / 22%); }
+.manager-shell.is-dark .crud-action.is-warning:hover { background: rgb(156 107 12 / 32%); }
+.manager-shell.is-dark .crud-action.is-stock { color: #6fd9ae; background: rgb(31 111 87 / 22%); }
+.manager-shell.is-dark .crud-action.is-stock:hover { background: rgb(31 111 87 / 32%); }
+.manager-shell.is-dark .crud-action.is-archive { color: #c7c7cb; background: rgb(91 91 95 / 22%); }
+.manager-shell.is-dark .crud-action.is-archive:hover { background: rgb(91 91 95 / 32%); }
+.manager-shell.is-dark .crud-action.is-danger { color: #f2a19b; background: rgb(179 38 30 / 22%); }
+.manager-shell.is-dark .crud-action.is-danger:hover { color: #f2a19b; background: rgb(179 38 30 / 32%); }
 .manager-shell.is-dark .crud-pagination-rows,
 .manager-shell.is-dark .crud-pagination-summary { color: #9a9a9e; }
 .manager-shell.is-dark .crud-pagination-nav { border-color: #2f2f33; background: #1c1c20; color: #9a9a9e; }

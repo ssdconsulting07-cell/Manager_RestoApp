@@ -170,15 +170,9 @@ export default function Categories() {
                   </div>
 
                   <div className="crud-card-actions">
-                    <button className="crud-action" type="button" onClick={() => setModal({ kind: 'categorie-detail', categorie })}>
-                      <i className="fa-solid fa-eye" aria-hidden="true" /> Voir
+                    <button className="crud-action is-accent-green" type="button" onClick={() => setModal({ kind: 'categorie-apercu', categorie })}>
+                      <i className="fa-solid fa-image" aria-hidden="true" /> Aperçu
                     </button>
-
-                    {(categorie.statut === 'ACTIF' || categorie.statut === 'BROUILLON') && (
-                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'categorie-apercu', categorie })}>
-                        <i className="fa-solid fa-image" aria-hidden="true" /> Aperçu
-                      </button>
-                    )}
 
                     {categorie.statut === 'BROUILLON' && (
                       <>
@@ -192,7 +186,7 @@ export default function Categories() {
                     )}
 
                     {categorie.statut === 'ACTIF' && (
-                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-depublier-categorie', categorie })}>
+                      <button className="crud-action is-accent-orange" type="button" onClick={() => setModal({ kind: 'confirm-depublier-categorie', categorie })}>
                         <i className="fa-solid fa-eye-slash" aria-hidden="true" /> Dépublier
                       </button>
                     )}
@@ -205,12 +199,12 @@ export default function Categories() {
                       </button>
                     )}
                     {categorie.statut === 'ACTIF' && (
-                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-archive-categorie', categorie })}>
+                      <button className="crud-action is-accent-red" type="button" onClick={() => setModal({ kind: 'confirm-archive-categorie', categorie })}>
                         <i className="fa-solid fa-box-archive" aria-hidden="true" /> Archiver
                       </button>
                     )}
                     {categorie.statut === 'ARCHIVE' && (
-                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-restaurer-categorie', categorie })}>
+                      <button className="crud-action is-archive" type="button" onClick={() => setModal({ kind: 'confirm-restaurer-categorie', categorie })}>
                         <i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Restaurer
                       </button>
                     )}
@@ -240,18 +234,6 @@ export default function Categories() {
           categorie={modal.categorie}
           produits={produits.filter((p) => p.categorieId === modal.categorie.id && p.statut === 'ACTIF')}
           onClose={() => setModal(null)}
-        />
-      )}
-      {modal?.kind === 'categorie-detail' && (
-        <ConfirmModal
-          title={modal.categorie.nom}
-          message={`Statut : ${STATUT_LABELS[modal.categorie.statut]} — ${produits.filter((p) => p.categorieId === modal.categorie.id).length} produit(s) associé(s).`}
-          confirmLabel="Fermer"
-          cancelLabel=""
-          tone="info"
-          icon="fa-circle-info"
-          onConfirm={() => setModal(null)}
-          onCancel={() => setModal(null)}
         />
       )}
       {modal?.kind === 'confirm-archive-categorie' && (

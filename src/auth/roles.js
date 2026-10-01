@@ -25,6 +25,7 @@ export const ROUTE_ROLES = {
   '/produits': ['GERANT'],
   '/categories': ['GERANT'],
   '/apercu-client': ['GERANT'],
+  '/annonces': ['GERANT'],
   '/statistiques': ['MANAGER'],
   // A revoir quand le mode d'attribution des livraisons sera tranche
   // (le Manager pourrait avoir besoin de cet ecran s'il affecte les livreurs).

@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import Cropper from 'react-easy-crop'
 import { getCroppedImageUrl } from './cropImage.js'
 
-export default function ImageCropModal({ imageSrc, onCancel, onConfirm }) {
+export default function ImageCropModal({ imageSrc, onCancel, onConfirm, aspect = 4 / 3, eyebrow = 'Photo du produit', title = 'Recadrer la photo' }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
@@ -31,8 +31,8 @@ export default function ImageCropModal({ imageSrc, onCancel, onConfirm }) {
       <section className="manager-modal manager-modal-wide crud-crop-modal" role="dialog" aria-modal="true" aria-labelledby="crop-modal-title">
         <div className="manager-modal-header">
           <div>
-            <p className="manager-eyebrow">Photo du produit</p>
-            <h2 id="crop-modal-title">Recadrer la photo</h2>
+            <p className="manager-eyebrow">{eyebrow}</p>
+            <h2 id="crop-modal-title">{title}</h2>
           </div>
           <button className="manager-icon-button" type="button" aria-label="Fermer" onClick={onCancel}>
             <i className="fa-solid fa-xmark" aria-hidden="true" />
@@ -44,7 +44,7 @@ export default function ImageCropModal({ imageSrc, onCancel, onConfirm }) {
             image={imageSrc}
             crop={crop}
             zoom={zoom}
-            aspect={4 / 3}
+            aspect={aspect}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={handleCropComplete}

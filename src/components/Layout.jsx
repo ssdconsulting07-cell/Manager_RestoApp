@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { path: '/produits', label: 'Produits', icon: 'fa-utensils', roles: ['GERANT'] },
   { path: '/categories', label: 'Catégories', icon: 'fa-tags', roles: ['GERANT'] },
   { path: '/apercu-client', label: 'Aperçu client', icon: 'fa-eye', roles: ['GERANT'] },
+  { path: '/annonces', label: 'Annonces', icon: 'fa-bullhorn', roles: ['GERANT'] },
   { path: '/statistiques', label: 'Statistiques', icon: 'fa-chart-line', roles: ['MANAGER'] },
   { path: '/personnel', label: 'Personnel', icon: 'fa-users', roles: ['MANAGER'] },
   { path: '/livraisons', label: 'Livraisons', icon: 'fa-truck-fast', roles: ['LIVREUR'] },

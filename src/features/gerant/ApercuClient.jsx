@@ -1,9 +1,11 @@
 import Layout from '../../components/Layout.jsx'
 import AppClientPreview from './AppClientPreview.jsx'
 import { useMenuData } from './MenuDataContext.jsx'
+import { useAnnonces } from './AnnoncesContext.jsx'
 
 export default function ApercuClient() {
   const { categories, produits } = useMenuData()
+  const { annonceActive } = useAnnonces()
 
   return (
     <Layout>
@@ -15,7 +17,7 @@ export default function ApercuClient() {
         </div>
       </section>
 
-      <AppClientPreview categories={categories} produits={produits} />
+      <AppClientPreview categories={categories} produits={produits} annonce={annonceActive} />
     </Layout>
   )
 }

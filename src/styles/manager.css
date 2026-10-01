@@ -359,8 +359,14 @@
 .crud-dropzone-text span { font-size: 11px; }
 .crud-dropzone-preview { position: relative; width: 100%; height: 150px; }
 .crud-dropzone-preview img { width: 100%; height: 100%; object-fit: cover; }
-.crud-dropzone-remove { position: absolute; top: 8px; right: 8px; z-index: 2; display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; color: #fff; background: rgb(20 20 20 / 65%); cursor: pointer; font-size: 12px; }
-.crud-dropzone-remove:hover { background: rgb(20 20 20 / 85%); }
+.crud-dropzone-preview-actions { position: absolute; top: 8px; right: 8px; z-index: 2; display: flex; gap: 6px; }
+.crud-dropzone-action { display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; color: #fff; background: rgb(20 20 20 / 65%); cursor: pointer; font-size: 12px; }
+.crud-dropzone-action:hover { background: rgb(20 20 20 / 85%); }
+
+.crud-crop-area { position: relative; width: 100%; height: 320px; margin: 4px 0 14px; border-radius: 12px; overflow: hidden; background: #1c1c20; }
+.crud-crop-zoom { display: flex; align-items: center; gap: 10px; color: #6b6b6b; font-size: 14px; }
+.crud-crop-zoom input[type="range"] { flex: 1; accent-color: #a6192e; }
+.crud-crop-error { margin: 10px 0 0; color: #b3261e; font-size: 12px; }
 
 .crud-availability-field { display: flex; gap: 10px; border: 0; margin: 0; padding: 0; }
 .crud-availability-field legend { width: 100%; margin-bottom: 7px; color: #141414; font-size: 12px; font-weight: 600; }
@@ -411,6 +417,7 @@
 .manager-shell.is-dark .crud-dropzone.is-dragover { border-color: #e14b64; background: #1c1316; color: #e14b64; }
 .manager-shell.is-dark .crud-dropzone-text strong,
 .manager-shell.is-dark .crud-dropzone-field > span:first-child { color: #f2f2f2; }
+.manager-shell.is-dark .crud-crop-zoom { color: #9a9a9e; }
 .manager-shell.is-dark .crud-action { color: #9a9a9e; }
 .manager-shell.is-dark .crud-action:hover { color: #f2f2f2; }
 .manager-shell.is-dark .crud-pagination-rows,
@@ -420,6 +427,8 @@
 .manager-shell.is-dark .manager-modal-form textarea,
 .manager-shell.is-dark .manager-modal-form select { border-color: #2f2f33; color: #f2f2f2; background: #121214; }
 .manager-shell.is-dark .crud-radio-pill { border-color: #2f2f33; color: #9a9a9e; }
+.manager-shell.is-dark .crud-radio-pill.is-checked { border-color: #2f7f63; color: #6fd9ae; background: rgb(31 111 87 / 22%); }
+.manager-shell.is-dark .crud-radio-pill.is-rupture.is-checked { border-color: #b3261e; color: #f2a19b; background: rgb(179 38 30 / 22%); }
 .manager-shell.is-dark .crud-empty,
 .manager-shell.is-dark .crud-apercu-empty { color: #9a9a9e; }
 .manager-shell.is-dark .crud-confirm-icon { color: #9a9a9e; background: #232327; }

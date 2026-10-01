@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import ImageCropModal from './ImageCropModal.jsx'
 
 export default function ProductFormModal({ produit, categories, onSave, onClose }) {
   const isEdit = Boolean(produit)
@@ -9,15 +10,19 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
   const [disponibilite, setDisponibilite] = useState(produit?.disponibilite || 'EN_STOCK')
   const [photoUrl, setPhotoUrl] = useState(produit?.photoUrl || '')
   const [isDragOver, setIsDragOver] = useState(false)
+  const [cropSource, setCropSource] = useState(null)
   const fileInputRef = useRef(null)
 
   function applyFile(file) {
     if (!file || !file.type.startsWith('image/')) return
-    setPhotoUrl(URL.createObjectURL(file))
+    // The raw upload is sent straight to the cropper rather than used as-is —
+    // the final photoUrl is only set once the user validates a crop.
+    setCropSource(URL.createObjectURL(file))
   }
 
   function handleInputChange(e) {
     applyFile(e.target.files?.[0])
+    e.target.value = ''
   }
 
   function handleDrop(e) {
@@ -28,8 +33,28 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
 
   function handleRemovePhoto(e) {
     e.stopPropagation()
+    if (photoUrl.startsWith('blob:')) URL.revokeObjectURL(photoUrl)
     setPhotoUrl('')
     if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  function handleRecadrer(e) {
+    e.stopPropagation()
+    setCropSource(photoUrl)
+  }
+
+  function handleCropConfirm(croppedUrl) {
+    if (photoUrl && photoUrl.startsWith('blob:') && photoUrl !== cropSource) URL.revokeObjectURL(photoUrl)
+    if (cropSource && cropSource.startsWith('blob:')) URL.revokeObjectURL(cropSource)
+    setPhotoUrl(croppedUrl)
+    setCropSource(null)
+  }
+
+  function handleCropCancel() {
+    // Only release the object URL if it was created for this upload, not when
+    // re-cropping the photo already saved on the product.
+    if (cropSource && cropSource.startsWith('blob:') && cropSource !== photoUrl) URL.revokeObjectURL(cropSource)
+    setCropSource(null)
   }
 
   function submit(e) {
@@ -47,8 +72,9 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
   const canSubmit = Boolean(nom.trim()) && Number(prix) > 0 && Boolean(categorieId)
 
   return (
-    <div className="manager-modal-backdrop" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <section className="manager-modal manager-modal-wide" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
+    <>
+      <div className="manager-modal-backdrop" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+        <section className="manager-modal manager-modal-wide" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
         <div className="manager-modal-header">
           <div>
             <p className="manager-eyebrow">{isEdit ? 'Modifier le brouillon' : 'Nouveau produit'}</p>
@@ -73,14 +99,26 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
                   {photoUrl ? (
                     <div className="crud-dropzone-preview">
                       <img src={photoUrl} alt="" />
-                      <button
-                        className="crud-dropzone-remove"
-                        type="button"
-                        aria-label="Retirer la photo"
-                        onClick={handleRemovePhoto}
-                      >
-                        <i className="fa-solid fa-xmark" aria-hidden="true" />
-                      </button>
+                      <div className="crud-dropzone-preview-actions">
+                        {photoUrl.startsWith('blob:') && (
+                          <button
+                            className="crud-dropzone-action"
+                            type="button"
+                            aria-label="Recadrer la photo"
+                            onClick={handleRecadrer}
+                          >
+                            <i className="fa-solid fa-crop-simple" aria-hidden="true" />
+                          </button>
+                        )}
+                        <button
+                          className="crud-dropzone-action"
+                          type="button"
+                          aria-label="Retirer la photo"
+                          onClick={handleRemovePhoto}
+                        >
+                          <i className="fa-solid fa-xmark" aria-hidden="true" />
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <>
@@ -177,6 +215,15 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
           </div>
         </form>
       </section>
-    </div>
+      </div>
+
+      {cropSource && (
+        <ImageCropModal
+          imageSrc={cropSource}
+          onCancel={handleCropCancel}
+          onConfirm={handleCropConfirm}
+        />
+      )}
+    </>
   )
 }

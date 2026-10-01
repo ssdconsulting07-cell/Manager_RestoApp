@@ -20,11 +20,11 @@ const DASHBOARD_DATA = {
     title: 'Bonjour, équipe Gérance.',
     description: 'Gardez une vue claire sur le menu et la disponibilité des produits.',
     cards: [
-      ['Produits au menu', '0', 'Produits configurés', '/menu'],
-      ['Disponibles aujourd’hui', '0', 'Produits prêts à vendre', '/menu'],
+      ['Produits au menu', '0', 'Produits configurés', '/produits'],
+      ['Disponibles aujourd’hui', '0', 'Produits prêts à vendre', '/produits'],
       ['Commandes du jour', '0', 'À suivre avec la cuisine', '/commandes'],
     ],
-    action: ['Gérer le menu', '/menu'],
+    action: ['Gérer le menu', '/produits'],
   },
   MANAGER: {
     eyebrow: 'Vue opérationnelle',

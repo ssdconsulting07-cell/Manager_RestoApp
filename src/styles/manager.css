@@ -67,9 +67,9 @@
 .manager-notification-close-panel { display: grid; width: 28px; height: 28px; place-items: center; border: 1px solid #d7d4d1; border-radius: 50%; background: #f7f6f4; color: #4a4a4a; font-size: 22px; line-height: 1; transition: box-shadow 0.2s ease, transform 0.2s ease; box-shadow: 0 1px 2px rgba(20, 20, 20, 0.06); }
 .manager-notification-close-panel:hover { box-shadow: 0 0 0 3px rgba(166, 25, 46, 0.12); transform: translateY(-1px); }
 .manager-notification-list { max-height: 300px; overflow-y: auto; }
-.manager-notification-item { display: flex; width: 100%; align-items: flex-start; gap: 8px; border: 0; border-bottom: 1px solid #e5e5e3; padding: 15px 18px; color: #141414; background: #fff; font: inherit; text-align: left; }
+.manager-notification-item { display: flex; box-sizing: border-box; width: 100%; align-items: flex-start; gap: 8px; border: 0; border-bottom: 1px solid #e5e5e3; padding: 15px 18px; color: #141414; background: #fff; font: inherit; text-align: left; }
 .manager-notification-item:hover { background: #fafafa; }
-.manager-notification-main { display: flex; flex: 1; align-items: flex-start; gap: 12px; border: 0; padding: 0; color: inherit; background: transparent; cursor: pointer; text-align: left; }
+.manager-notification-main { display: flex; min-width: 0; flex: 1; align-items: flex-start; gap: 12px; border: 0; padding: 0; color: inherit; background: transparent; cursor: pointer; text-align: left; }
 .manager-notification-symbol { display: grid; width: 36px; height: 36px; flex: 0 0 36px; place-items: center; border: 1px solid #e5e5e3; border-radius: 50%; color: #6b6b6b; background: #f8f8f8; }
 .manager-notification-icon { font-size: 16px; line-height: 1; }
 .manager-notification-copy { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 4px; }

@@ -165,15 +165,9 @@ export default function Produits() {
                 <strong className="crud-grid-price">{produit.prix.toLocaleString('fr-FR')} F CFA</strong>
 
                 <div className="crud-card-actions crud-grid-footer">
-                  <button className="crud-action" type="button" onClick={() => setModal({ kind: 'produit-detail', produit })}>
-                    <i className="fa-solid fa-eye" aria-hidden="true" /> Voir
+                  <button className="crud-action is-accent-green" type="button" onClick={() => setModal({ kind: 'produit-apercu', produit })}>
+                    <i className="fa-solid fa-image" aria-hidden="true" /> Aperçu
                   </button>
-
-                  {(produit.statut === 'ACTIF' || produit.statut === 'BROUILLON') && (
-                    <button className="crud-action" type="button" onClick={() => setModal({ kind: 'produit-apercu', produit })}>
-                      <i className="fa-solid fa-image" aria-hidden="true" /> Aperçu
-                    </button>
-                  )}
 
                   {produit.statut === 'BROUILLON' && (
                     <>
@@ -188,17 +182,19 @@ export default function Produits() {
 
                   {produit.statut === 'ACTIF' && (
                     <>
-                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-toggle-dispo-produit', produit })}>
+                      <button
+                        className="crud-action is-accent-yellow"
+                        type="button"
+                        onClick={() => setModal({ kind: 'confirm-toggle-dispo-produit', produit })}
+                      >
                         <i className={`fa-solid ${produit.disponibilite === 'RUPTURE' ? 'fa-check' : 'fa-ban'}`} aria-hidden="true" />
-                        {produit.disponibilite === 'RUPTURE' ? 'Remettre en stock' : 'Marquer en rupture'}
+                        {produit.disponibilite === 'RUPTURE' ? 'En stock' : 'Rupture'}
                       </button>
-                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-depublier-produit', produit })}>
+                      <button className="crud-action is-accent-orange" type="button" onClick={() => setModal({ kind: 'confirm-depublier-produit', produit })}>
                         <i className="fa-solid fa-eye-slash" aria-hidden="true" /> Dépublier
                       </button>
                     </>
                   )}
-
-                  <span className="crud-action-spacer" />
 
                   {produit.statut === 'BROUILLON' && (
                     <button className="crud-action is-danger" type="button" onClick={() => setModal({ kind: 'confirm-delete-produit', produit })}>
@@ -206,12 +202,12 @@ export default function Produits() {
                     </button>
                   )}
                   {produit.statut === 'ACTIF' && (
-                    <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-archive-produit', produit })}>
+                    <button className="crud-action is-accent-red" type="button" onClick={() => setModal({ kind: 'confirm-archive-produit', produit })}>
                       <i className="fa-solid fa-box-archive" aria-hidden="true" /> Archiver
                     </button>
                   )}
                   {produit.statut === 'ARCHIVE' && (
-                    <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-restaurer-produit', produit })}>
+                    <button className="crud-action is-archive" type="button" onClick={() => setModal({ kind: 'confirm-restaurer-produit', produit })}>
                       <i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Restaurer
                     </button>
                   )}
@@ -245,18 +241,6 @@ export default function Produits() {
           produit={modal.produit}
           categorieNom={categorieNomParId(modal.produit.categorieId)}
           onClose={() => setModal(null)}
-        />
-      )}
-      {modal?.kind === 'produit-detail' && (
-        <ConfirmModal
-          title={modal.produit.nom}
-          message={`${modal.produit.description || 'Aucune description.'} — ${modal.produit.prix.toLocaleString('fr-FR')} F CFA — Catégorie : ${categorieNomParId(modal.produit.categorieId)} — Statut : ${STATUT_LABELS[modal.produit.statut]}.`}
-          confirmLabel="Fermer"
-          cancelLabel=""
-          tone="info"
-          icon="fa-circle-info"
-          onConfirm={() => setModal(null)}
-          onCancel={() => setModal(null)}
         />
       )}
       {modal?.kind === 'confirm-delete-produit' && (

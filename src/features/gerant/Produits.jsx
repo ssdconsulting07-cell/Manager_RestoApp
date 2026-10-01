@@ -272,7 +272,7 @@ export default function Produits() {
           title="Archiver ce produit ?"
           message={`« ${modal.produit.nom} » sera retiré de la vente et déplacé dans les archives. Vous pourrez le restaurer plus tard depuis le filtre Archivés.`}
           confirmLabel="Archiver"
-          tone="warning"
+          tone="danger"
           icon="fa-box-archive"
           onConfirm={() => handleArchiver(modal.produit)}
           onCancel={() => setModal(null)}

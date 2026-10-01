@@ -257,7 +257,7 @@ export default function Categories() {
           title="Archiver cette catégorie ?"
           message={`« ${modal.categorie.nom} » sera retirée et déplacée dans les archives. Vous pourrez la restaurer plus tard depuis le filtre Archivés.`}
           confirmLabel="Archiver"
-          tone="warning"
+          tone="danger"
           icon="fa-box-archive"
           onConfirm={() => handleArchiver(modal.categorie)}
           onCancel={() => setModal(null)}

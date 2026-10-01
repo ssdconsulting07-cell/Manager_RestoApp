@@ -434,6 +434,7 @@
 .manager-shell.is-dark .crud-confirm-icon { color: #9a9a9e; background: #232327; }
 .manager-shell.is-dark .crud-confirm-icon.is-danger { color: #f2a19b; background: rgb(179 38 30 / 22%); }
 .manager-shell.is-dark .crud-confirm-icon.is-warning { color: #e0b45c; background: rgb(156 107 12 / 22%); }
+.manager-shell.is-dark .crud-confirm-message { color: #a8a8ad; }
 .manager-shell.is-dark .client-product-card,
 .manager-shell.is-dark .crud-apercu-card { border-color: #2a2a2e; background: #1c1c20; }
 .manager-shell.is-dark .client-product-body h3,

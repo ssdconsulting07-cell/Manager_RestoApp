@@ -16,11 +16,16 @@ function createImage(url) {
  * `pixelCrop` is the { x, y, width, height } object react-easy-crop reports
  * via its onCropComplete callback (in natural image pixels).
  */
+// Caps the exported image at this width so a 4000px phone photo doesn't turn
+// into a multi-MB JPEG once cropped — plenty for how product photos are shown.
+const MAX_OUTPUT_WIDTH = 1200
+
 export async function getCroppedImageUrl(imageSrc, pixelCrop) {
   const image = await createImage(imageSrc)
+  const scale = pixelCrop.width > MAX_OUTPUT_WIDTH ? MAX_OUTPUT_WIDTH / pixelCrop.width : 1
   const canvas = document.createElement('canvas')
-  canvas.width = Math.round(pixelCrop.width)
-  canvas.height = Math.round(pixelCrop.height)
+  canvas.width = Math.round(pixelCrop.width * scale)
+  canvas.height = Math.round(pixelCrop.height * scale)
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Impossible de créer le contexte canvas.')
 

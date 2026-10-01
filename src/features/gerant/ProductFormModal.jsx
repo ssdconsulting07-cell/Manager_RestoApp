@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import ImageCropModal from './ImageCropModal.jsx'
+import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 
 export default function ProductFormModal({ produit, categories, onSave, onClose }) {
   const isEdit = Boolean(produit)
@@ -11,7 +12,32 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
   const [photoUrl, setPhotoUrl] = useState(produit?.photoUrl || '')
   const [isDragOver, setIsDragOver] = useState(false)
   const [cropSource, setCropSource] = useState(null)
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
   const fileInputRef = useRef(null)
+  const initialValues = useRef({
+    nom: produit?.nom || '',
+    description: produit?.description || '',
+    prix: produit?.prix ? String(produit.prix) : '',
+    categorieId: produit?.categorieId || categories[0]?.id || '',
+    disponibilite: produit?.disponibilite || 'EN_STOCK',
+    photoUrl: produit?.photoUrl || '',
+  })
+
+  const isDirty =
+    nom !== initialValues.current.nom ||
+    description !== initialValues.current.description ||
+    prix !== initialValues.current.prix ||
+    categorieId !== initialValues.current.categorieId ||
+    disponibilite !== initialValues.current.disponibilite ||
+    photoUrl !== initialValues.current.photoUrl
+
+  function requestClose() {
+    if (isDirty) {
+      setShowDiscardConfirm(true)
+      return
+    }
+    onClose()
+  }
 
   function applyFile(file) {
     if (!file || !file.type.startsWith('image/')) return
@@ -59,28 +85,36 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
 
   function submit(e) {
     e.preventDefault()
-    onSave({
+    const payload = {
       nom: nom.trim(),
       description: description.trim(),
       prix: Number(prix),
       categorieId,
       disponibilite,
       photoUrl,
-    })
+    }
+    // En création, deux boutons de soumission partagent ce même formulaire
+    // (Publier / Enregistrer en brouillon) : le statut visé est porté par le
+    // bouton qui a déclenché la soumission. En édition, le statut existant
+    // du produit n'est jamais modifié depuis ce formulaire.
+    if (!isEdit) {
+      payload.statut = e.nativeEvent.submitter?.value || 'BROUILLON'
+    }
+    onSave(payload)
   }
 
   const canSubmit = Boolean(nom.trim()) && Number(prix) > 0 && Boolean(categorieId)
 
   return (
     <>
-      <div className="manager-modal-backdrop" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="manager-modal-backdrop" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && requestClose()}>
         <section className="manager-modal manager-modal-wide" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
         <div className="manager-modal-header">
           <div>
             <p className="manager-eyebrow">{isEdit ? 'Modifier le brouillon' : 'Nouveau produit'}</p>
             <h2 id="product-modal-title">{isEdit ? produit.nom : 'Ajouter un produit'}</h2>
           </div>
-          <button className="manager-icon-button" type="button" aria-label="Fermer" onClick={onClose}>
+          <button className="manager-icon-button" type="button" aria-label="Fermer" onClick={requestClose}>
             <i className="fa-solid fa-xmark" aria-hidden="true" />
           </button>
         </div>
@@ -208,10 +242,21 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
           </div>
 
           <div className="manager-modal-actions">
-            <button className="manager-button manager-button-quiet" type="button" onClick={onClose}>Annuler</button>
-            <button className="manager-button manager-button-primary" type="submit" disabled={!canSubmit}>
-              {isEdit ? 'Enregistrer' : 'Créer en brouillon'}
-            </button>
+            <button className="manager-button manager-button-quiet" type="button" onClick={requestClose}>Annuler</button>
+            {isEdit ? (
+              <button className="manager-button manager-button-primary" type="submit" disabled={!canSubmit}>
+                Enregistrer
+              </button>
+            ) : (
+              <>
+                <button className="manager-button manager-button-warning" type="submit" value="BROUILLON" disabled={!canSubmit}>
+                  Enregistrer en brouillon
+                </button>
+                <button className="manager-button manager-button-primary" type="submit" value="ACTIF" disabled={!canSubmit}>
+                  Publier
+                </button>
+              </>
+            )}
           </div>
         </form>
       </section>
@@ -222,6 +267,19 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
           imageSrc={cropSource}
           onCancel={handleCropCancel}
           onConfirm={handleCropConfirm}
+        />
+      )}
+
+      {showDiscardConfirm && (
+        <ConfirmModal
+          title="Quitter sans enregistrer ?"
+          message="Les modifications apportées à ce produit seront perdues."
+          confirmLabel="Quitter sans enregistrer"
+          cancelLabel="Continuer l'édition"
+          tone="danger"
+          icon="fa-triangle-exclamation"
+          onConfirm={onClose}
+          onCancel={() => setShowDiscardConfirm(false)}
         />
       )}
     </>

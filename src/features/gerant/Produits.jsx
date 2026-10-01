@@ -67,6 +67,7 @@ export default function Produits() {
   function handleDepublier(produit) {
     majStatutProduit(produit.id, 'BROUILLON')
     notify('success', `« ${produit.nom} » dépublié et repassé en brouillon.`)
+    setModal(null)
   }
 
   function handleArchiver(produit) {
@@ -78,12 +79,14 @@ export default function Produits() {
   function handleRestaurer(produit) {
     majStatutProduit(produit.id, 'BROUILLON')
     notify('success', `« ${produit.nom} » restauré en brouillon.`)
+    setModal(null)
   }
 
   function handleToggleDispo(produit) {
     const nouvelleDispo = produit.disponibilite === 'EN_STOCK' ? 'RUPTURE' : 'EN_STOCK'
     toggleDisponibiliteProduit(produit.id)
     notify('success', nouvelleDispo === 'RUPTURE' ? `« ${produit.nom} » marqué en rupture.` : `« ${produit.nom} » remis en stock.`)
+    setModal(null)
   }
 
   function handleSave(data) {
@@ -92,7 +95,7 @@ export default function Produits() {
       notify('success', `« ${data.nom} » mis à jour.`)
     } else {
       creerProduit(data)
-      notify('success', `« ${data.nom} » créé en brouillon.`)
+      notify('success', data.statut === 'ACTIF' ? `« ${data.nom} » créé et publié.` : `« ${data.nom} » créé en brouillon.`)
     }
     setModal(null)
   }
@@ -185,11 +188,11 @@ export default function Produits() {
 
                   {produit.statut === 'ACTIF' && (
                     <>
-                      <button className="crud-action" type="button" onClick={() => handleToggleDispo(produit)}>
+                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-toggle-dispo-produit', produit })}>
                         <i className={`fa-solid ${produit.disponibilite === 'RUPTURE' ? 'fa-check' : 'fa-ban'}`} aria-hidden="true" />
                         {produit.disponibilite === 'RUPTURE' ? 'Remettre en stock' : 'Marquer en rupture'}
                       </button>
-                      <button className="crud-action" type="button" onClick={() => handleDepublier(produit)}>
+                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-depublier-produit', produit })}>
                         <i className="fa-solid fa-eye-slash" aria-hidden="true" /> Dépublier
                       </button>
                     </>
@@ -208,7 +211,7 @@ export default function Produits() {
                     </button>
                   )}
                   {produit.statut === 'ARCHIVE' && (
-                    <button className="crud-action" type="button" onClick={() => handleRestaurer(produit)}>
+                    <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-restaurer-produit', produit })}>
                       <i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Restaurer
                     </button>
                   )}
@@ -275,6 +278,41 @@ export default function Produits() {
           tone="danger"
           icon="fa-box-archive"
           onConfirm={() => handleArchiver(modal.produit)}
+          onCancel={() => setModal(null)}
+        />
+      )}
+      {modal?.kind === 'confirm-depublier-produit' && (
+        <ConfirmModal
+          title="Dépublier ce produit ?"
+          message={`« ${modal.produit.nom} » sera retiré de la vente côté client et repassera en brouillon. Vous pourrez le republier à tout moment.`}
+          confirmLabel="Dépublier"
+          tone="warning"
+          icon="fa-eye-slash"
+          onConfirm={() => handleDepublier(modal.produit)}
+          onCancel={() => setModal(null)}
+        />
+      )}
+      {modal?.kind === 'confirm-restaurer-produit' && (
+        <ConfirmModal
+          title="Restaurer ce produit ?"
+          message={`« ${modal.produit.nom} » sera retiré des archives et repassera en brouillon.`}
+          confirmLabel="Restaurer"
+          tone="warning"
+          icon="fa-clock-rotate-left"
+          onConfirm={() => handleRestaurer(modal.produit)}
+          onCancel={() => setModal(null)}
+        />
+      )}
+      {modal?.kind === 'confirm-toggle-dispo-produit' && (
+        <ConfirmModal
+          title={modal.produit.disponibilite === 'RUPTURE' ? 'Remettre ce produit en stock ?' : 'Marquer ce produit en rupture ?'}
+          message={modal.produit.disponibilite === 'RUPTURE'
+            ? `« ${modal.produit.nom} » redeviendra disponible à la commande côté client.`
+            : `« ${modal.produit.nom} » n'apparaîtra plus disponible à la commande côté client, jusqu'à ce qu'il soit remis en stock.`}
+          confirmLabel={modal.produit.disponibilite === 'RUPTURE' ? 'Remettre en stock' : 'Marquer en rupture'}
+          tone="warning"
+          icon={modal.produit.disponibilite === 'RUPTURE' ? 'fa-check' : 'fa-ban'}
+          onConfirm={() => handleToggleDispo(modal.produit)}
           onCancel={() => setModal(null)}
         />
       )}

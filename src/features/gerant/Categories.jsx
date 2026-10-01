@@ -66,6 +66,7 @@ export default function Categories() {
   function handleDepublier(categorie) {
     majStatutCategorie(categorie.id, 'BROUILLON')
     notify('success', `« ${categorie.nom} » dépubliée et repassée en brouillon.`)
+    setModal(null)
   }
 
   function handleArchiver(categorie) {
@@ -77,6 +78,7 @@ export default function Categories() {
   function handleRestaurer(categorie) {
     majStatutCategorie(categorie.id, 'BROUILLON')
     notify('success', `« ${categorie.nom} » restaurée en brouillon.`)
+    setModal(null)
   }
 
   function handleSave(data) {
@@ -190,7 +192,7 @@ export default function Categories() {
                     )}
 
                     {categorie.statut === 'ACTIF' && (
-                      <button className="crud-action" type="button" onClick={() => handleDepublier(categorie)}>
+                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-depublier-categorie', categorie })}>
                         <i className="fa-solid fa-eye-slash" aria-hidden="true" /> Dépublier
                       </button>
                     )}
@@ -208,7 +210,7 @@ export default function Categories() {
                       </button>
                     )}
                     {categorie.statut === 'ARCHIVE' && (
-                      <button className="crud-action" type="button" onClick={() => handleRestaurer(categorie)}>
+                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'confirm-restaurer-categorie', categorie })}>
                         <i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Restaurer
                       </button>
                     )}
@@ -260,6 +262,28 @@ export default function Categories() {
           tone="danger"
           icon="fa-box-archive"
           onConfirm={() => handleArchiver(modal.categorie)}
+          onCancel={() => setModal(null)}
+        />
+      )}
+      {modal?.kind === 'confirm-depublier-categorie' && (
+        <ConfirmModal
+          title="Dépublier cette catégorie ?"
+          message={`« ${modal.categorie.nom} » sera retirée de la vente côté client et repassera en brouillon. Vous pourrez la republier à tout moment.`}
+          confirmLabel="Dépublier"
+          tone="warning"
+          icon="fa-eye-slash"
+          onConfirm={() => handleDepublier(modal.categorie)}
+          onCancel={() => setModal(null)}
+        />
+      )}
+      {modal?.kind === 'confirm-restaurer-categorie' && (
+        <ConfirmModal
+          title="Restaurer cette catégorie ?"
+          message={`« ${modal.categorie.nom} » sera retirée des archives et repassera en brouillon.`}
+          confirmLabel="Restaurer"
+          tone="warning"
+          icon="fa-clock-rotate-left"
+          onConfirm={() => handleRestaurer(modal.categorie)}
           onCancel={() => setModal(null)}
         />
       )}

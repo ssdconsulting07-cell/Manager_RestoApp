@@ -6,13 +6,13 @@ import Toast from './Toast.jsx'
 import '../styles/manager.css'
 
 const NAV_ITEMS = [
-  { path: '/dashboard', label: 'Tableau de bord', icon: '▣', roles: ['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR'] },
-  { path: '/commandes', label: 'Commandes', icon: '◫', roles: ['CUISINE'] },
-  { path: '/preparation', label: 'Préparation', icon: '◧', roles: ['CUISINE'] },
-  { path: '/menu', label: 'Menu', icon: '☰', roles: ['GERANT'] },
-  { path: '/statistiques', label: 'Statistiques', icon: '◔', roles: ['MANAGER'] },
-  { path: '/personnel', label: 'Personnel', icon: '◎', roles: ['MANAGER'] },
-  { path: '/livraisons', label: 'Livraisons', icon: '⇢', roles: ['LIVREUR'] },
+  { path: '/dashboard', label: 'Tableau de bord', icon: 'fa-gauge-high', roles: ['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR'] },
+  { path: '/commandes', label: 'Commandes', icon: 'fa-receipt', roles: ['CUISINE'] },
+  { path: '/preparation', label: 'Préparation', icon: 'fa-kitchen-set', roles: ['CUISINE'] },
+  { path: '/menu', label: 'Menu', icon: 'fa-utensils', roles: ['GERANT'] },
+  { path: '/statistiques', label: 'Statistiques', icon: 'fa-chart-line', roles: ['MANAGER'] },
+  { path: '/personnel', label: 'Personnel', icon: 'fa-users', roles: ['MANAGER'] },
+  { path: '/livraisons', label: 'Livraisons', icon: 'fa-truck-fast', roles: ['LIVREUR'] },
 ]
 
 function initials(username, role) {
@@ -36,38 +36,25 @@ function formatLastConnection(timestamp) {
 }
 
   function BellIcon() {
-    return (
-      <svg className="manager-header-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M6 17h12l-1.2-1.7V10a4.8 4.8 0 0 0-9.6 0v5.3L6 17Z" />
-        <path d="M10 20h4" />
-      </svg>
-    )
+    return <i className="fa-solid fa-bell manager-header-icon" aria-hidden="true" />
   }
 
   function MoonIcon() {
-    return (
-      <svg className="manager-header-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M19.2 14.7A7.6 7.6 0 0 1 9.3 4.8 7.7 7.7 0 1 0 19.2 14.7Z" />
-      </svg>
-    )
+    return <i className="fa-solid fa-moon manager-header-icon" aria-hidden="true" />
   }
 
   function SunIcon() {
-    return (
-      <svg className="manager-header-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="3.3" />
-        <path d="M12 2.5v2M12 19.5v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2.5 12h2M19.5 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-      </svg>
-    )
+    return <i className="fa-solid fa-sun manager-header-icon" aria-hidden="true" />
   }
 
-function NotificationIcon() {
-  return (
-    <svg className="manager-notification-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6 17h12l-1.2-1.7V10a4.8 4.8 0 0 0-9.6 0v5.3L6 17Z" />
-      <path d="M10 20h4" />
-    </svg>
-  )
+const NOTIFICATION_ICONS = {
+  crown: 'fa-crown',
+  assignment: 'fa-clipboard-check',
+  status: 'fa-circle-info',
+}
+
+function NotificationIcon({ kind }) {
+  return <i className={`fa-solid ${NOTIFICATION_ICONS[kind] || 'fa-bell'} manager-notification-icon`} aria-hidden="true" />
 }
 
 const INITIAL_NOTIFICATIONS = [
@@ -104,7 +91,7 @@ function ChangePasswordModal({ onClose, onNotice }) {
             <p className="manager-eyebrow">Sécurité du compte</p>
             <h2 id="password-modal-title">Changer le mot de passe</h2>
           </div>
-          <button className="manager-icon-button" type="button" aria-label="Fermer" onClick={onClose}>×</button>
+          <button className="manager-icon-button" type="button" aria-label="Fermer" onClick={onClose}><i className="fa-solid fa-xmark" aria-hidden="true" /></button>
         </div>
         <form className="manager-modal-form" onSubmit={submit}>
           <label>
@@ -232,7 +219,7 @@ export default function Layout({ children }) {
           <span className="manager-brand-full">SEN<span>YUMMIES</span></span>
           <span className="manager-brand-short">SY</span>
           <button className="manager-collapse-button" type="button" aria-label={mobileOpen ? 'Fermer la navigation' : 'Réduire la navigation'} onClick={toggleSidebar}>
-            {mobileOpen ? '‹' : collapsed ? '›' : '‹'}
+            <i className={`fa-solid ${mobileOpen ? 'fa-chevron-left' : collapsed ? 'fa-chevron-right' : 'fa-chevron-left'}`} aria-hidden="true" />
           </button>
         </div>
         <div className="manager-role-block">
@@ -248,7 +235,7 @@ export default function Layout({ children }) {
               onClick={() => setMobileOpen(false)}
               title={collapsed ? item.label : undefined}
             >
-              <span className="manager-nav-icon" aria-hidden="true">{item.icon}</span>
+              <span className="manager-nav-icon" aria-hidden="true"><i className={`fa-solid ${item.icon}`} /></span>
               <span className="manager-nav-label">{item.label}</span>
               {unreadFor(item.path) > 0 && <span className="manager-nav-badge">{unreadFor(item.path)}</span>}
             </NavLink>
@@ -256,7 +243,7 @@ export default function Layout({ children }) {
         </nav>
         <div className="manager-sidebar-footer">
           <button className="manager-nav-link manager-logout-link" type="button" onClick={logout}>
-            <span className="manager-nav-icon" aria-hidden="true">↪</span>
+            <span className="manager-nav-icon" aria-hidden="true"><i className="fa-solid fa-arrow-right-from-bracket" /></span>
             <span className="manager-nav-label">Déconnexion</span>
           </button>
         </div>
@@ -264,7 +251,7 @@ export default function Layout({ children }) {
 
       <div className="manager-main">
         <header className="manager-header">
-          <button className="manager-mobile-menu" type="button" aria-label="Ouvrir la navigation" onClick={() => setMobileOpen(true)}>☰</button>
+          <button className="manager-mobile-menu" type="button" aria-label="Ouvrir la navigation" onClick={() => setMobileOpen(true)}><i className="fa-solid fa-bars" aria-hidden="true" /></button>
           <div className="manager-header-context">
             <div className="manager-header-stat">
               <span className="manager-header-stat-label">Aujourd’hui</span>
@@ -288,7 +275,7 @@ export default function Layout({ children }) {
                       <h2>Notifications</h2>
                       <div className="manager-notification-header-actions">
                         <button type="button" onClick={markNotificationsRead}>Tout marquer lu</button>
-                        <button className="manager-notification-close-panel" type="button" aria-label="Fermer les notifications" onClick={() => setNotificationsOpen(false)}>×</button>
+                        <button className="manager-notification-close-panel" type="button" aria-label="Fermer les notifications" onClick={() => setNotificationsOpen(false)}><i className="fa-solid fa-xmark" aria-hidden="true" /></button>
                       </div>
                     </div>
                     <div className="manager-notification-list">
@@ -324,7 +311,7 @@ export default function Layout({ children }) {
                                   <small>{notification.time}</small>
                                 </span>
                               </button>
-                              <button className="manager-notification-close" type="button" aria-label="Fermer la notification" onClick={() => dismissNotification(notification.id)}>×</button>
+                              <button className="manager-notification-close" type="button" aria-label="Fermer la notification" onClick={() => dismissNotification(notification.id)}><i className="fa-solid fa-xmark" aria-hidden="true" /></button>
                             </div>
                           )
                         })

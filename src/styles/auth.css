@@ -320,6 +320,7 @@ body,
   right: 24px;
   z-index: 20;
   width: min(390px, calc(100vw - 48px));
+  font-family: 'Poppins', Helvetica, Arial, sans-serif;
 }
 
 .toast {

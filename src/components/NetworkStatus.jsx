@@ -2,8 +2,14 @@ import { useEffect, useState } from 'react'
 import { API_BASE_URL } from '../api/client.js'
 import Toast from './Toast.jsx'
 
-const CHECK_INTERVAL_MS = 1000
-const CHECK_TIMEOUT_MS = 1200
+// 12s (et non 1s) : une sonde de connectivite n'a pas besoin d'etre plus
+// reactive que l'oeil humain, et ca evite de solliciter le backend en
+// continu pour chaque poste connecte. Le retour sur l'onglet (voir
+// visibilitychange plus bas) et les evenements online/offline du navigateur
+// compensent l'intervalle plus long en cas de coupure pendant que l'onglet
+// etait en arriere-plan.
+const CHECK_INTERVAL_MS = 12000
+const CHECK_TIMEOUT_MS = 2500
 const STABLE_CHECKS_REQUIRED = 2
 
 export default function NetworkStatus() {
@@ -64,7 +70,10 @@ export default function NetworkStatus() {
       const timeout = window.setTimeout(() => controller.abort(), CHECK_TIMEOUT_MS)
 
       try {
-        await fetch(`${API_BASE_URL}/produits`, {
+        // Sonde dediee (GET /health, sans acces base de donnees), pas un
+        // endpoint metier : on ne veut pas payer une requete SQL a chaque
+        // verification de connectivite.
+        await fetch(`${API_BASE_URL}/health`, {
           cache: 'no-store',
           signal: controller.signal,
         })
@@ -77,8 +86,19 @@ export default function NetworkStatus() {
       }
     }
 
+    function handleVisibility() {
+      // Les navigateurs throttlent fortement les setInterval d'un onglet en
+      // arriere-plan : sans ce hook, une coupure survenue pendant que
+      // l'onglet etait cache ne serait detectee qu'au prochain tick throttle,
+      // parfois bien plus tard que CHECK_INTERVAL_MS.
+      if (document.visibilityState === 'visible') {
+        checkConnection()
+      }
+    }
+
     window.addEventListener('offline', showOffline)
     window.addEventListener('online', showOnline)
+    document.addEventListener('visibilitychange', handleVisibility)
 
     checkConnection()
     const timer = window.setInterval(checkConnection, CHECK_INTERVAL_MS)
@@ -87,6 +107,7 @@ export default function NetworkStatus() {
       cancelled = true
       window.removeEventListener('offline', showOffline)
       window.removeEventListener('online', showOnline)
+      document.removeEventListener('visibilitychange', handleVisibility)
       window.clearInterval(timer)
     }
   }, [])

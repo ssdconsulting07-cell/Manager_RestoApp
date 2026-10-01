@@ -25,14 +25,16 @@ function formatLastConnection(timestamp) {
   if (!timestamp) return 'Première connexion'
 
   const elapsedMinutes = Math.max(0, Math.floor((Date.now() - new Date(timestamp).getTime()) / 60000))
-  if (elapsedMinutes < 1) return 'À l’instant'
-  if (elapsedMinutes < 60) return `Il y a ${elapsedMinutes} min`
+  if (elapsedMinutes < 1) return 'Dernière connexion à l’instant'
+  if (elapsedMinutes < 60) return `Dernière connexion il y a ${elapsedMinutes} min`
 
   const elapsedHours = Math.floor(elapsedMinutes / 60)
-  if (elapsedHours < 24) return `Il y a ${elapsedHours} h`
+  if (elapsedHours < 24) return `Dernière connexion il y a ${elapsedHours} h`
 
   const elapsedDays = Math.floor(elapsedHours / 24)
-  return elapsedDays === 1 ? 'Hier' : `Il y a ${elapsedDays} jours`
+  return elapsedDays === 1
+    ? 'Dernière connexion hier'
+    : `Dernière connexion il y a ${elapsedDays} jours`
 }
 
   function BellIcon() {
@@ -253,14 +255,16 @@ export default function Layout({ children }) {
         <header className="manager-header">
           <button className="manager-mobile-menu" type="button" aria-label="Ouvrir la navigation" onClick={() => setMobileOpen(true)}><i className="fa-solid fa-bars" aria-hidden="true" /></button>
           <div className="manager-header-context">
-            <div className="manager-header-stat">
-              <span className="manager-header-stat-label">Aujourd’hui</span>
-              <strong className="manager-header-stat-value is-date">{formattedDate} · {formattedTime}</strong>
+            <div className="manager-header-datetime">
+              <i className="fa-solid fa-calendar-days manager-header-datetime-icon" aria-hidden="true" />
+              <span className="is-date">{formattedDate}</span>
+              <span className="manager-header-datetime-sep" aria-hidden="true">|</span>
+              <i className="fa-solid fa-clock manager-header-datetime-icon" aria-hidden="true" />
+              <span>{formattedTime}</span>
             </div>
-            <div className="manager-header-divider" aria-hidden="true" />
-            <div className="manager-header-stat">
-              <span className="manager-header-stat-label">Dernière connexion</span>
-              <strong className="manager-header-stat-value">{lastConnection}</strong>
+            <div className="manager-header-lastlogin">
+              <i className="fa-solid fa-right-to-bracket manager-header-lastlogin-icon" aria-hidden="true" />
+              <span>{lastConnection}</span>
             </div>
           </div>
           <div className="manager-header-actions">

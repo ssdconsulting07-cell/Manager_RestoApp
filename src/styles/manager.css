@@ -46,12 +46,12 @@
 .manager-logout-link { width: 100%; color: #cf98a0; }
 .manager-main { display: flex; width: calc(100% - var(--manager-sidebar-width)); min-height: 100vh; flex-direction: column; margin-left: var(--manager-sidebar-width); transition: margin-left 200ms ease, width 200ms ease; }
 .manager-header { position: sticky; z-index: 5; top: 0; display: flex; height: 78px; align-items: center; justify-content: space-between; border-bottom: 1px solid #e5e5e3; padding: 0 32px; background: rgb(255 255 255 / 94%); backdrop-filter: blur(12px); }
-.manager-header-context { display: flex; align-items: center; gap: 18px; color: #141414; font-size: 12px; }
-.manager-header-divider { width: 1px; height: 30px; background: #e5e5e3; }
-.manager-header-stat { display: flex; flex-direction: column; gap: 3px; }
-.manager-header-stat-label { color: #6b6b6b; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-.manager-header-stat-value { color: #141414; font-size: 13px; font-weight: 700; }
-.manager-header-stat-value.is-date { text-transform: capitalize; }
+.manager-header-context { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; font-size: 12px; }
+.manager-header-datetime { display: flex; align-items: center; gap: 6px; color: #141414; font-size: 13px; font-weight: 700; text-transform: capitalize; }
+.manager-header-datetime-icon { font-size: 12px; color: #a6192e; }
+.manager-header-datetime-sep { color: #c6c6c4; font-weight: 400; }
+.manager-header-lastlogin { display: flex; align-items: center; gap: 6px; color: #6b6b6b; font-size: 11px; }
+.manager-header-lastlogin-icon { font-size: 11px; }
 .manager-header-actions { display: flex; align-items: center; gap: 8px; }
 .manager-header-action { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid #e5e5e3; border-radius: 50%; color: #6b6b6b; background: #fff; cursor: pointer; font-size: 17px; }
 .manager-header-action:hover { color: #a6192e; border-color: #e6c2c9; }
@@ -205,14 +205,13 @@
 .manager-shell.is-dark .dashboard-panel { background: #1c1c20; }
 .manager-shell.is-dark .manager-mobile-menu { color: #f2f2f2; }
 .manager-shell.is-dark .manager-profile-copy strong,
-.manager-shell.is-dark .manager-header-context,
 .manager-shell.is-dark .dashboard-intro h1,
 .manager-shell.is-dark .dashboard-panel h2,
 .manager-shell.is-dark .manager-modal-header h2 { color: #f2f2f2; }
-.manager-shell.is-dark .manager-header-divider { background: #2a2a2e; }
-.manager-shell.is-dark .manager-header-stat-value { color: #f2f2f2; }
+.manager-shell.is-dark .manager-header-datetime { color: #f2f2f2; }
+.manager-shell.is-dark .manager-header-datetime-sep { color: #3a3a3e; }
 .manager-shell.is-dark .manager-profile-copy small,
-.manager-shell.is-dark .manager-header-stat-label,
+.manager-shell.is-dark .manager-header-lastlogin,
 .manager-shell.is-dark .dashboard-intro > div > p:last-child,
 .manager-shell.is-dark .dashboard-panel-copy { color: #9a9a9e; }
 .manager-shell.is-dark .manager-avatar { border-color: #1c1c20; box-shadow: 0 0 0 2px #1c1c20, 0 0 0 3px #55555a; }

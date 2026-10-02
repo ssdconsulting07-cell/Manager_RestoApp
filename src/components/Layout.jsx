@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { ROLE_LABELS } from '../auth/roles.js'
 import { useAuth } from '../auth/AuthContext.jsx'
 import Toast from './Toast.jsx'
+import ConfirmModal from './crud/ConfirmModal.jsx'
 import '../styles/manager.css'
 
 const NAV_ITEMS = [
@@ -76,6 +77,20 @@ function ChangePasswordModal({ onClose, onNotice }) {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showCurrent, setShowCurrent] = useState(false)
+  const [showNew, setShowNew] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
+
+  const isDirty = Boolean(currentPassword || newPassword || confirmPassword)
+
+  function requestClose() {
+    if (isDirty) {
+      setShowDiscardConfirm(true)
+      return
+    }
+    onClose()
+  }
 
   function submit(e) {
     e.preventDefault()
@@ -88,37 +103,67 @@ function ChangePasswordModal({ onClose, onNotice }) {
   }
 
   return (
-    <div className="manager-modal-backdrop" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <section className="manager-modal" role="dialog" aria-modal="true" aria-labelledby="password-modal-title">
-        <div className="manager-modal-header">
-          <div>
-            <p className="manager-eyebrow">Sécurité du compte</p>
-            <h2 id="password-modal-title">Changer le mot de passe</h2>
+    <>
+      <div className="manager-modal-backdrop" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && requestClose()}>
+        <section className="manager-modal" role="dialog" aria-modal="true" aria-labelledby="password-modal-title">
+          <div className="manager-modal-header">
+            <div>
+              <p className="manager-eyebrow">Sécurité du compte</p>
+              <h2 id="password-modal-title">Changer le mot de passe</h2>
+            </div>
+            <button className="manager-icon-button" type="button" aria-label="Fermer" onClick={requestClose}><i className="fa-solid fa-xmark" aria-hidden="true" /></button>
           </div>
-          <button className="manager-icon-button" type="button" aria-label="Fermer" onClick={onClose}><i className="fa-solid fa-xmark" aria-hidden="true" /></button>
-        </div>
-        <form className="manager-modal-form" onSubmit={submit}>
-          <label>
-            Mot de passe actuel
-            <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
-          </label>
-          <label>
-            Nouveau mot de passe
-            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-          </label>
-          <label>
-            Confirmer le nouveau mot de passe
-            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-          </label>
-          <div className="manager-modal-actions">
-            <button className="manager-button manager-button-quiet" type="button" onClick={onClose}>Annuler</button>
-            <button className="manager-button manager-button-primary" type="submit" disabled={!currentPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}>
-              Enregistrer
-            </button>
-          </div>
-        </form>
-      </section>
-    </div>
+          <form className="manager-modal-form" onSubmit={submit}>
+            <label>
+              Mot de passe actuel
+              <span className="password-field">
+                <input type={showCurrent ? 'text' : 'password'} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
+                <button type="button" className="password-toggle" aria-label={showCurrent ? 'Masquer le mot de passe' : 'Afficher le mot de passe'} onClick={() => setShowCurrent((v) => !v)}>
+                  <i className={`fa-solid ${showCurrent ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true" />
+                </button>
+              </span>
+            </label>
+            <label>
+              Nouveau mot de passe
+              <span className="password-field">
+                <input type={showNew ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+                <button type="button" className="password-toggle" aria-label={showNew ? 'Masquer le mot de passe' : 'Afficher le mot de passe'} onClick={() => setShowNew((v) => !v)}>
+                  <i className={`fa-solid ${showNew ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true" />
+                </button>
+              </span>
+            </label>
+            <label>
+              Confirmer le nouveau mot de passe
+              <span className="password-field">
+                <input type={showConfirm ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                <button type="button" className="password-toggle" aria-label={showConfirm ? 'Masquer le mot de passe' : 'Afficher le mot de passe'} onClick={() => setShowConfirm((v) => !v)}>
+                  <i className={`fa-solid ${showConfirm ? 'fa-eye-slash' : 'fa-eye'}`} aria-hidden="true" />
+                </button>
+              </span>
+            </label>
+            <div className="manager-modal-actions">
+              <button className="manager-button manager-button-quiet" type="button" onClick={requestClose}>Annuler</button>
+              <button className="manager-button manager-button-primary" type="submit" disabled={!currentPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}>
+                Enregistrer
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      {showDiscardConfirm && (
+        <ConfirmModal
+          title="Quitter sans enregistrer ?"
+          message="Le mot de passe saisi sera perdu."
+          confirmLabel="Quitter sans enregistrer"
+          cancelLabel="Continuer"
+          tone="danger"
+          icon="fa-triangle-exclamation"
+          onConfirm={onClose}
+          onCancel={() => setShowDiscardConfirm(false)}
+        />
+      )}
+    </>
   )
 }
 

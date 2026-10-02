@@ -256,6 +256,10 @@
 .manager-modal-form label { display: flex; flex-direction: column; gap: 7px; color: #141414; font-size: 12px; font-weight: 600; }
 .manager-modal-form input { border: 1px solid #d8d8d8; border-radius: 6px; padding: 12px; font: inherit; font-size: 13px; outline: none; }
 .manager-modal-form input:focus { border-color: #a6192e; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
+.password-field { position: relative; display: flex; }
+.password-field input { flex: 1; padding-right: 40px; }
+.password-toggle { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); border: 0; background: transparent; color: #6b6b6b; cursor: pointer; font-size: 15px; padding: 8px; line-height: 1; }
+.password-toggle:hover { color: #141414; }
 .manager-modal-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 8px; }
 .manager-button { border: 0; border-radius: 6px; padding: 11px 16px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
 .manager-button-quiet { color: #6b6b6b; background: #f2f2f2; }
@@ -300,6 +304,8 @@
 .manager-shell.is-dark .manager-notification-heading h2,
 .manager-shell.is-dark .manager-notification-copy strong { color: #f2f2f2; }
 .manager-shell.is-dark .manager-modal-form input { border-color: #2f2f33; color: #f2f2f2; background: #121214; }
+.manager-shell.is-dark .password-toggle { color: #9a9a9e; }
+.manager-shell.is-dark .password-toggle:hover { color: #f2f2f2; }
 .manager-shell.is-dark .manager-modal-form label,
 .manager-shell.is-dark .crud-availability-field legend { color: #f2f2f2; }
 .manager-shell.is-dark .dashboard-stat-card { border-color: #2a2a2e; background: linear-gradient(180deg, #1c1c20 0%, #151518 100%); box-shadow: 0 10px 24px rgb(0 0 0 / 40%); --stat-accent: #e14b64; --stat-accent-bg: rgba(225, 75, 100, 0.16); }

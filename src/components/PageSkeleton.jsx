@@ -14,11 +14,6 @@ const PAGE_DETAILS = {
     title: 'Catégories',
     description: 'La gestion des catégories sera disponible dans la prochaine étape.',
   },
-  'apercu-client': {
-    eyebrow: 'Gérance',
-    title: 'Aperçu client',
-    description: 'L’aperçu du menu côté client sera disponible dans la prochaine étape.',
-  },
   livraisons: {
     eyebrow: 'Livraison',
     title: 'Livraisons',

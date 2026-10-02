@@ -24,7 +24,6 @@ const PAGES = {
   '/livraisons': lazy(() => import('./features/livreur/Livraisons.jsx')),
   '/produits': lazy(() => import('./features/gerant/Produits.jsx')),
   '/categories': lazy(() => import('./features/gerant/Categories.jsx')),
-  '/apercu-client': lazy(() => import('./features/gerant/ApercuClient.jsx')),
   '/annonces': lazy(() => import('./features/gerant/Annonces.jsx')),
   '/personnel': lazy(() => import('./features/manager/Personnel.jsx')),
   '/statistiques': lazy(() => import('./features/manager/Statistiques.jsx')),

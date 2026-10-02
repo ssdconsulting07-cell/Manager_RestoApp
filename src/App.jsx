@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Connexion from './auth/Connexion.jsx'
 import { AuthProvider, useAuth } from './auth/AuthContext.jsx'
 import { MenuDataProvider } from './features/gerant/MenuDataContext.jsx'
+import { AnnoncesProvider } from './features/gerant/AnnoncesContext.jsx'
 import { ROLE_HOME, ROUTE_ROLES } from './auth/roles.js'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import NetworkStatus from './components/NetworkStatus.jsx'
@@ -23,7 +24,7 @@ const PAGES = {
   '/livraisons': lazy(() => import('./features/livreur/Livraisons.jsx')),
   '/produits': lazy(() => import('./features/gerant/Produits.jsx')),
   '/categories': lazy(() => import('./features/gerant/Categories.jsx')),
-  '/apercu-client': lazy(() => import('./features/gerant/ApercuClient.jsx')),
+  '/annonces': lazy(() => import('./features/gerant/Annonces.jsx')),
   '/personnel': lazy(() => import('./features/manager/Personnel.jsx')),
   '/statistiques': lazy(() => import('./features/manager/Statistiques.jsx')),
 }
@@ -37,26 +38,28 @@ export default function App() {
   return (
     <AuthProvider>
       <MenuDataProvider>
-        <BrowserRouter>
-          <NetworkStatus />
-          <Routes>
-            <Route path="/login" element={<Connexion />} />
-            {Object.entries(PAGES).map(([path, Page]) => (
-              <Route
-                key={path}
-                path={path}
-                element={
-                  <ProtectedRoute roles={ROUTE_ROLES[path]}>
-                    <Suspense fallback={<Layout><PageSkeleton page={path.slice(1)} /></Layout>}>
-                      <Page />
-                    </Suspense>
-                  </ProtectedRoute>
-                }
-              />
-            ))}
-            <Route path="*" element={<RoleHome />} />
-          </Routes>
-        </BrowserRouter>
+        <AnnoncesProvider>
+          <BrowserRouter>
+            <NetworkStatus />
+            <Routes>
+              <Route path="/login" element={<Connexion />} />
+              {Object.entries(PAGES).map(([path, Page]) => (
+                <Route
+                  key={path}
+                  path={path}
+                  element={
+                    <ProtectedRoute roles={ROUTE_ROLES[path]}>
+                      <Suspense fallback={<Layout><PageSkeleton page={path.slice(1)} /></Layout>}>
+                        <Page />
+                      </Suspense>
+                    </ProtectedRoute>
+                  }
+                />
+              ))}
+              <Route path="*" element={<RoleHome />} />
+            </Routes>
+          </BrowserRouter>
+        </AnnoncesProvider>
       </MenuDataProvider>
     </AuthProvider>
   )

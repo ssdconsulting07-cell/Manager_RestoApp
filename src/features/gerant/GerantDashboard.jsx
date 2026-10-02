@@ -14,8 +14,8 @@ import { STATUT_LABELS, countByStatut } from './menuData.js'
 // qui relève des équipes Cuisine/Manager et n'existe pas encore côté Backend.
 const STATUT_CHART_COLORS = {
   ACTIF: 'var(--chart-green)',
-  BROUILLON: 'var(--chart-amber)',
-  ARCHIVE: 'var(--chart-gray)',
+  BROUILLON: 'var(--chart-brand)',
+  ARCHIVE: 'var(--chart-red)',
 }
 
 function formatRelativeTime(timestamp) {
@@ -141,11 +141,11 @@ export default function GerantDashboard() {
           value={produitsCounts.ACTIF} detail={`${produits.length} au total`} to="/produits"
         />
         <KpiCard
-          icon="fa-ban" accent="red" label="Produits en rupture"
+          icon="fa-ban" accent="amber" label="Produits en rupture"
           value={produitsRupture.length} detail="parmi les actifs" to="/produits"
         />
         <KpiCard
-          icon="fa-pen-to-square" accent="amber" label="Brouillons produits"
+          icon="fa-pen-to-square" accent="brand" label="Brouillons produits"
           value={produitsCounts.BROUILLON} detail="à publier" to="/produits"
         />
         <KpiCard
@@ -225,7 +225,7 @@ export default function GerantDashboard() {
               <PieChart>
                 <Pie data={disponibiliteData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>
                   {disponibiliteData.map((entry) => (
-                    <Cell key={entry.key} fill={entry.key === 'RUPTURE' ? 'var(--chart-red)' : 'var(--chart-green)'} />
+                    <Cell key={entry.key} fill={entry.key === 'RUPTURE' ? 'var(--chart-amber)' : 'var(--chart-green)'} />
                   ))}
                 </Pie>
                 <Tooltip content={<ChartTooltip />} />

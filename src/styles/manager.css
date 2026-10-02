@@ -292,7 +292,6 @@
 .crud-card { display: flex; align-items: flex-start; gap: 16px; border: 1px solid #e5e5e3; border-radius: 14px; padding: 16px 18px; background: #fff; }
 .crud-card-photo { display: grid; flex: 0 0 56px; width: 56px; height: 56px; place-items: center; overflow: hidden; border-radius: 10px; color: #c6c2bd; background: #f4f2f0; font-size: 18px; }
 .crud-card-photo img { width: 100%; height: 100%; object-fit: cover; }
-.crud-card-photo.is-wide { flex-basis: 72px; width: 72px; height: 40px; border-radius: 8px; }
 .crud-card-body { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 4px; }
 .crud-card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .crud-card-title { overflow: hidden; color: #141414; font-size: 14px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
@@ -356,6 +355,7 @@
 .manager-button-danger:hover { background: #8c1d17; }
 .manager-button-warning { color: #fff; background: #9c6b0c; }
 .manager-button-warning:hover { background: #7e5609; }
+.manager-button-warning:disabled { cursor: not-allowed; opacity: .45; }
 
 .manager-modal-confirm { text-align: center; }
 .crud-confirm-icon { display: grid; width: 52px; height: 52px; margin: 0 auto 14px; place-items: center; border-radius: 50%; color: #6b6b6b; background: #f0efed; font-size: 20px; }
@@ -419,14 +419,14 @@
 .crud-category-preview-list li { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f0efed; padding-bottom: 10px; font-size: 13px; }
 .crud-category-preview-list li:last-child { border-bottom: 0; }
 
-
-.crud-annonce-popup { position: relative; max-width: 360px; margin: 0 auto 28px; overflow: hidden; border-radius: 16px; border: 1px solid #e5e5e3; background: #fff; box-shadow: 0 16px 32px rgb(20 20 20 / 10%); }
-.crud-annonce-popup-photo { position: relative; display: grid; aspect-ratio: 16 / 9; place-items: center; color: #c6c2bd; background: #f4f2f0; font-size: 26px; }
+.crud-annonce-popup { position: relative; width: min(88vw, 320px); margin: 0 auto 28px; overflow: hidden; border-radius: 18px; border: 1px solid #e5e5e3; background: #fff; box-shadow: 0 16px 32px rgb(20 20 20 / 10%); }
+.crud-annonce-popup-photo { position: relative; display: grid; aspect-ratio: 4 / 5; place-items: center; overflow: hidden; color: #c6c2bd; background: #f4f2f0; font-size: 26px; }
 .crud-annonce-popup-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.crud-annonce-popup-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgb(20 20 20 / 0%) 48%, rgb(20 20 20 / 80%) 100%); pointer-events: none; }
+.crud-annonce-popup-title { position: absolute; right: 16px; bottom: 14px; left: 16px; z-index: 1; margin: 0; color: #fff; font-size: 17px; font-weight: 800; line-height: 1.25; text-shadow: 0 2px 8px rgb(0 0 0 / 40%); }
 .crud-annonce-popup-close { position: absolute; top: 10px; right: 10px; z-index: 2; display: grid; width: 28px; height: 28px; place-items: center; border: 0; border-radius: 50%; color: #fff; background: rgb(20 20 20 / 55%); cursor: pointer; font-size: 12px; }
 .crud-annonce-popup-close:hover { background: rgb(20 20 20 / 75%); }
-.crud-annonce-popup-body { padding: 14px 16px 18px; }
-.crud-annonce-popup-body h3 { margin: 0 0 6px; font-size: 15px; }
+.crud-annonce-popup-body { padding: 12px 16px 16px; }
 .crud-annonce-popup-body p { margin: 0; color: #6b6b6b; font-size: 12.5px; }
 
 .manager-shell.is-dark .crud-filter-card { border-color: #2a2a2e; background: linear-gradient(180deg, #1c1c20 0%, #151518 100%); color: #f2f2f2; box-shadow: 0 10px 24px rgb(0 0 0 / 40%); }
@@ -491,7 +491,6 @@
 .manager-shell.is-dark .client-product-body p { color: #9a9a9e; }
 .manager-shell.is-dark .crud-annonce-popup { border-color: #2a2a2e; background: #1c1c20; box-shadow: 0 16px 32px rgb(0 0 0 / 40%); }
 .manager-shell.is-dark .crud-annonce-popup-photo { background: #151518; color: #55555a; }
-.manager-shell.is-dark .crud-annonce-popup-body h3 { color: #f2f2f2; }
 .manager-shell.is-dark .crud-annonce-popup-body p { color: #9a9a9e; }
 .manager-shell.is-dark .crud-category-preview-list li { border-color: #2a2a2e; color: #f2f2f2; }
 /* === Grille de cartes produits (espace Gérant — Produits) === */

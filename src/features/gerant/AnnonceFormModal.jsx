@@ -84,7 +84,7 @@ export default function AnnonceFormModal({ annonce, onSave, onClose }) {
     onSave(payload)
   }
 
-  const canSubmit = Boolean(titre.trim()) && Boolean(imageUrl)
+  const canSubmit = Boolean(titre.trim())
 
   return (
     <>
@@ -103,7 +103,7 @@ export default function AnnonceFormModal({ annonce, onSave, onClose }) {
             <div className="crud-product-form-grid">
               <div className="crud-product-form-photo">
                 <div className="crud-dropzone-field">
-                  <span>Image de l'annonce</span>
+                  <span>Image de l'annonce (optionnelle)</span>
                   <div
                     className={`crud-dropzone ${imageUrl ? 'has-image' : ''} ${isDragOver ? 'is-dragover' : ''}`}
                     onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
@@ -140,7 +140,7 @@ export default function AnnonceFormModal({ annonce, onSave, onClose }) {
                         <i className="fa-solid fa-cloud-arrow-up crud-dropzone-icon" aria-hidden="true" />
                         <span className="crud-dropzone-text">
                           <strong>Glissez-déposez une image</strong>
-                          <span>ou cliquez pour parcourir — JPG, PNG (format large recommandé)</span>
+                          <span>ou cliquez pour parcourir — JPG, PNG (format portrait recommandé)</span>
                         </span>
                       </>
                     )}
@@ -197,7 +197,7 @@ export default function AnnonceFormModal({ annonce, onSave, onClose }) {
       {cropSource && (
         <ImageCropModal
           imageSrc={cropSource}
-          aspect={16 / 9}
+          aspect={4 / 5}
           eyebrow="Image de l'annonce"
           title="Recadrer l'affiche"
           onCancel={handleCropCancel}

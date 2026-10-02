@@ -141,25 +141,25 @@ export default function Annonces() {
           </button>
         </div>
 
-        <div className="crud-list">
-          {visibles.length === 0 && (
-            <p className="crud-empty">Aucune annonce {STATUT_LABELS[filter].toLowerCase()} pour le moment.</p>
-          )}
+        {visibles.length === 0 && (
+          <p className="crud-empty">Aucune annonce {STATUT_LABELS[filter].toLowerCase()} pour le moment.</p>
+        )}
+
+        <div className="crud-grid">
           {visibles.map((annonce) => (
-            <article className="crud-card" key={annonce.id}>
-              <span className="crud-card-photo is-wide" aria-hidden="true">
-                {annonce.imageUrl ? <img src={annonce.imageUrl} alt="" /> : <i className="fa-solid fa-bullhorn" />}
-              </span>
-              <div className="crud-card-body">
-                <div className="crud-card-top">
-                  <span className="crud-card-title">{annonce.titre}</span>
-                  <StatusBadge statut={annonce.statut} label={STATUT_LABELS[annonce.statut]} />
-                </div>
-                <div className="crud-card-meta">
+            <article className="crud-grid-card" key={annonce.id}>
+              <div className="crud-grid-photo">
+                {annonce.imageUrl ? <img src={annonce.imageUrl} alt="" /> : <i className="fa-solid fa-bullhorn" aria-hidden="true" />}
+                <StatusBadge statut={annonce.statut} label={STATUT_LABELS[annonce.statut]} />
+              </div>
+
+              <div className="crud-grid-body">
+                <h3 className="crud-grid-title">{annonce.titre}</h3>
+                <div className="crud-grid-meta">
                   <span>{annonce.message || 'Aucun message.'}</span>
                 </div>
 
-                <div className="crud-card-actions">
+                <div className="crud-card-actions crud-grid-footer">
                   <button className="crud-action is-accent-green" type="button" onClick={() => setModal({ kind: 'annonce-apercu', annonce })}>
                     <i className="fa-solid fa-image" aria-hidden="true" /> Aperçu
                   </button>
@@ -180,8 +180,6 @@ export default function Annonces() {
                       <i className="fa-solid fa-eye-slash" aria-hidden="true" /> Dépublier
                     </button>
                   )}
-
-                  <span className="crud-action-spacer" />
 
                   {annonce.statut === 'BROUILLON' && (
                     <button className="crud-action is-danger" type="button" onClick={() => setModal({ kind: 'confirm-delete-annonce', annonce })}>

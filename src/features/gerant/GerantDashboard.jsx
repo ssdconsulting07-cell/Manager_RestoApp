@@ -13,9 +13,28 @@ import { STATUT_LABELS, countByStatut } from './menuData.js'
 // toujours mock pour l'instant). Volontairement aucune donnée Commandes/CA,
 // qui relève des équipes Cuisine/Manager et n'existe pas encore côté Backend.
 const STATUT_CHART_COLORS = {
+  ACTIF: 'var(--chart-fill-green)',
+  BROUILLON: 'var(--chart-fill-orange)',
+  ARCHIVE: 'var(--chart-fill-red)',
+}
+
+// Couleurs de TEXTE des legendes (camemberts) : distinctes des couleurs de
+// remplissage ci-dessus, ajustees par theme pour rester lisibles (>= 4.5:1),
+// comme le texte des cartes KPI. Les pastilles de legende et les parts du
+// camembert restent aux couleurs exactes des boutons d'action.
+const STATUT_TEXT_COLORS = {
   ACTIF: 'var(--chart-green)',
-  BROUILLON: 'var(--chart-amber)',
-  ARCHIVE: 'var(--chart-gray)',
+  BROUILLON: 'var(--chart-brand)',
+  ARCHIVE: 'var(--chart-red)',
+}
+const DISPONIBILITE_TEXT_COLORS = {
+  EN_STOCK: 'var(--chart-green)',
+  RUPTURE: 'var(--chart-amber)',
+}
+function legendTextFormatter(textColors) {
+  return (value, entry) => (
+    <span style={{ color: textColors[entry.payload?.key] }}>{value}</span>
+  )
 }
 
 function formatRelativeTime(timestamp) {
@@ -43,6 +62,7 @@ function KpiCard({ icon, accent, label, value, detail, to }) {
         <span className="dashboard-kpi-label">{label}</span>
         {detail && <span className="dashboard-kpi-detail">{detail}</span>}
       </span>
+      <span className="dashboard-kpi-arrow" aria-hidden="true">→</span>
     </Link>
   )
 }
@@ -144,7 +164,7 @@ export default function GerantDashboard() {
           value={produitsRupture.length} detail="parmi les actifs" to="/produits"
         />
         <KpiCard
-          icon="fa-pen-to-square" accent="amber" label="Brouillons produits"
+          icon="fa-pen-to-square" accent="brand" label="Brouillons produits"
           value={produitsCounts.BROUILLON} detail="à publier" to="/produits"
         />
         <KpiCard
@@ -158,12 +178,34 @@ export default function GerantDashboard() {
           to="/annonces"
         />
         <KpiCard
-          icon="fa-sack-dollar" accent="gray" label="Valeur du catalogue"
+          icon="fa-sack-dollar" accent="amber" label="Valeur du catalogue"
           value={formatFCFA(valeurCatalogue)} detail="produits actifs" to="/produits"
         />
       </section>
 
       <section className="dashboard-charts-grid" aria-label="Analytiques du menu">
+        <div className="dashboard-panel dashboard-chart-panel dashboard-chart-panel-wide">
+          <div className="dashboard-panel-heading">
+            <div>
+              <p className="manager-eyebrow">Catégories</p>
+              <h2>Produits par catégorie</h2>
+            </div>
+          </div>
+          {categoriesChartData.length === 0 ? (
+            <p className="dashboard-chart-empty">Aucune catégorie pour le moment.</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={248}>
+              <BarChart data={categoriesChartData} margin={{ top: 4, right: 8, bottom: 4, left: -24 }}>
+                <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+                <XAxis dataKey="nom" interval={0} angle={-35} textAnchor="end" height={80} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
+                <Bar dataKey="produits" name="Produits" fill="var(--chart-fill-orange)" radius={[6, 6, 0, 0]} barSize={28} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
         <div className="dashboard-panel dashboard-chart-panel">
           <div className="dashboard-panel-heading">
             <div>
@@ -182,30 +224,8 @@ export default function GerantDashboard() {
                   ))}
                 </Pie>
                 <Tooltip content={<ChartTooltip />} />
-                <Legend verticalAlign="bottom" height={32} iconType="circle" />
+                <Legend verticalAlign="bottom" height={32} iconType="circle" formatter={legendTextFormatter(STATUT_TEXT_COLORS)} />
               </PieChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-
-        <div className="dashboard-panel dashboard-chart-panel">
-          <div className="dashboard-panel-heading">
-            <div>
-              <p className="manager-eyebrow">Catégories</p>
-              <h2>Produits par catégorie</h2>
-            </div>
-          </div>
-          {categoriesChartData.length === 0 ? (
-            <p className="dashboard-chart-empty">Aucune catégorie pour le moment.</p>
-          ) : (
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={categoriesChartData} layout="vertical" margin={{ top: 4, right: 16, bottom: 4, left: 8 }}>
-                <CartesianGrid horizontal={false} stroke="var(--chart-grid)" />
-                <XAxis type="number" allowDecimals={false} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
-                <YAxis type="category" dataKey="nom" width={124} tick={{ fill: 'var(--chart-axis)', fontSize: 12 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
-                <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
-                <Bar dataKey="produits" name="Produits" fill="var(--chart-brand)" radius={[0, 6, 6, 0]} barSize={18} />
-              </BarChart>
             </ResponsiveContainer>
           )}
         </div>
@@ -224,57 +244,16 @@ export default function GerantDashboard() {
               <PieChart>
                 <Pie data={disponibiliteData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>
                   {disponibiliteData.map((entry) => (
-                    <Cell key={entry.key} fill={entry.key === 'RUPTURE' ? 'var(--chart-red)' : 'var(--chart-green)'} />
+                    <Cell key={entry.key} fill={entry.key === 'RUPTURE' ? 'var(--chart-fill-gold)' : 'var(--chart-fill-green)'} />
                   ))}
                 </Pie>
                 <Tooltip content={<ChartTooltip />} />
-                <Legend verticalAlign="bottom" height={32} iconType="circle" />
+                <Legend verticalAlign="bottom" height={32} iconType="circle" formatter={legendTextFormatter(DISPONIBILITE_TEXT_COLORS)} />
               </PieChart>
             </ResponsiveContainer>
           )}
         </div>
 
-        <div className="dashboard-panel dashboard-chart-panel">
-          <div className="dashboard-panel-heading">
-            <div>
-              <p className="manager-eyebrow">Annonces</p>
-              <h2>Popup « nouveauté »</h2>
-            </div>
-          </div>
-
-          <div className="dashboard-annonce-highlight">
-            <span className={`dashboard-annonce-dot ${annonceActive ? '' : 'is-off'}`} aria-hidden="true" />
-            {annonceActive ? (
-              <span>
-                <strong>{annonceActive.titre}</strong>
-                <span>Affichée à l’arrivée sur l’app Client</span>
-              </span>
-            ) : (
-              <span>
-                <strong>Aucune annonce active</strong>
-                <span>Rien n’est affiché à l’arrivée sur l’app Client</span>
-              </span>
-            )}
-          </div>
-
-          {annoncesChartData.length === 0 ? (
-            <p className="dashboard-chart-empty">Aucune annonce pour le moment.</p>
-          ) : (
-            <ResponsiveContainer width="100%" height={140}>
-              <BarChart data={annoncesChartData} margin={{ top: 4, right: 8, bottom: 4, left: -24 }}>
-                <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-                <XAxis dataKey="name" tick={{ fill: 'var(--chart-axis)', fontSize: 12 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
-                <Bar dataKey="value" name="Annonces" radius={[6, 6, 0, 0]} barSize={36}>
-                  {annoncesChartData.map((entry) => (
-                    <Cell key={entry.key} fill={STATUT_CHART_COLORS[entry.key]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
       </section>
 
       <section className="dashboard-panel dashboard-activity-panel" aria-label="Activité récente du menu">

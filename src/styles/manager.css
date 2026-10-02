@@ -7,32 +7,41 @@
   font-family: 'Poppins', Helvetica, Arial, sans-serif;
   --chart-green: #1f6f57;
   --chart-green-bg: #e2f2ec;
-  --chart-amber: #9c6b0c;
-  --chart-amber-bg: #f6ecd9;
+  --chart-amber: #8e700f;
+  --chart-amber-bg: #fcf7e5;
   --chart-gray: #5b5b5f;
   --chart-gray-bg: #ececea;
   --chart-red: #b3261e;
   --chart-red-bg: #fbe4e2;
-  --chart-brand: #a6192e;
-  --chart-brand-bg: #f8e9ec;
+  --chart-brand: #b35d13;
+  --chart-brand-bg: #fcf0e6;
   --chart-grid: #e7e4e1;
   --chart-axis: #6b6b6b;
   --chart-cursor: rgba(20, 20, 20, 0.04);
+  /* Couleurs de REMPLISSAGE des graphiques (barres, camemberts) : identiques
+     aux boutons d'action Apercu/Rupture/Depublier/Archiver, memes dans les
+     deux themes. Ne pas reutiliser pour du texte (utiliser --chart-green,
+     --chart-amber, --chart-red, --chart-brand plus haut a la place, qui sont
+     ajustees par theme pour rester lisibles en tant que texte). */
+  --chart-fill-green: #1f6f57;
+  --chart-fill-gold: #e8b923;
+  --chart-fill-orange: #e8822b;
+  --chart-fill-red: #b3261e;
 }
 
 .manager-shell.is-dark {
   color: #f2f2f2;
   background: #121214;
-  --chart-green: #35b78e;
-  --chart-green-bg: rgba(53, 183, 142, 0.18);
-  --chart-amber: #d69a2d;
-  --chart-amber-bg: rgba(214, 154, 45, 0.16);
-  --chart-gray: #9a9a9e;
-  --chart-gray-bg: rgba(154, 154, 158, 0.16);
-  --chart-red: #f2a19b;
+  --chart-green: #6fd9ae;
+  --chart-green-bg: rgba(31, 111, 87, 0.22);
+  --chart-amber: #e8b923;
+  --chart-amber-bg: rgba(232, 185, 35, 0.20);
+  --chart-gray: #adadb2;
+  --chart-gray-bg: rgba(173, 173, 178, 0.16);
+  --chart-red: #e36059;
   --chart-red-bg: rgba(179, 38, 30, 0.22);
-  --chart-brand: #e14b64;
-  --chart-brand-bg: rgba(225, 75, 100, 0.16);
+  --chart-brand: #e8822b;
+  --chart-brand-bg: rgba(232, 130, 43, 0.20);
   --chart-grid: #2a2a2e;
   --chart-axis: #a8a8ad;
   --chart-cursor: rgba(255, 255, 255, 0.05);
@@ -151,25 +160,28 @@
 
 /* === Tableau de bord Gerant — KPI, graphiques, activite === */
 .dashboard-kpi-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
-.dashboard-kpi-card { display: flex; align-items: flex-start; gap: 12px; border: 1px solid #e7e4e1; border-radius: 14px; padding: 16px 18px; color: #141414; background: linear-gradient(180deg, #fff 0%, #f9f8f7 100%); text-decoration: none; box-shadow: 0 10px 24px rgb(20 20 20 / 4%); transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+.dashboard-kpi-card { position: relative; display: flex; align-items: flex-start; gap: 12px; border: 1px solid #e7e4e1; border-radius: 14px; padding: 16px 34px 16px 18px; color: #141414; background: linear-gradient(180deg, #fff 0%, #f9f8f7 100%); text-decoration: none; box-shadow: 0 10px 24px rgb(20 20 20 / 4%); transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
 .dashboard-kpi-card:hover { transform: translateY(-2px); border-color: #d8d1cc; box-shadow: 0 16px 28px rgb(20 20 20 / 8%); }
+.dashboard-kpi-arrow { position: absolute; right: 14px; bottom: 14px; font-size: 14px; opacity: .55; transition: opacity 140ms ease, transform 140ms ease; }
+.dashboard-kpi-card:hover .dashboard-kpi-arrow { opacity: 1; transform: translateX(2px); }
 .dashboard-kpi-icon { display: grid; flex: none; width: 40px; height: 40px; place-items: center; border-radius: 11px; font-size: 16px; }
 .dashboard-kpi-body { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
 .dashboard-kpi-body strong { font-size: 22px; line-height: 1.1; letter-spacing: -.02em; }
 .dashboard-kpi-label { color: #6b6b6b; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
 .dashboard-kpi-detail { overflow: hidden; color: #6b6b6b; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-.dashboard-kpi-card.is-green .dashboard-kpi-icon, .dashboard-kpi-card.is-green strong { color: var(--chart-green); }
+.dashboard-kpi-card.is-green .dashboard-kpi-icon, .dashboard-kpi-card.is-green strong, .dashboard-kpi-card.is-green .dashboard-kpi-arrow { color: var(--chart-green); }
 .dashboard-kpi-card.is-green .dashboard-kpi-icon { background: var(--chart-green-bg); }
-.dashboard-kpi-card.is-amber .dashboard-kpi-icon, .dashboard-kpi-card.is-amber strong { color: var(--chart-amber); }
+.dashboard-kpi-card.is-amber .dashboard-kpi-icon, .dashboard-kpi-card.is-amber strong, .dashboard-kpi-card.is-amber .dashboard-kpi-arrow { color: var(--chart-amber); }
 .dashboard-kpi-card.is-amber .dashboard-kpi-icon { background: var(--chart-amber-bg); }
-.dashboard-kpi-card.is-gray .dashboard-kpi-icon, .dashboard-kpi-card.is-gray strong { color: var(--chart-gray); }
+.dashboard-kpi-card.is-gray .dashboard-kpi-icon, .dashboard-kpi-card.is-gray strong, .dashboard-kpi-card.is-gray .dashboard-kpi-arrow { color: var(--chart-gray); }
 .dashboard-kpi-card.is-gray .dashboard-kpi-icon { background: var(--chart-gray-bg); }
-.dashboard-kpi-card.is-red .dashboard-kpi-icon, .dashboard-kpi-card.is-red strong { color: var(--chart-red); }
+.dashboard-kpi-card.is-red .dashboard-kpi-icon, .dashboard-kpi-card.is-red strong, .dashboard-kpi-card.is-red .dashboard-kpi-arrow { color: var(--chart-red); }
 .dashboard-kpi-card.is-red .dashboard-kpi-icon { background: var(--chart-red-bg); }
-.dashboard-kpi-card.is-brand .dashboard-kpi-icon, .dashboard-kpi-card.is-brand strong { color: var(--chart-brand); }
+.dashboard-kpi-card.is-brand .dashboard-kpi-icon, .dashboard-kpi-card.is-brand strong, .dashboard-kpi-card.is-brand .dashboard-kpi-arrow { color: var(--chart-brand); }
 .dashboard-kpi-card.is-brand .dashboard-kpi-icon { background: var(--chart-brand-bg); }
 
 .dashboard-charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr)); gap: 16px; margin-bottom: 16px; }
+.dashboard-chart-panel-wide { grid-column: 1 / -1; }
 .dashboard-chart-panel .dashboard-panel-heading { margin-bottom: 4px; }
 .dashboard-chart-empty { margin: 32px 0; color: #6b6b6b; font-size: 13px; text-align: center; }
 
@@ -253,6 +265,10 @@
 .manager-modal-form label { display: flex; flex-direction: column; gap: 7px; color: #141414; font-size: 12px; font-weight: 600; }
 .manager-modal-form input { border: 1px solid #d8d8d8; border-radius: 6px; padding: 12px; font: inherit; font-size: 13px; outline: none; }
 .manager-modal-form input:focus { border-color: #a6192e; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
+.password-field { position: relative; display: flex; }
+.password-field input { flex: 1; padding-right: 40px; }
+.password-toggle { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); border: 0; background: transparent; color: #6b6b6b; cursor: pointer; font-size: 15px; padding: 8px; line-height: 1; }
+.password-toggle:hover { color: #141414; }
 .manager-modal-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 8px; }
 .manager-button { border: 0; border-radius: 6px; padding: 11px 16px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
 .manager-button-quiet { color: #6b6b6b; background: #f2f2f2; }
@@ -297,6 +313,8 @@
 .manager-shell.is-dark .manager-notification-heading h2,
 .manager-shell.is-dark .manager-notification-copy strong { color: #f2f2f2; }
 .manager-shell.is-dark .manager-modal-form input { border-color: #2f2f33; color: #f2f2f2; background: #121214; }
+.manager-shell.is-dark .password-toggle { color: #9a9a9e; }
+.manager-shell.is-dark .password-toggle:hover { color: #f2f2f2; }
 .manager-shell.is-dark .manager-modal-form label,
 .manager-shell.is-dark .crud-availability-field legend { color: #f2f2f2; }
 .manager-shell.is-dark .dashboard-stat-card { border-color: #2a2a2e; background: linear-gradient(180deg, #1c1c20 0%, #151518 100%); box-shadow: 0 10px 24px rgb(0 0 0 / 40%); --stat-accent: #e14b64; --stat-accent-bg: rgba(225, 75, 100, 0.16); }

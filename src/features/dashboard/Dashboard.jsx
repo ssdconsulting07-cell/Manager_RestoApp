@@ -19,7 +19,7 @@ const DASHBOARD_DATA = {
   GERANT: {
     eyebrow: 'Gérance',
     title: 'Tableau de bord',
-    description: 'Vue d’ensemble du menu : statuts, disponibilité, catégories et annonces, en un coup d’œil.',
+    description: 'Menu, catégories et annonces : tout en un coup d’œil.',
   },
   MANAGER: {
     eyebrow: 'Vue opérationnelle',

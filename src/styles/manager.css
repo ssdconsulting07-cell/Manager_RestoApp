@@ -18,6 +18,15 @@
   --chart-grid: #e7e4e1;
   --chart-axis: #6b6b6b;
   --chart-cursor: rgba(20, 20, 20, 0.04);
+  /* Couleurs de REMPLISSAGE des graphiques (barres, camemberts) : identiques
+     aux boutons d'action Apercu/Rupture/Depublier/Archiver, memes dans les
+     deux themes. Ne pas reutiliser pour du texte (utiliser --chart-green,
+     --chart-amber, --chart-red, --chart-brand plus haut a la place, qui sont
+     ajustees par theme pour rester lisibles en tant que texte). */
+  --chart-fill-green: #1f6f57;
+  --chart-fill-gold: #e8b923;
+  --chart-fill-orange: #e8822b;
+  --chart-fill-red: #b3261e;
 }
 
 .manager-shell.is-dark {

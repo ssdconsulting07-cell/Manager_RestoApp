@@ -13,9 +13,28 @@ import { STATUT_LABELS, countByStatut } from './menuData.js'
 // toujours mock pour l'instant). Volontairement aucune donnée Commandes/CA,
 // qui relève des équipes Cuisine/Manager et n'existe pas encore côté Backend.
 const STATUT_CHART_COLORS = {
+  ACTIF: 'var(--chart-fill-green)',
+  BROUILLON: 'var(--chart-fill-orange)',
+  ARCHIVE: 'var(--chart-fill-red)',
+}
+
+// Couleurs de TEXTE des legendes (camemberts) : distinctes des couleurs de
+// remplissage ci-dessus, ajustees par theme pour rester lisibles (>= 4.5:1),
+// comme le texte des cartes KPI. Les pastilles de legende et les parts du
+// camembert restent aux couleurs exactes des boutons d'action.
+const STATUT_TEXT_COLORS = {
   ACTIF: 'var(--chart-green)',
   BROUILLON: 'var(--chart-brand)',
   ARCHIVE: 'var(--chart-red)',
+}
+const DISPONIBILITE_TEXT_COLORS = {
+  EN_STOCK: 'var(--chart-green)',
+  RUPTURE: 'var(--chart-amber)',
+}
+function legendTextFormatter(textColors) {
+  return (value, entry) => (
+    <span style={{ color: textColors[entry.payload?.key] }}>{value}</span>
+  )
 }
 
 function formatRelativeTime(timestamp) {
@@ -141,7 +160,7 @@ export default function GerantDashboard() {
           value={produitsCounts.ACTIF} detail={`${produits.length} au total`} to="/produits"
         />
         <KpiCard
-          icon="fa-ban" accent="amber" label="Produits en rupture"
+          icon="fa-ban" accent="red" label="Produits en rupture"
           value={produitsRupture.length} detail="parmi les actifs" to="/produits"
         />
         <KpiCard
@@ -159,7 +178,7 @@ export default function GerantDashboard() {
           to="/annonces"
         />
         <KpiCard
-          icon="fa-sack-dollar" accent="gray" label="Valeur du catalogue"
+          icon="fa-sack-dollar" accent="amber" label="Valeur du catalogue"
           value={formatFCFA(valeurCatalogue)} detail="produits actifs" to="/produits"
         />
       </section>
@@ -181,7 +200,7 @@ export default function GerantDashboard() {
                 <XAxis dataKey="nom" interval={0} angle={-35} textAnchor="end" height={80} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
                 <YAxis allowDecimals={false} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
-                <Bar dataKey="produits" name="Produits" fill="var(--chart-brand)" radius={[6, 6, 0, 0]} barSize={28} />
+                <Bar dataKey="produits" name="Produits" fill="var(--chart-fill-orange)" radius={[6, 6, 0, 0]} barSize={28} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -205,7 +224,7 @@ export default function GerantDashboard() {
                   ))}
                 </Pie>
                 <Tooltip content={<ChartTooltip />} />
-                <Legend verticalAlign="bottom" height={32} iconType="circle" />
+                <Legend verticalAlign="bottom" height={32} iconType="circle" formatter={legendTextFormatter(STATUT_TEXT_COLORS)} />
               </PieChart>
             </ResponsiveContainer>
           )}
@@ -225,11 +244,11 @@ export default function GerantDashboard() {
               <PieChart>
                 <Pie data={disponibiliteData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>
                   {disponibiliteData.map((entry) => (
-                    <Cell key={entry.key} fill={entry.key === 'RUPTURE' ? 'var(--chart-amber)' : 'var(--chart-green)'} />
+                    <Cell key={entry.key} fill={entry.key === 'RUPTURE' ? 'var(--chart-fill-gold)' : 'var(--chart-fill-green)'} />
                   ))}
                 </Pie>
                 <Tooltip content={<ChartTooltip />} />
-                <Legend verticalAlign="bottom" height={32} iconType="circle" />
+                <Legend verticalAlign="bottom" height={32} iconType="circle" formatter={legendTextFormatter(DISPONIBILITE_TEXT_COLORS)} />
               </PieChart>
             </ResponsiveContainer>
           )}

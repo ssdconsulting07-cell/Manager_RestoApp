@@ -43,6 +43,7 @@ function KpiCard({ icon, accent, label, value, detail, to }) {
         <span className="dashboard-kpi-label">{label}</span>
         {detail && <span className="dashboard-kpi-detail">{detail}</span>}
       </span>
+      <span className="dashboard-kpi-arrow" aria-hidden="true">→</span>
     </Link>
   )
 }
@@ -198,13 +199,13 @@ export default function GerantDashboard() {
           {categoriesChartData.length === 0 ? (
             <p className="dashboard-chart-empty">Aucune catégorie pour le moment.</p>
           ) : (
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={categoriesChartData} layout="vertical" margin={{ top: 4, right: 16, bottom: 4, left: 8 }}>
-                <CartesianGrid horizontal={false} stroke="var(--chart-grid)" />
-                <XAxis type="number" allowDecimals={false} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
-                <YAxis type="category" dataKey="nom" width={124} tick={{ fill: 'var(--chart-axis)', fontSize: 12 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
+            <ResponsiveContainer width="100%" height={248}>
+              <BarChart data={categoriesChartData} margin={{ top: 4, right: 8, bottom: 4, left: -24 }}>
+                <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+                <XAxis dataKey="nom" interval={0} angle={-15} textAnchor="end" height={56} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
-                <Bar dataKey="produits" name="Produits" fill="var(--chart-brand)" radius={[0, 6, 6, 0]} barSize={18} />
+                <Bar dataKey="produits" name="Produits" fill="var(--chart-brand)" radius={[6, 6, 0, 0]} barSize={28} />
               </BarChart>
             </ResponsiveContainer>
           )}

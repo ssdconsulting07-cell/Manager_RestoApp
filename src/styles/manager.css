@@ -23,16 +23,16 @@
 .manager-shell.is-dark {
   color: #f2f2f2;
   background: #121214;
-  --chart-green: #35b78e;
-  --chart-green-bg: rgba(53, 183, 142, 0.18);
-  --chart-amber: #d69a2d;
-  --chart-amber-bg: rgba(214, 154, 45, 0.16);
-  --chart-gray: #9a9a9e;
-  --chart-gray-bg: rgba(154, 154, 158, 0.16);
-  --chart-red: #f2a19b;
-  --chart-red-bg: rgba(179, 38, 30, 0.22);
-  --chart-brand: #e14b64;
-  --chart-brand-bg: rgba(225, 75, 100, 0.16);
+  --chart-green: #22c55e;
+  --chart-green-bg: rgba(34, 197, 94, 0.18);
+  --chart-amber: #f59e0b;
+  --chart-amber-bg: rgba(245, 158, 11, 0.16);
+  --chart-gray: #adadb2;
+  --chart-gray-bg: rgba(173, 173, 178, 0.16);
+  --chart-red: #ef4444;
+  --chart-red-bg: rgba(239, 68, 68, 0.20);
+  --chart-brand: #ff4d6d;
+  --chart-brand-bg: rgba(255, 77, 109, 0.16);
   --chart-grid: #2a2a2e;
   --chart-axis: #a8a8ad;
   --chart-cursor: rgba(255, 255, 255, 0.05);
@@ -151,22 +151,24 @@
 
 /* === Tableau de bord Gerant — KPI, graphiques, activite === */
 .dashboard-kpi-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
-.dashboard-kpi-card { display: flex; align-items: flex-start; gap: 12px; border: 1px solid #e7e4e1; border-radius: 14px; padding: 16px 18px; color: #141414; background: linear-gradient(180deg, #fff 0%, #f9f8f7 100%); text-decoration: none; box-shadow: 0 10px 24px rgb(20 20 20 / 4%); transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+.dashboard-kpi-card { position: relative; display: flex; align-items: flex-start; gap: 12px; border: 1px solid #e7e4e1; border-radius: 14px; padding: 16px 34px 16px 18px; color: #141414; background: linear-gradient(180deg, #fff 0%, #f9f8f7 100%); text-decoration: none; box-shadow: 0 10px 24px rgb(20 20 20 / 4%); transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
 .dashboard-kpi-card:hover { transform: translateY(-2px); border-color: #d8d1cc; box-shadow: 0 16px 28px rgb(20 20 20 / 8%); }
+.dashboard-kpi-arrow { position: absolute; right: 14px; bottom: 14px; font-size: 14px; opacity: .55; transition: opacity 140ms ease, transform 140ms ease; }
+.dashboard-kpi-card:hover .dashboard-kpi-arrow { opacity: 1; transform: translateX(2px); }
 .dashboard-kpi-icon { display: grid; flex: none; width: 40px; height: 40px; place-items: center; border-radius: 11px; font-size: 16px; }
 .dashboard-kpi-body { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
 .dashboard-kpi-body strong { font-size: 22px; line-height: 1.1; letter-spacing: -.02em; }
 .dashboard-kpi-label { color: #6b6b6b; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
 .dashboard-kpi-detail { overflow: hidden; color: #6b6b6b; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-.dashboard-kpi-card.is-green .dashboard-kpi-icon, .dashboard-kpi-card.is-green strong { color: var(--chart-green); }
+.dashboard-kpi-card.is-green .dashboard-kpi-icon, .dashboard-kpi-card.is-green strong, .dashboard-kpi-card.is-green .dashboard-kpi-arrow { color: var(--chart-green); }
 .dashboard-kpi-card.is-green .dashboard-kpi-icon { background: var(--chart-green-bg); }
-.dashboard-kpi-card.is-amber .dashboard-kpi-icon, .dashboard-kpi-card.is-amber strong { color: var(--chart-amber); }
+.dashboard-kpi-card.is-amber .dashboard-kpi-icon, .dashboard-kpi-card.is-amber strong, .dashboard-kpi-card.is-amber .dashboard-kpi-arrow { color: var(--chart-amber); }
 .dashboard-kpi-card.is-amber .dashboard-kpi-icon { background: var(--chart-amber-bg); }
-.dashboard-kpi-card.is-gray .dashboard-kpi-icon, .dashboard-kpi-card.is-gray strong { color: var(--chart-gray); }
+.dashboard-kpi-card.is-gray .dashboard-kpi-icon, .dashboard-kpi-card.is-gray strong, .dashboard-kpi-card.is-gray .dashboard-kpi-arrow { color: var(--chart-gray); }
 .dashboard-kpi-card.is-gray .dashboard-kpi-icon { background: var(--chart-gray-bg); }
-.dashboard-kpi-card.is-red .dashboard-kpi-icon, .dashboard-kpi-card.is-red strong { color: var(--chart-red); }
+.dashboard-kpi-card.is-red .dashboard-kpi-icon, .dashboard-kpi-card.is-red strong, .dashboard-kpi-card.is-red .dashboard-kpi-arrow { color: var(--chart-red); }
 .dashboard-kpi-card.is-red .dashboard-kpi-icon { background: var(--chart-red-bg); }
-.dashboard-kpi-card.is-brand .dashboard-kpi-icon, .dashboard-kpi-card.is-brand strong { color: var(--chart-brand); }
+.dashboard-kpi-card.is-brand .dashboard-kpi-icon, .dashboard-kpi-card.is-brand strong, .dashboard-kpi-card.is-brand .dashboard-kpi-arrow { color: var(--chart-brand); }
 .dashboard-kpi-card.is-brand .dashboard-kpi-icon { background: var(--chart-brand-bg); }
 
 .dashboard-charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr)); gap: 16px; margin-bottom: 16px; }

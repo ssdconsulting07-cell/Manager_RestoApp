@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { ROLE_LABELS } from '../../auth/roles.js'
 import Layout from '../../components/Layout.jsx'
+import GerantDashboard from '../gerant/GerantDashboard.jsx'
 
 const DASHBOARD_DATA = {
   CUISINE: {
@@ -16,15 +17,9 @@ const DASHBOARD_DATA = {
     action: ['Voir les commandes', '/commandes'],
   },
   GERANT: {
-    eyebrow: 'Pilotage du menu',
-    title: 'Bonjour, équipe Gérance.',
-    description: 'Gardez une vue claire sur le menu et la disponibilité des produits.',
-    cards: [
-      ['Produits au menu', '0', 'Produits configurés', '/produits'],
-      ['Disponibles aujourd’hui', '0', 'Produits prêts à vendre', '/produits'],
-      ['Commandes du jour', '0', 'À suivre avec la cuisine', '/commandes'],
-    ],
-    action: ['Gérer le menu', '/produits'],
+    eyebrow: 'Gérance',
+    title: 'Tableau de bord',
+    description: 'Vue d’ensemble du menu : statuts, disponibilité, catégories et annonces, en un coup d’œil.',
   },
   MANAGER: {
     eyebrow: 'Vue opérationnelle',
@@ -65,38 +60,44 @@ export default function Dashboard() {
         <span className="dashboard-role-badge">{ROLE_LABELS[role]}</span>
       </section>
 
-      <section className="dashboard-stat-grid" aria-label="Résumé de l’activité">
-        {data.cards.map(([label, value, detail, path]) => (
-          <Link className="dashboard-stat-card" key={label} to={path}>
-            <div className="dashboard-stat-head">
-              <span className="dashboard-stat-label">{label}</span>
-            </div>
-            <div className="dashboard-stat-body">
-              <strong>{value}</strong>
-              <span className="dashboard-stat-detail">{detail}</span>
-            </div>
-            <span className="dashboard-card-arrow" aria-hidden="true">→</span>
-          </Link>
-        ))}
-      </section>
+      {role === 'GERANT' ? (
+        <GerantDashboard />
+      ) : (
+        <>
+          <section className="dashboard-stat-grid" aria-label="Résumé de l’activité">
+            {data.cards.map(([label, value, detail, path]) => (
+              <Link className="dashboard-stat-card" key={label} to={path}>
+                <div className="dashboard-stat-head">
+                  <span className="dashboard-stat-label">{label}</span>
+                </div>
+                <div className="dashboard-stat-body">
+                  <strong>{value}</strong>
+                  <span className="dashboard-stat-detail">{detail}</span>
+                </div>
+                <span className="dashboard-card-arrow" aria-hidden="true">→</span>
+              </Link>
+            ))}
+          </section>
 
-      <section className="dashboard-lower-grid">
-        <div className="dashboard-panel">
-          <div className="dashboard-panel-heading">
-            <div>
-              <p className="manager-eyebrow">Raccourci</p>
-              <h2>Votre prochaine action</h2>
+          <section className="dashboard-lower-grid">
+            <div className="dashboard-panel">
+              <div className="dashboard-panel-heading">
+                <div>
+                  <p className="manager-eyebrow">Raccourci</p>
+                  <h2>Votre prochaine action</h2>
+                </div>
+              </div>
+              <p className="dashboard-panel-copy">Accédez directement à l’espace principal de votre rôle.</p>
+              <Link className="manager-button manager-button-primary dashboard-action" to={data.action[1]}>{data.action[0]} <span>→</span></Link>
             </div>
-          </div>
-          <p className="dashboard-panel-copy">Accédez directement à l’espace principal de votre rôle.</p>
-          <Link className="manager-button manager-button-primary dashboard-action" to={data.action[1]}>{data.action[0]} <span>→</span></Link>
-        </div>
-        <div className="dashboard-panel dashboard-panel-muted">
-          <p className="manager-eyebrow">État du service</p>
-          <h2>Tout est prêt pour commencer.</h2>
-          <p className="dashboard-panel-copy">Les données opérationnelles apparaîtront ici dès les premières commandes.</p>
-        </div>
-      </section>
+            <div className="dashboard-panel dashboard-panel-muted">
+              <p className="manager-eyebrow">État du service</p>
+              <h2>Tout est prêt pour commencer.</h2>
+              <p className="dashboard-panel-copy">Les données opérationnelles apparaîtront ici dès les premières commandes.</p>
+            </div>
+          </section>
+        </>
+      )}
     </Layout>
   )
 }

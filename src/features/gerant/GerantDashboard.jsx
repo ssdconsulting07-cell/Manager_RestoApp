@@ -165,6 +165,28 @@ export default function GerantDashboard() {
       </section>
 
       <section className="dashboard-charts-grid" aria-label="Analytiques du menu">
+        <div className="dashboard-panel dashboard-chart-panel dashboard-chart-panel-wide">
+          <div className="dashboard-panel-heading">
+            <div>
+              <p className="manager-eyebrow">Catégories</p>
+              <h2>Produits par catégorie</h2>
+            </div>
+          </div>
+          {categoriesChartData.length === 0 ? (
+            <p className="dashboard-chart-empty">Aucune catégorie pour le moment.</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={248}>
+              <BarChart data={categoriesChartData} margin={{ top: 4, right: 8, bottom: 4, left: -24 }}>
+                <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+                <XAxis dataKey="nom" interval={0} angle={-35} textAnchor="end" height={80} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
+                <Bar dataKey="produits" name="Produits" fill="var(--chart-brand)" radius={[6, 6, 0, 0]} barSize={28} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
         <div className="dashboard-panel dashboard-chart-panel">
           <div className="dashboard-panel-heading">
             <div>
@@ -185,28 +207,6 @@ export default function GerantDashboard() {
                 <Tooltip content={<ChartTooltip />} />
                 <Legend verticalAlign="bottom" height={32} iconType="circle" />
               </PieChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-
-        <div className="dashboard-panel dashboard-chart-panel">
-          <div className="dashboard-panel-heading">
-            <div>
-              <p className="manager-eyebrow">Catégories</p>
-              <h2>Produits par catégorie</h2>
-            </div>
-          </div>
-          {categoriesChartData.length === 0 ? (
-            <p className="dashboard-chart-empty">Aucune catégorie pour le moment.</p>
-          ) : (
-            <ResponsiveContainer width="100%" height={248}>
-              <BarChart data={categoriesChartData} margin={{ top: 4, right: 8, bottom: 4, left: -24 }}>
-                <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-                <XAxis dataKey="nom" interval={0} angle={-15} textAnchor="end" height={56} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
-                <Bar dataKey="produits" name="Produits" fill="var(--chart-brand)" radius={[6, 6, 0, 0]} barSize={28} />
-              </BarChart>
             </ResponsiveContainer>
           )}
         </div>
@@ -235,47 +235,6 @@ export default function GerantDashboard() {
           )}
         </div>
 
-        <div className="dashboard-panel dashboard-chart-panel">
-          <div className="dashboard-panel-heading">
-            <div>
-              <p className="manager-eyebrow">Annonces</p>
-              <h2>Popup « nouveauté »</h2>
-            </div>
-          </div>
-
-          <div className="dashboard-annonce-highlight">
-            <span className={`dashboard-annonce-dot ${annonceActive ? '' : 'is-off'}`} aria-hidden="true" />
-            {annonceActive ? (
-              <span>
-                <strong>{annonceActive.titre}</strong>
-                <span>Affichée à l’arrivée sur l’app Client</span>
-              </span>
-            ) : (
-              <span>
-                <strong>Aucune annonce active</strong>
-                <span>Rien n’est affiché à l’arrivée sur l’app Client</span>
-              </span>
-            )}
-          </div>
-
-          {annoncesChartData.length === 0 ? (
-            <p className="dashboard-chart-empty">Aucune annonce pour le moment.</p>
-          ) : (
-            <ResponsiveContainer width="100%" height={140}>
-              <BarChart data={annoncesChartData} margin={{ top: 4, right: 8, bottom: 4, left: -24 }}>
-                <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-                <XAxis dataKey="name" tick={{ fill: 'var(--chart-axis)', fontSize: 12 }} axisLine={{ stroke: 'var(--chart-grid)' }} tickLine={false} />
-                <YAxis allowDecimals={false} tick={{ fill: 'var(--chart-axis)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip content={<ChartTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
-                <Bar dataKey="value" name="Annonces" radius={[6, 6, 0, 0]} barSize={36}>
-                  {annoncesChartData.map((entry) => (
-                    <Cell key={entry.key} fill={STATUT_CHART_COLORS[entry.key]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
       </section>
 
       <section className="dashboard-panel dashboard-activity-panel" aria-label="Activité récente du menu">

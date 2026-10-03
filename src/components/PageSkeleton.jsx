@@ -2,7 +2,7 @@ const PAGE_DETAILS = {
   preparation: {
     eyebrow: 'Cuisine',
     title: 'Préparation',
-    description: 'L’espace de préparation détaillé sera disponible dans la prochaine étape.',
+    description: 'Commandes en cours de préparation.',
   },
   menu: {
     eyebrow: 'Gérance',
@@ -105,7 +105,7 @@ export default function PageSkeleton({ page, contentOnly = false }) {
       <span className="page-skeleton-announcement">Chargement de la page…</span>
       {page === 'dashboard' ? (
         <DashboardSkeleton />
-      ) : page === 'commandes' ? (
+      ) : page === 'commandes' || page === 'preparation' ? (
         <>
           {!contentOnly && (
             <div className="page-skeleton-page-heading" aria-hidden="true">

@@ -58,7 +58,7 @@ function PasswordInput({ value, onChange, autoComplete, autoFocus, required }) {
 }
 
 export default function Connexion() {
-  const { role, login } = useAuth()
+  const { role, login, loginDemoCuisine } = useAuth()
   const navigate = useNavigate()
   const from = useLocation().state?.from
   const [mode, setMode] = useState('login')
@@ -372,6 +372,20 @@ export default function Connexion() {
                     : 'Se connecter'}
           </span>
         </button>
+
+        {mode === 'login' && (
+          <button
+            type="button"
+            className="auth-submit"
+            style={{ marginTop: 10, background: 'transparent', color: '#a6192e', border: '1px solid #e6c2c9' }}
+            onClick={() => {
+              const receivedRole = loginDemoCuisine()
+              navigate(destinationFor(receivedRole, from), { replace: true })
+            }}
+          >
+            <span>Entrer en démo Cuisine (sans backend)</span>
+          </button>
+        )}
 
       </form>
       <Toast toast={toast} onClose={() => setToast(null)} />

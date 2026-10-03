@@ -64,12 +64,31 @@ export function AuthProvider({ children }) {
     return receivedRole
   }, [])
 
+  // Acces local sans backend (UI Cuisine + donnees fictives).
+  const loginDemoCuisine = useCallback(() => {
+    clearAuthToken()
+    setAuthToken('demo-cuisine-token')
+    const previousLogin = localStorage.getItem(LAST_LOGIN_KEY)
+    localStorage.setItem(ROLE_KEY, 'CUISINE')
+    localStorage.setItem(USERNAME_KEY, 'cuisine-demo')
+    if (previousLogin) localStorage.setItem(PREVIOUS_LOGIN_KEY, previousLogin)
+    localStorage.setItem(LAST_LOGIN_KEY, new Date().toISOString())
+    setRole('CUISINE')
+    setUsername('cuisine-demo')
+    setLastLoginAt(previousLogin)
+    return 'CUISINE'
+  }, [])
+
   useEffect(() => {
     window.addEventListener(SESSION_EXPIRED_EVENT, logout)
     return () => window.removeEventListener(SESSION_EXPIRED_EVENT, logout)
   }, [logout])
 
-  return <AuthContext.Provider value={{ role, username, lastLoginAt, login, logout }}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{ role, username, lastLoginAt, login, loginDemoCuisine, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {

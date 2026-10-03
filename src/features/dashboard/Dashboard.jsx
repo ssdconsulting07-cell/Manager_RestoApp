@@ -2,19 +2,9 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { ROLE_LABELS } from '../../auth/roles.js'
 import Layout from '../../components/Layout.jsx'
+import CuisineDashboard from '../cuisine/CuisineDashboard.jsx'
 
 const DASHBOARD_DATA = {
-  CUISINE: {
-    eyebrow: 'Service en cours',
-    title: 'Bonjour, équipe Cuisine.',
-    description: 'Gardez le rythme sur les commandes qui attendent votre attention.',
-    cards: [
-      ['Commandes à préparer', '0', 'En attente de traitement', '/commandes'],
-      ['En préparation', '0', 'Commandes en cours', '/commandes'],
-      ['Prêtes à servir', '0', 'À remettre au client ou au livreur', '/commandes'],
-    ],
-    action: ['Voir les commandes', '/commandes'],
-  },
   GERANT: {
     eyebrow: 'Pilotage du menu',
     title: 'Bonjour, équipe Gérance.',
@@ -52,7 +42,9 @@ const DASHBOARD_DATA = {
 
 export default function Dashboard() {
   const { role } = useAuth()
-  const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.CUISINE
+  if (role === 'CUISINE') return <CuisineDashboard />
+
+  const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.GERANT
 
   return (
     <Layout>
@@ -89,7 +81,9 @@ export default function Dashboard() {
             </div>
           </div>
           <p className="dashboard-panel-copy">Accédez directement à l’espace principal de votre rôle.</p>
-          <Link className="manager-button manager-button-primary dashboard-action" to={data.action[1]}>{data.action[0]} <span>→</span></Link>
+          <Link className="manager-button manager-button-primary dashboard-action" to={data.action[1]}>
+            {data.action[0]} <span>→</span>
+          </Link>
         </div>
         <div className="dashboard-panel dashboard-panel-muted">
           <p className="manager-eyebrow">État du service</p>

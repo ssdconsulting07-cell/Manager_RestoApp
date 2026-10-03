@@ -2,6 +2,8 @@ import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Connexion from './auth/Connexion.jsx'
 import { AuthProvider, useAuth } from './auth/AuthContext.jsx'
+import { MenuDataProvider } from './features/gerant/MenuDataContext.jsx'
+import { AnnoncesProvider } from './features/gerant/AnnoncesContext.jsx'
 import { ROLE_HOME, ROUTE_ROLES } from './auth/roles.js'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import NetworkStatus from './components/NetworkStatus.jsx'
@@ -20,7 +22,9 @@ const PAGES = {
   '/commandes': lazy(() => import('./features/cuisine/Commandes.jsx')),
   '/preparation': lazy(() => import('./features/cuisine/Preparation.jsx')),
   '/livraisons': lazy(() => import('./features/livreur/Livraisons.jsx')),
-  '/menu': lazy(() => import('./features/gerant/Menu.jsx')),
+  '/produits': lazy(() => import('./features/gerant/Produits.jsx')),
+  '/categories': lazy(() => import('./features/gerant/Categories.jsx')),
+  '/annonces': lazy(() => import('./features/gerant/Annonces.jsx')),
   '/personnel': lazy(() => import('./features/manager/Personnel.jsx')),
   '/statistiques': lazy(() => import('./features/manager/Statistiques.jsx')),
 }
@@ -33,26 +37,30 @@ function RoleHome() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <NetworkStatus />
-        <Routes>
-          <Route path="/login" element={<Connexion />} />
-          {Object.entries(PAGES).map(([path, Page]) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                <ProtectedRoute roles={ROUTE_ROLES[path]}>
-                  <Suspense fallback={<Layout><PageSkeleton page={path.slice(1)} /></Layout>}>
-                    <Page />
-                  </Suspense>
-                </ProtectedRoute>
-              }
-            />
-          ))}
-          <Route path="*" element={<RoleHome />} />
-        </Routes>
-      </BrowserRouter>
+      <MenuDataProvider>
+        <AnnoncesProvider>
+          <BrowserRouter>
+            <NetworkStatus />
+            <Routes>
+              <Route path="/login" element={<Connexion />} />
+              {Object.entries(PAGES).map(([path, Page]) => (
+                <Route
+                  key={path}
+                  path={path}
+                  element={
+                    <ProtectedRoute roles={ROUTE_ROLES[path]}>
+                      <Suspense fallback={<Layout><PageSkeleton page={path.slice(1)} /></Layout>}>
+                        <Page />
+                      </Suspense>
+                    </ProtectedRoute>
+                  }
+                />
+              ))}
+              <Route path="*" element={<RoleHome />} />
+            </Routes>
+          </BrowserRouter>
+        </AnnoncesProvider>
+      </MenuDataProvider>
     </AuthProvider>
   )
 }

@@ -4,10 +4,15 @@ const PAGE_DETAILS = {
     title: 'Préparation',
     description: 'Commandes en cours de préparation.',
   },
-  menu: {
+  produits: {
     eyebrow: 'Gérance',
-    title: 'Menu',
-    description: 'La gestion des produits, prix et disponibilités sera disponible dans la prochaine étape.',
+    title: 'Produits',
+    description: 'La gestion des produits sera disponible dans la prochaine étape.',
+  },
+  categories: {
+    eyebrow: 'Gérance',
+    title: 'Catégories',
+    description: 'La gestion des catégories sera disponible dans la prochaine étape.',
   },
   livraisons: {
     eyebrow: 'Livraison',

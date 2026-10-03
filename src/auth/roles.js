@@ -22,7 +22,9 @@ export const ROUTE_ROLES = {
   '/dashboard': ROLES,
   '/commandes': ['CUISINE'],
   '/preparation': ['CUISINE'],
-  '/menu': ['GERANT'],
+  '/produits': ['GERANT'],
+  '/categories': ['GERANT'],
+  '/annonces': ['GERANT'],
   '/statistiques': ['MANAGER'],
   // A revoir quand le mode d'attribution des livraisons sera tranche
   // (le Manager pourrait avoir besoin de cet ecran s'il affecte les livreurs).

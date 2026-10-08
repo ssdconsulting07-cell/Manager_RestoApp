@@ -62,6 +62,12 @@ describe('Manager mock data', () => {
     expect(journalAudit.some((e) => /connect/i.test(e.action))).toBe(false)
     expect(new Set(journalAudit.map((e) => e.acteur.role))).toEqual(new Set(['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR']))
   })
+
+  it('reserves Personnel actions to Gerant staff and keeps the Manager on orders', () => {
+    expect(journalAudit.length).toBeGreaterThanOrEqual(40)
+    journalAudit.filter((e) => e.domaine === 'PERSONNEL').forEach((e) => expect(e.acteur.role).toBe('GERANT'))
+    journalAudit.filter((e) => e.acteur.role === 'MANAGER').forEach((e) => expect(e.domaine).toBe('COMMANDE'))
+  })
 })
 
 describe('Dashboard by role', () => {
@@ -89,8 +95,13 @@ describe('Dashboard by role', () => {
 
     const commandes = screen.getByRole('region', { name: 'Commandes du jour' })
     expect(within(commandes).getAllByRole('link')).toHaveLength(6)
-    // Le Manager n'a acces qu'a /dashboard et /statistiques.
-    screen.getAllByRole('link').forEach((link) => expect(link).toHaveAttribute('href', '/statistiques'))
+    // Le Manager n'a acces qu'a /dashboard et /journal-audit.
+    screen.getAllByRole('link').forEach((link) => expect(link).toHaveAttribute('href', '/journal-audit'))
+
+    // Le flux n'est qu'un apercu des 12 dernieres actions du Journal d'audit.
+    const audit = screen.getByRole('region', { name: 'Actions du personnel' })
+    expect(within(audit).getAllByRole('listitem')).toHaveLength(12)
+    expect(within(audit).getAllByRole('listitem')[0]).toHaveTextContent(`${journalAudit[0].acteur.nom} ${journalAudit[0].action}`)
   })
 
   it.each(['CUISINE', 'LIVREUR'])('keeps the generic dashboard for %s', (role) => {

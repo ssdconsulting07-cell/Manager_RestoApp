@@ -13,7 +13,7 @@ const NAV_ITEMS = [
   { path: '/produits', label: 'Produits', icon: 'fa-utensils', roles: ['GERANT'] },
   { path: '/categories', label: 'Catégories', icon: 'fa-tags', roles: ['GERANT'] },
   { path: '/annonces', label: 'Annonces', icon: 'fa-bullhorn', roles: ['GERANT'] },
-  { path: '/statistiques', label: 'Statistiques', icon: 'fa-chart-line', roles: ['MANAGER'] },
+  { path: '/journal-audit', label: 'Journal d’audit', icon: 'fa-clipboard-list', roles: ['MANAGER'] },
   { path: '/personnel', label: 'Utilisateurs', icon: 'fa-users', roles: ['GERANT'] },
   { path: '/livraisons', label: 'Livraisons', icon: 'fa-truck-fast', roles: ['LIVREUR'] },
 ]
@@ -65,7 +65,7 @@ function NotificationIcon({ kind }) {
 const INITIAL_NOTIFICATIONS = [
   { id: 1, kind: 'crown', title: 'Nouveau service', text: 'Une nouvelle information concerne votre espace de travail et vous aide à prioriser votre activité de la journée.', time: 'À l’instant', target: '/commandes', unread: true },
   { id: 2, kind: 'assignment', title: 'Activité de votre équipe', text: 'Une action récente nécessite votre attention, notamment la validation de livraisons en attente et les changements de statut.', time: 'Il y a 3 h', target: '/livraisons', unread: true },
-  { id: 3, kind: 'status', title: 'Mise à jour du service', text: 'Le statut d’une opération vient d’être actualisé et les équipes ont été informées du changement.', time: 'Hier', target: '/statistiques', unread: false },
+  { id: 3, kind: 'status', title: 'Mise à jour du service', text: 'Le statut d’une opération vient d’être actualisé et les équipes ont été informées du changement.', time: 'Hier', target: '/journal-audit', unread: false },
   { id: 4, kind: 'crown', title: 'Priorité de la journée', text: 'Le planning de service a été revu. Consultez les tâches urgentes avant la prochaine tournée.', time: 'Il y a 1 j', target: '/dashboard', unread: true },
   { id: 5, kind: 'status', title: 'Validation nécessaire', text: 'Une demande de validation est en attente dans votre espace pour éviter tout retard sur la préparation.', time: 'Il y a 2 j', target: '/preparation', unread: false },
 ]

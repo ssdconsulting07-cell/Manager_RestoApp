@@ -24,10 +24,10 @@ const PAGE_DETAILS = {
     title: 'Personnel',
     description: 'La gestion des membres de l’équipe sera disponible dans la prochaine étape.',
   },
-  statistiques: {
-    eyebrow: 'Manager',
-    title: 'Statistiques',
-    description: 'Les indicateurs financiers et opérationnels seront disponibles dans la prochaine étape.',
+  'journal-audit': {
+    eyebrow: 'Traçabilité',
+    title: 'Journal d’audit',
+    description: 'Toutes les actions du personnel, en consultation seule.',
   },
 }
 

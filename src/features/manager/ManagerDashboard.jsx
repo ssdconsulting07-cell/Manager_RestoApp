@@ -18,8 +18,10 @@ import { DOMAINES_AUDIT, journalAudit } from './auditData.js'
 // bord Gerant (cartes KPI, panneaux, graphiques recharts, flux d'activite).
 // Commandes, paiements et audit n'existent pas encore cote Backend : tout vient
 // des mocks en memoire de ce dossier. Le Manager n'a acces qu'a /dashboard et
-// /statistiques : les cartes menent donc toutes vers /statistiques.
-const STATISTIQUES = '/statistiques'
+// /journal-audit : les cartes menent donc toutes vers /journal-audit.
+const JOURNAL_AUDIT = '/journal-audit'
+// Le flux du tableau de bord n'est qu'un apercu du Journal d'audit.
+const APERCU_AUDIT = 12
 
 // Montant sur deux lignes au besoin : le nombre ne se coupe jamais (espaces
 // insecables du format fr-FR) et l'unite passe a la ligne d'un seul bloc.
@@ -81,16 +83,16 @@ export default function ManagerDashboard() {
           <KpiCard
             icon="fa-sack-dollar" accent="amber" label="CA du jour"
             value={<Montant valeur={finances.jour} />}
-            detail={`${commandes.encaissees} commandes`} to={STATISTIQUES}
+            detail={`${commandes.encaissees} commandes`} to={JOURNAL_AUDIT}
           />
           <KpiCard
             icon="fa-calendar-week" accent="amber" label="CA de la semaine"
-            value={<Montant valeur={finances.semaine} />} detail="depuis lundi" to={STATISTIQUES}
+            value={<Montant valeur={finances.semaine} />} detail="depuis lundi" to={JOURNAL_AUDIT}
           />
           <KpiCard
             icon="fa-calendar-days" accent="amber" label="CA du mois"
             value={<Montant valeur={finances.mois} />}
-            detail={`depuis le 1er ${maintenant.toLocaleDateString('fr-FR', { month: 'short' })}`} to={STATISTIQUES}
+            detail={`depuis le 1er ${maintenant.toLocaleDateString('fr-FR', { month: 'short' })}`} to={JOURNAL_AUDIT}
           />
         </div>
 
@@ -123,27 +125,27 @@ export default function ManagerDashboard() {
         <div className="dashboard-kpi-grid is-wrapping">
           <KpiCard
             icon="fa-inbox" accent="brand" label="Reçues"
-            value={counts[STATUTS_COMMANDE.PAYEE]} detail={`${commandes.total} au total`} to={STATISTIQUES}
+            value={counts[STATUTS_COMMANDE.PAYEE]} detail={`${commandes.total} au total`} to={JOURNAL_AUDIT}
           />
           <KpiCard
             icon="fa-fire-burner" accent="amber" label="En préparation"
-            value={counts[STATUTS_COMMANDE.EN_PREPARATION]} detail="en cuisine" to={STATISTIQUES}
+            value={counts[STATUTS_COMMANDE.EN_PREPARATION]} detail="en cuisine" to={JOURNAL_AUDIT}
           />
           <KpiCard
             icon="fa-bell-concierge" accent="green" label="Prêtes"
-            value={counts[STATUTS_COMMANDE.PRETE]} detail="à remettre ou livrer" to={STATISTIQUES}
+            value={counts[STATUTS_COMMANDE.PRETE]} detail="à remettre ou livrer" to={JOURNAL_AUDIT}
           />
           <KpiCard
             icon="fa-circle-check" accent="green" label="Livrées"
-            value={counts[STATUTS_COMMANDE.LIVREE]} detail="remises aux clients" to={STATISTIQUES}
+            value={counts[STATUTS_COMMANDE.LIVREE]} detail="remises aux clients" to={JOURNAL_AUDIT}
           />
           <KpiCard
             icon="fa-ban" accent="red" label="Annulées aujourd’hui"
-            value={counts[STATUTS_COMMANDE.ANNULEE]} detail="non encaissées" to={STATISTIQUES}
+            value={counts[STATUTS_COMMANDE.ANNULEE]} detail="non encaissées" to={JOURNAL_AUDIT}
           />
           <KpiCard
             icon="fa-basket-shopping" accent="gray" label="Panier moyen"
-            value={<Montant valeur={commandes.panierMoyen} />} detail="par commande" to={STATISTIQUES}
+            value={<Montant valeur={commandes.panierMoyen} />} detail="par commande" to={JOURNAL_AUDIT}
           />
         </div>
       </section>
@@ -160,7 +162,7 @@ export default function ManagerDashboard() {
           <p className="dashboard-chart-empty">Aucune action enregistrée pour le moment.</p>
         ) : (
           <ul className="dashboard-activity-list">
-            {journalAudit.map((entree) => (
+            {journalAudit.slice(0, APERCU_AUDIT).map((entree) => (
               <li key={entree.id}>
                 <div className="dashboard-activity-row is-static is-wrapping">
                   <span className="dashboard-activity-icon" aria-hidden="true"><i className={`fa-solid ${DOMAINES_AUDIT[entree.domaine].icon}`} /></span>

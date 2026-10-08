@@ -41,6 +41,15 @@ export function MenuDataProvider({ children }) {
     )))
   }
 
+  function toggleMiseEnAvantProduit(id, miseEnAvant) {
+    if (!['tendance', 'platDuJour'].includes(miseEnAvant)) return
+    setProduits((prev) => prev.map((produit) => (
+      produit.id === id
+        ? { ...produit, [miseEnAvant]: !produit[miseEnAvant], updatedAt: new Date().toISOString() }
+        : produit
+    )))
+  }
+
   function creerProduit(data) {
     const nouveau = { id: createProduitId(), statut: 'BROUILLON', ...data, updatedAt: new Date().toISOString() }
     setProduits((prev) => [nouveau, ...prev])
@@ -86,6 +95,7 @@ export function MenuDataProvider({ children }) {
     categoriesSelectionnables,
     majStatutProduit,
     toggleDisponibiliteProduit,
+    toggleMiseEnAvantProduit,
     creerProduit,
     modifierProduit,
     supprimerProduit,

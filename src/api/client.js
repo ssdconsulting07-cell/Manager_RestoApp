@@ -64,3 +64,11 @@ export async function apiPatch(path, body) {
   })
   return handleResponse(res)
 }
+
+export async function apiDelete(path) {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'DELETE',
+    headers: { ...authHeaders() },
+  })
+  return handleResponse(res)
+}

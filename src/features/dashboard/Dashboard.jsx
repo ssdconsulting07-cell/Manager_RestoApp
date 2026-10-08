@@ -3,6 +3,7 @@ import { useAuth } from '../../auth/AuthContext.jsx'
 import { ROLE_LABELS } from '../../auth/roles.js'
 import Layout from '../../components/Layout.jsx'
 import GerantDashboard from '../gerant/GerantDashboard.jsx'
+import ManagerDashboard from '../manager/ManagerDashboard.jsx'
 
 const DASHBOARD_DATA = {
   CUISINE: {
@@ -23,14 +24,8 @@ const DASHBOARD_DATA = {
   },
   MANAGER: {
     eyebrow: 'Vue opérationnelle',
-    title: 'Bonjour, équipe Manager.',
-    description: 'Suivez les indicateurs essentiels et les équipes du restaurant.',
-    cards: [
-      ['Chiffre du jour', '—', 'Données bientôt disponibles', '/statistiques'],
-      ['Commandes du jour', '0', 'Toutes les commandes', '/commandes'],
-      ['Équipe active', '0', 'Collaborateurs connectés', '/personnel'],
-    ],
-    action: ['Ouvrir les statistiques', '/statistiques'],
+    title: 'Tableau de bord',
+    description: 'Chiffre d’affaires, commandes et actions du personnel : tout en un coup d’œil.',
   },
   LIVREUR: {
     eyebrow: 'Tournées du jour',
@@ -62,6 +57,8 @@ export default function Dashboard() {
 
       {role === 'GERANT' ? (
         <GerantDashboard />
+      ) : role === 'MANAGER' ? (
+        <ManagerDashboard />
       ) : (
         <>
           <section className="dashboard-stat-grid" aria-label="Résumé de l’activité">

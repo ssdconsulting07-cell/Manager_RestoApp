@@ -206,6 +206,22 @@
 .dashboard-activity-text span { color: #6b6b6b; font-size: 11px; }
 .dashboard-activity-time { flex: none; color: #6b6b6b; font-size: 11px; white-space: nowrap; }
 
+/* === Tableau de bord Manager — memes patterns que le Gerant (KPI, panneaux, activite) === */
+.dashboard-section { margin-bottom: 26px; }
+.dashboard-section > :last-child { margin-bottom: 0; }
+.dashboard-section-heading { margin-bottom: 14px; }
+.dashboard-section-heading h2 { margin: 0; font-size: 20px; line-height: 1.2; }
+/* Unite des montants : passe a la ligne d'un seul bloc si la carte est etroite. */
+.dashboard-kpi-unit { white-space: nowrap; }
+/* Details des cartes Manager : retour a la ligne plutot que troncature sur carte etroite. */
+.dashboard-kpi-grid.is-wrapping .dashboard-kpi-detail { overflow: visible; white-space: normal; }
+/* Journal d'audit : lignes non cliquables (pas d'ecran de detail) et phrases
+   completes sur plusieurs lignes plutot que tronquees. */
+.dashboard-activity-row.is-static:hover { background: transparent; }
+.dashboard-activity-row.is-wrapping { align-items: flex-start; }
+.dashboard-activity-row.is-wrapping .dashboard-activity-text strong { overflow: visible; line-height: 1.45; overflow-wrap: break-word; white-space: normal; }
+.dashboard-activity-row.is-wrapping .dashboard-activity-time { padding-top: 2px; }
+
 .page-skeleton { width: 100%; }
 .page-skeleton-announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
 .page-skeleton-block { display: block; overflow: hidden; border-radius: 5px; background: linear-gradient(100deg, #e8e6e3 20%, #f4f3f1 40%, #e8e6e3 60%); background-size: 200% 100%; animation: page-skeleton-shimmer 1.35s ease-in-out infinite; }
@@ -337,9 +353,16 @@
 .manager-shell.is-dark .dashboard-activity-icon { color: #f3b0bb; background: rgba(225, 75, 100, 0.16); }
 .manager-shell.is-dark .dashboard-activity-text span { color: #9a9a9e; }
 .manager-shell.is-dark .dashboard-activity-time { color: #9a9a9e; }
+.manager-shell.is-dark .dashboard-activity-row.is-static:hover { background: transparent; }
 
 @media (max-width: 900px) {
   .dashboard-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Journal d'audit sur petit ecran : l'horodatage passe sous la phrase pour lui laisser toute la largeur. */
+@media (max-width: 600px) {
+  .dashboard-activity-row.is-wrapping { display: grid; grid-template-columns: 34px minmax(0, 1fr); column-gap: 12px; row-gap: 3px; }
+  .dashboard-activity-row.is-wrapping .dashboard-activity-time { grid-column: 2; padding-top: 0; }
 }
 
 @media (max-width: 760px) {

@@ -30,7 +30,7 @@ export const ROUTE_ROLES = {
   // (le Manager pourrait avoir besoin de cet ecran s'il affecte les livreurs).
   '/livraisons': ['LIVREUR'],
   // Non couvert par les specs MVP : a confirmer avec l'equipe Chez Ketchup.
-  '/personnel': ['MANAGER'],
+  '/personnel': ['GERANT'],
 }
 
 export function isKnownRole(role) {

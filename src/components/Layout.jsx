@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { path: '/categories', label: 'Catégories', icon: 'fa-tags', roles: ['GERANT'] },
   { path: '/annonces', label: 'Annonces', icon: 'fa-bullhorn', roles: ['GERANT'] },
   { path: '/statistiques', label: 'Statistiques', icon: 'fa-chart-line', roles: ['MANAGER'] },
-  { path: '/personnel', label: 'Personnel', icon: 'fa-users', roles: ['MANAGER'] },
+  { path: '/personnel', label: 'Utilisateurs', icon: 'fa-users', roles: ['GERANT'] },
   { path: '/livraisons', label: 'Livraisons', icon: 'fa-truck-fast', roles: ['LIVREUR'] },
 ]
 

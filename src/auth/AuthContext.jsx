@@ -48,18 +48,46 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (username, password) => {
     // Un ancien token ne doit pas accompagner la tentative de connexion.
     clearAuthToken()
-    const { token, role: receivedRole } = await apiPost('/auth/login', { username, password })
+    const response = await apiPost('/auth/login', { username, password })
+    if (response?.mustChangePassword) {
+      return { mustChangePassword: true, role: response.role }
+    }
+
+    const { token, role: receivedRole } = response || {}
     if (!token || !isKnownRole(receivedRole)) {
       throw new Error('Réponse de connexion inattendue du serveur.')
     }
+
+    const normalizedUsername = username.trim()
     setAuthToken(token)
     const previousLogin = localStorage.getItem(LAST_LOGIN_KEY)
     localStorage.setItem(ROLE_KEY, receivedRole)
-    localStorage.setItem(USERNAME_KEY, username.trim())
+    localStorage.setItem(USERNAME_KEY, normalizedUsername)
     if (previousLogin) localStorage.setItem(PREVIOUS_LOGIN_KEY, previousLogin)
     localStorage.setItem(LAST_LOGIN_KEY, new Date().toISOString())
     setRole(receivedRole)
-    setUsername(username.trim())
+    setUsername(normalizedUsername)
+    setLastLoginAt(previousLogin)
+    return { mustChangePassword: false, role: receivedRole }
+  }, [])
+
+  const changeTemporaryPassword = useCallback(async ({ username, temporaryPassword, newPassword }) => {
+    const response = await apiPost('/auth/first-login-password', { username, temporaryPassword, newPassword })
+    const { token, role: receivedRole } = response || {}
+    if (!token || !isKnownRole(receivedRole)) {
+      throw new Error('Réponse de changement de mot de passe inattendue du serveur.')
+    }
+
+    const normalizedUsername = username.trim()
+    clearAuthToken()
+    const previousLogin = localStorage.getItem(LAST_LOGIN_KEY)
+    setAuthToken(token)
+    localStorage.setItem(ROLE_KEY, receivedRole)
+    localStorage.setItem(USERNAME_KEY, normalizedUsername)
+    if (previousLogin) localStorage.setItem(PREVIOUS_LOGIN_KEY, previousLogin)
+    localStorage.setItem(LAST_LOGIN_KEY, new Date().toISOString())
+    setRole(receivedRole)
+    setUsername(normalizedUsername)
     setLastLoginAt(previousLogin)
     return receivedRole
   }, [])
@@ -69,7 +97,7 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener(SESSION_EXPIRED_EVENT, logout)
   }, [logout])
 
-  return <AuthContext.Provider value={{ role, username, lastLoginAt, login, logout }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ role, username, lastLoginAt, login, changeTemporaryPassword, logout }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {

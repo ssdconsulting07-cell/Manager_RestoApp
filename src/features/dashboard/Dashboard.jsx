@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { ROLE_LABELS } from '../../auth/roles.js'
 import Layout from '../../components/Layout.jsx'
+import CuisineDashboard from '../cuisine/CuisineDashboard.jsx'
 import GerantDashboard from '../gerant/GerantDashboard.jsx'
 import ManagerDashboard from '../manager/ManagerDashboard.jsx'
 
@@ -42,6 +43,9 @@ const DASHBOARD_DATA = {
 
 export default function Dashboard() {
   const { role } = useAuth()
+
+  if (role === 'CUISINE') return <CuisineDashboard />
+
   const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.CUISINE
 
   return (

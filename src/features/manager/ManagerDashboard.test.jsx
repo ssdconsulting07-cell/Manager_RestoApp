@@ -104,9 +104,16 @@ describe('Dashboard by role', () => {
     expect(within(audit).getAllByRole('listitem')[0]).toHaveTextContent(`${journalAudit[0].acteur.nom} ${journalAudit[0].action}`)
   })
 
-  it.each(['CUISINE', 'LIVREUR'])('keeps the generic dashboard for %s', (role) => {
-    renderFor(role)
+  it('keeps the generic dashboard for LIVREUR', () => {
+    renderFor('LIVREUR')
     expect(screen.queryByRole('heading', { name: 'Chiffre d’affaires' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Votre prochaine action' })).toBeInTheDocument()
+  })
+
+  it('renders the Cuisine dashboard (not the generic one) for CUISINE', () => {
+    renderFor('CUISINE')
+    expect(screen.queryByRole('heading', { name: 'Chiffre d’affaires' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Votre prochaine action' })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Bonjour, équipe Cuisine.' })).toBeInTheDocument()
   })
 })

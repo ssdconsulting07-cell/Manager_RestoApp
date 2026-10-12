@@ -25,12 +25,12 @@ export const ROUTE_ROLES = {
   '/produits': ['GERANT'],
   '/categories': ['GERANT'],
   '/annonces': ['GERANT'],
-  '/statistiques': ['MANAGER'],
+  '/journal-audit': ['MANAGER'],
   // A revoir quand le mode d'attribution des livraisons sera tranche
   // (le Manager pourrait avoir besoin de cet ecran s'il affecte les livreurs).
   '/livraisons': ['LIVREUR'],
   // Non couvert par les specs MVP : a confirmer avec l'equipe Chez Ketchup.
-  '/personnel': ['MANAGER'],
+  '/personnel': ['GERANT'],
 }
 
 export function isKnownRole(role) {

@@ -20,6 +20,8 @@ export const DISPONIBILITE_LABELS = {
   RUPTURE: 'Rupture',
 }
 
+export const CATEGORIE_PLATS_DU_JOUR_ID = 'categorie-5'
+
 // Données de démonstration — remplacées par l'API /produits et /categories
 // dès que le domaine Menu sera disponible côté Backend_RestoApp. Le statut
 // éditorial (Brouillon / Actif / Archivé) est une notion propre à l'espace
@@ -29,6 +31,7 @@ export const CATEGORIES_INITIALES = [
   { id: 'categorie-2', nom: 'Accompagnements', statut: STATUTS.ACTIF, updatedAt: '2026-09-20T10:00:00Z' },
   { id: 'categorie-3', nom: 'Boissons', statut: STATUTS.ACTIF, updatedAt: '2026-09-20T10:00:00Z' },
   { id: 'categorie-4', nom: 'Desserts', statut: STATUTS.BROUILLON, updatedAt: '2026-09-28T10:00:00Z' },
+  { id: CATEGORIE_PLATS_DU_JOUR_ID, nom: 'Plats du jour', statut: STATUTS.ACTIF, updatedAt: '2026-10-06T09:00:00Z' },
 ]
 
 export const PRODUITS_INITIAUX = [

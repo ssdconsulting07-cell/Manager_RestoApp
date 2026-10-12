@@ -7,6 +7,9 @@ import {
 import { useMenuData } from './MenuDataContext.jsx'
 import { useAnnonces } from './AnnoncesContext.jsx'
 import { STATUT_LABELS, countByStatut } from './menuData.js'
+import {
+  ChartTooltip, KpiCard, formatFCFA, formatRelativeTime,
+} from '../../components/dashboard/DashboardWidgets.jsx'
 
 // Tableau de bord Gérant — construit uniquement avec les données déjà
 // disponibles dans le périmètre Gérant (Produits/Catégories/Annonces,
@@ -29,7 +32,7 @@ const STATUT_TEXT_COLORS = {
 }
 const DISPONIBILITE_TEXT_COLORS = {
   EN_STOCK: 'var(--chart-green)',
-  RUPTURE: 'var(--chart-amber)',
+  RUPTURE: 'var(--chart-red)',
 }
 function legendTextFormatter(textColors) {
   return (value, entry) => (
@@ -37,57 +40,13 @@ function legendTextFormatter(textColors) {
   )
 }
 
-function formatRelativeTime(timestamp) {
-  const elapsedMinutes = Math.max(0, Math.floor((Date.now() - new Date(timestamp).getTime()) / 60000))
-  if (elapsedMinutes < 1) return 'à l’instant'
-  if (elapsedMinutes < 60) return `il y a ${elapsedMinutes} min`
-
-  const elapsedHours = Math.floor(elapsedMinutes / 60)
-  if (elapsedHours < 24) return `il y a ${elapsedHours} h`
-
-  const elapsedDays = Math.floor(elapsedHours / 24)
-  return elapsedDays === 1 ? 'hier' : `il y a ${elapsedDays} jours`
-}
-
-function formatFCFA(montant) {
-  return `${montant.toLocaleString('fr-FR')} F CFA`
-}
-
-function KpiCard({ icon, accent, label, value, detail, to }) {
-  return (
-    <Link className={`dashboard-kpi-card is-${accent}`} to={to}>
-      <span className="dashboard-kpi-icon" aria-hidden="true"><i className={`fa-solid ${icon}`} /></span>
-      <span className="dashboard-kpi-body">
-        <strong>{value}</strong>
-        <span className="dashboard-kpi-label">{label}</span>
-        {detail && <span className="dashboard-kpi-detail">{detail}</span>}
-      </span>
-      <span className="dashboard-kpi-arrow" aria-hidden="true">→</span>
-    </Link>
-  )
-}
-
-function ChartTooltip({ active, payload }) {
-  if (!active || !payload?.length) return null
-  return (
-    <div className="dashboard-chart-tooltip">
-      {payload.map((entry) => (
-        <div className="dashboard-chart-tooltip-row" key={entry.name || entry.dataKey}>
-          <span className="dashboard-chart-tooltip-dot" style={{ background: entry.color || entry.payload?.fill }} />
-          {entry.name} : <strong>{entry.value}</strong>
-        </div>
-      ))}
-    </div>
-  )
-}
-
 export default function GerantDashboard() {
   const { produits, categories, categorieNomParId } = useMenuData()
-  const { annonces, annonceActive } = useAnnonces()
+  const { chaines, chainesActives } = useAnnonces()
 
   const produitsCounts = useMemo(() => countByStatut(produits), [produits])
   const categoriesCounts = useMemo(() => countByStatut(categories), [categories])
-  const annoncesCounts = useMemo(() => countByStatut(annonces), [annonces])
+  const annoncesCounts = useMemo(() => countByStatut(chaines), [chaines])
 
   const produitsActifs = useMemo(() => produits.filter((p) => p.statut === 'ACTIF'), [produits])
   const produitsRupture = useMemo(
@@ -144,13 +103,13 @@ export default function GerantDashboard() {
       ...categories.map((c) => ({
         key: `categorie-${c.id}`, type: 'Catégorie', icon: 'fa-tags', nom: c.nom, statut: c.statut, updatedAt: c.updatedAt, to: '/categories',
       })),
-      ...annonces.map((a) => ({
-        key: `annonce-${a.id}`, type: 'Annonce', icon: 'fa-bullhorn', nom: a.titre, statut: a.statut, updatedAt: a.updatedAt, to: '/annonces',
+      ...chaines.map((chaine) => ({
+        key: `chaine-${chaine.id}`, type: 'Chaîne', icon: 'fa-bullhorn', nom: chaine.titre, statut: chaine.statut, updatedAt: chaine.updatedAt, to: '/annonces',
       })),
     ]
     return items.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 6)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [produits, categories, annonces])
+  }, [produits, categories, chaines])
 
   return (
     <>
@@ -172,9 +131,9 @@ export default function GerantDashboard() {
           value={categoriesCounts.ACTIF} detail={`${categories.length} au total`} to="/categories"
         />
         <KpiCard
-          icon="fa-bullhorn" accent="brand" label="Annonce active"
-          value={annonceActive ? '1' : '0'}
-          detail={annonceActive ? annonceActive.titre : 'Aucune pour le moment'}
+          icon="fa-bullhorn" accent="brand" label="Chaînes actives"
+          value={chainesActives.length}
+          detail={chainesActives[0]?.titre || 'Aucune pour le moment'}
           to="/annonces"
         />
         <KpiCard
@@ -244,7 +203,7 @@ export default function GerantDashboard() {
               <PieChart>
                 <Pie data={disponibiliteData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85} paddingAngle={3}>
                   {disponibiliteData.map((entry) => (
-                    <Cell key={entry.key} fill={entry.key === 'RUPTURE' ? 'var(--chart-fill-gold)' : 'var(--chart-fill-green)'} />
+                    <Cell key={entry.key} fill={entry.key === 'RUPTURE' ? 'var(--chart-fill-red)' : 'var(--chart-fill-green)'} />
                   ))}
                 </Pie>
                 <Tooltip content={<ChartTooltip />} />

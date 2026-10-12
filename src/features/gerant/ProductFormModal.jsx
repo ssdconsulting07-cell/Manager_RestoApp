@@ -238,6 +238,7 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
                   <i className="fa-solid fa-ban" aria-hidden="true" /> Rupture
                 </label>
               </fieldset>
+
             </div>
           </div>
 

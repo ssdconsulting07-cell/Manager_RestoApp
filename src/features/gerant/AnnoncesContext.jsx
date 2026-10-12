@@ -1,57 +1,61 @@
 import { createContext, useContext, useMemo, useState } from 'react'
-import { ANNONCES_INITIALES, createAnnonceId } from './annonceData.js'
+import { CHAINES_INITIALES, createChaineId } from './annonceData.js'
 
-// Sur le modele de MenuDataContext : partage les annonces (mock) entre la
-// page Annonces et l'Apercu client (qui affiche l'annonce active comme le
-// ferait l'app Client au lancement).
+// Donnees mock partagees entre la page de gestion et l'apercu cote client.
 const AnnoncesContext = createContext(null)
 
 export function AnnoncesProvider({ children }) {
-  const [annonces, setAnnonces] = useState(ANNONCES_INITIALES)
+  const [chaines, setChaines] = useState(CHAINES_INITIALES)
 
-  const annonceActive = useMemo(
-    () => annonces.find((a) => a.statut === 'ACTIF') || null,
-    [annonces],
+  const chainesActives = useMemo(
+    () => chaines
+      .filter((chaine) => chaine.statut === 'ACTIF')
+      .sort((a, b) => new Date(a.publishedAt || a.updatedAt) - new Date(b.publishedAt || b.updatedAt)),
+    [chaines],
   )
 
-  function creerAnnonce(data) {
-    const nouvelle = { id: createAnnonceId(), statut: 'BROUILLON', ...data, updatedAt: new Date().toISOString() }
-    setAnnonces((prev) => [nouvelle, ...prev])
+  function creerChaine(data) {
+    const nouvelle = { id: createChaineId(), statut: 'BROUILLON', ...data, updatedAt: new Date().toISOString() }
+    setChaines((prev) => [nouvelle, ...prev])
     return nouvelle
   }
 
-  function modifierAnnonce(id, data) {
-    setAnnonces((prev) => prev.map((a) => (a.id === id ? { ...a, ...data, updatedAt: new Date().toISOString() } : a)))
+  function modifierChaine(id, data) {
+    setChaines((prev) => prev.map((chaine) => (
+      chaine.id === id ? { ...chaine, ...data, updatedAt: new Date().toISOString() } : chaine
+    )))
   }
 
-  // Une seule annonce active a la fois (popup unique a l'arrivee sur l'app
-  // Client) : publier celle-ci depublie automatiquement toute autre annonce
-  // actuellement ACTIF.
-  function publierAnnonce(id) {
+  function publierChaine(id) {
     const maintenant = new Date().toISOString()
-    setAnnonces((prev) => prev.map((a) => {
-      if (a.id === id) return { ...a, statut: 'ACTIF', updatedAt: maintenant }
-      if (a.statut === 'ACTIF') return { ...a, statut: 'BROUILLON', updatedAt: maintenant }
-      return a
-    }))
+    setChaines((prev) => prev.map((chaine) => (
+      chaine.id === id
+        ? { ...chaine, statut: 'ACTIF', publishedAt: maintenant, updatedAt: maintenant }
+        : chaine
+    )))
   }
 
-  function majStatutAnnonce(id, statut) {
-    setAnnonces((prev) => prev.map((a) => (a.id === id ? { ...a, statut, updatedAt: new Date().toISOString() } : a)))
+  function majStatutChaine(id, statut) {
+    const maintenant = new Date().toISOString()
+    setChaines((prev) => prev.map((chaine) => (
+      chaine.id === id
+        ? { ...chaine, statut, publishedAt: statut === 'ACTIF' ? maintenant : null, updatedAt: maintenant }
+        : chaine
+    )))
   }
 
-  function supprimerAnnonce(id) {
-    setAnnonces((prev) => prev.filter((a) => a.id !== id))
+  function supprimerChaine(id) {
+    setChaines((prev) => prev.filter((chaine) => chaine.id !== id))
   }
 
   const value = {
-    annonces,
-    annonceActive,
-    creerAnnonce,
-    modifierAnnonce,
-    publierAnnonce,
-    majStatutAnnonce,
-    supprimerAnnonce,
+    chaines,
+    chainesActives,
+    creerChaine,
+    modifierChaine,
+    publierChaine,
+    majStatutChaine,
+    supprimerChaine,
   }
 
   return <AnnoncesContext.Provider value={value}>{children}</AnnoncesContext.Provider>

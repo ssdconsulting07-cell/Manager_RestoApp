@@ -61,6 +61,10 @@ body,
   text-align: center;
 }
 
+.auth-form-logo-accent {
+  color: #a6192e;
+}
+
 .auth-form-kicker,
 .auth-eyebrow {
   margin: 0 0 10px;
@@ -182,6 +186,16 @@ body,
   font-size: 12px;
   font-weight: 400;
   line-height: 1.4;
+}
+
+.auth-reset-notice {
+  border-left: 3px solid #a6192e;
+  border-radius: 0 6px 6px 0;
+  padding: 12px 14px;
+  color: #4d4d4d;
+  background: #f7f1f2;
+  font-size: 13px;
+  line-height: 1.55;
 }
 
 .auth-otp-row {
@@ -633,18 +647,28 @@ body,
 }
 
 .auth-shell.is-dark .auth-form-logo-accent,
-.auth-shell.is-dark .auth-form-kicker,
-.auth-shell.is-dark .auth-back-link,
-.auth-shell.is-dark .auth-secondary-row button,
 .auth-shell.is-dark .auth-code-meta button:not(:disabled) {
   color: #f3b0bb;
 }
 
+.auth-shell.is-dark .auth-form-logo-accent,
+.auth-shell.is-dark .auth-form-kicker,
+.auth-shell.is-dark .auth-secondary-row button,
+.auth-shell.is-dark .auth-back-link {
+  color: #a6192e;
+}
+
 .auth-shell.is-dark .auth-form-header p:last-child,
 .auth-shell.is-dark .auth-field-help,
+.auth-shell.is-dark .auth-reset-notice,
 .auth-shell.is-dark .auth-code-meta,
 .auth-shell.is-dark .auth-code-meta .is-expired {
   color: #b9b9b9;
+}
+
+.auth-shell.is-dark .auth-reset-notice {
+  border-color: #c45a6b;
+  background: #2b2022;
 }
 
 .auth-shell.is-dark .auth-copyright {

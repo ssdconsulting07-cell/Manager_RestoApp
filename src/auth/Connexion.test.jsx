@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Connexion from './Connexion.jsx'
@@ -20,6 +20,7 @@ vi.mock('react-router-dom', async () => {
 
 describe('Connexion', () => {
   afterEach(() => {
+    cleanup()
     vi.useRealTimers()
   })
 
@@ -27,6 +28,7 @@ describe('Connexion', () => {
     useAuth.mockReturnValue({
       role: null,
       login: vi.fn().mockRejectedValue({ status: 401, message: 'Identifiants invalides' }),
+      changeTemporaryPassword: vi.fn(),
     })
   })
 
@@ -75,5 +77,48 @@ describe('Connexion', () => {
         /Échec de connexion\. Vérifiez votre identifiant et votre mot de passe\.*/i
       )
     })
+  })
+
+  it('requires a new password after a temporary-password login', async () => {
+    const login = vi.fn().mockResolvedValue({ mustChangePassword: true, role: 'GERANT' })
+    const changeTemporaryPassword = vi.fn().mockResolvedValue('GERANT')
+    useAuth.mockReturnValue({ role: null, login, changeTemporaryPassword })
+
+    render(
+      <MemoryRouter>
+        <Connexion />
+      </MemoryRouter>
+    )
+
+    fireEvent.change(screen.getByLabelText(/^Identifiant$/i), { target: { value: 'gerant' } })
+    fireEvent.change(document.querySelector('input[autocomplete="current-password"]'), { target: { value: 'temp-password' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Se connecter' }))
+
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Définissez votre mot de passe.' })).toBeInTheDocument())
+    const newPasswordInputs = document.querySelectorAll('input[autocomplete="new-password"]')
+    fireEvent.change(newPasswordInputs[0], { target: { value: 'nouveau-password-12' } })
+    fireEvent.change(newPasswordInputs[1], { target: { value: 'nouveau-password-12' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et accéder à mon espace' }))
+
+    await waitFor(() => {
+      expect(changeTemporaryPassword).toHaveBeenCalledWith({
+        username: 'gerant',
+        temporaryPassword: 'temp-password',
+        newPassword: 'nouveau-password-12',
+      })
+    })
+  })
+
+  it('asks staff to contact the manager for a temporary password', () => {
+    render(
+      <MemoryRouter>
+        <Connexion />
+      </MemoryRouter>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mot de passe oublié ?' }))
+
+    expect(screen.getByText(/Contactez votre gérant pour obtenir un mot de passe temporaire/i)).toBeInTheDocument()
+    expect(screen.queryByLabelText(/adresse e-mail/i)).not.toBeInTheDocument()
   })
 })

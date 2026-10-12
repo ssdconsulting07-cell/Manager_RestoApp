@@ -4,8 +4,20 @@ import { ROLE_LABELS } from '../../auth/roles.js'
 import Layout from '../../components/Layout.jsx'
 import CuisineDashboard from '../cuisine/CuisineDashboard.jsx'
 import GerantDashboard from '../gerant/GerantDashboard.jsx'
+import ManagerDashboard from '../manager/ManagerDashboard.jsx'
 
 const DASHBOARD_DATA = {
+  CUISINE: {
+    eyebrow: 'Service en cours',
+    title: 'Bonjour, équipe Cuisine.',
+    description: 'Gardez le rythme sur les commandes qui attendent votre attention.',
+    cards: [
+      ['Commandes à préparer', '0', 'En attente de traitement', '/commandes'],
+      ['En préparation', '0', 'Commandes en cours', '/commandes'],
+      ['Prêtes à servir', '0', 'À remettre au client ou au livreur', '/commandes'],
+    ],
+    action: ['Voir les commandes', '/commandes'],
+  },
   GERANT: {
     eyebrow: 'Gérance',
     title: 'Tableau de bord',
@@ -13,14 +25,8 @@ const DASHBOARD_DATA = {
   },
   MANAGER: {
     eyebrow: 'Vue opérationnelle',
-    title: 'Bonjour, équipe Manager.',
-    description: 'Suivez les indicateurs essentiels et les équipes du restaurant.',
-    cards: [
-      ['Chiffre du jour', '—', 'Données bientôt disponibles', '/statistiques'],
-      ['Commandes du jour', '0', 'Toutes les commandes', '/commandes'],
-      ['Équipe active', '0', 'Collaborateurs connectés', '/personnel'],
-    ],
-    action: ['Ouvrir les statistiques', '/statistiques'],
+    title: 'Tableau de bord',
+    description: 'Chiffre d’affaires, commandes et actions du personnel : tout en un coup d’œil.',
   },
   LIVREUR: {
     eyebrow: 'Tournées du jour',
@@ -40,7 +46,7 @@ export default function Dashboard() {
 
   if (role === 'CUISINE') return <CuisineDashboard />
 
-  const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.MANAGER
+  const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.CUISINE
 
   return (
     <Layout>
@@ -55,10 +61,12 @@ export default function Dashboard() {
 
       {role === 'GERANT' ? (
         <GerantDashboard />
+      ) : role === 'MANAGER' ? (
+        <ManagerDashboard />
       ) : (
         <>
           <section className="dashboard-stat-grid" aria-label="Résumé de l’activité">
-            {(data.cards || []).map(([label, value, detail, path]) => (
+            {data.cards.map(([label, value, detail, path]) => (
               <Link className="dashboard-stat-card" key={label} to={path}>
                 <div className="dashboard-stat-head">
                   <span className="dashboard-stat-label">{label}</span>
@@ -81,9 +89,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <p className="dashboard-panel-copy">Accédez directement à l’espace principal de votre rôle.</p>
-              <Link className="manager-button manager-button-primary dashboard-action" to={data.action[1]}>
-                {data.action[0]} <span>→</span>
-              </Link>
+              <Link className="manager-button manager-button-primary dashboard-action" to={data.action[1]}>{data.action[0]} <span>→</span></Link>
             </div>
             <div className="dashboard-panel dashboard-panel-muted">
               <p className="manager-eyebrow">État du service</p>

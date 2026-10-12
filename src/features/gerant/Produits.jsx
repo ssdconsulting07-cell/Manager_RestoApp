@@ -8,7 +8,7 @@ import StatusBadge from '../../components/crud/StatusBadge.jsx'
 import ProductFormModal from './ProductFormModal.jsx'
 import ProductPreviewModal from './ProductPreviewModal.jsx'
 import { useMenuData } from './MenuDataContext.jsx'
-import { STATUT_LABELS, countByStatut } from './menuData.js'
+import { CATEGORIE_PLATS_DU_JOUR_ID, STATUT_LABELS, countByStatut } from './menuData.js'
 
 const FILTER_DEFS = [
   { key: 'ACTIF', label: 'Actifs', icon: 'fa-circle-check', accent: '#1f6f57', accentBg: '#e2f2ec' },
@@ -25,6 +25,7 @@ export default function Produits() {
     categoriesSelectionnables,
     majStatutProduit,
     toggleDisponibiliteProduit,
+    toggleMiseEnAvantProduit,
     creerProduit,
     modifierProduit,
     supprimerProduit,
@@ -89,6 +90,11 @@ export default function Produits() {
     setModal(null)
   }
 
+  function handleToggleMiseEnAvant(produit, miseEnAvant, label) {
+    toggleMiseEnAvantProduit(produit.id, miseEnAvant)
+    notify('success', `« ${produit.nom} » ${produit[miseEnAvant] ? `retiré de « ${label} »` : `ajouté à « ${label} »`}.`)
+  }
+
   function handleSave(data) {
     if (modal?.kind === 'produit-form' && modal.produit) {
       modifierProduit(modal.produit.id, data)
@@ -149,6 +155,12 @@ export default function Produits() {
               <div className="crud-grid-photo">
                 {produit.photoUrl ? <img src={produit.photoUrl} alt="" /> : <i className="fa-solid fa-image" aria-hidden="true" />}
                 <StatusBadge statut={produit.statut} label={STATUT_LABELS[produit.statut]} />
+                {(produit.tendance || produit.platDuJour || produit.categorieId === CATEGORIE_PLATS_DU_JOUR_ID) && (
+                  <div className="crud-product-highlight-badges">
+                    {produit.tendance && <span className="crud-product-highlight is-trending"><i className="fa-solid fa-fire" aria-hidden="true" /> Tendance</span>}
+                    {(produit.platDuJour || produit.categorieId === CATEGORIE_PLATS_DU_JOUR_ID) && <span className="crud-product-highlight is-daily"><i className="fa-solid fa-calendar-day" aria-hidden="true" /> Plat du jour</span>}
+                  </div>
+                )}
                 {produit.statut === 'ACTIF' && (
                   <span className={`crud-grid-availability-chip ${produit.disponibilite === 'RUPTURE' ? 'is-rupture' : 'is-stock'}`}>
                     <i className={`fa-solid ${produit.disponibilite === 'RUPTURE' ? 'fa-ban' : 'fa-check'}`} aria-hidden="true" />
@@ -169,11 +181,29 @@ export default function Produits() {
                     <i className="fa-solid fa-image" aria-hidden="true" /> Aperçu
                   </button>
 
+                  {produit.statut !== 'ARCHIVE' && (
+                    <>
+                      <button
+                        className={`crud-action crud-highlight-action is-trending ${produit.tendance ? 'is-active' : ''}`}
+                        type="button"
+                        aria-pressed={Boolean(produit.tendance)}
+                        onClick={() => handleToggleMiseEnAvant(produit, 'tendance', 'Tendance')}
+                      >
+                        <i className="fa-solid fa-fire" aria-hidden="true" /> Tendance
+                      </button>
+                      <button
+                        className={`crud-action crud-highlight-action is-daily ${produit.platDuJour ? 'is-active' : ''}`}
+                        type="button"
+                        aria-pressed={Boolean(produit.platDuJour)}
+                        onClick={() => handleToggleMiseEnAvant(produit, 'platDuJour', 'Plat du jour')}
+                      >
+                        <i className="fa-solid fa-calendar-day" aria-hidden="true" /> Plat du jour
+                      </button>
+                    </>
+                  )}
+
                   {produit.statut === 'BROUILLON' && (
                     <>
-                      <button className="crud-action" type="button" onClick={() => setModal({ kind: 'produit-form', produit })}>
-                        <i className="fa-solid fa-pen" aria-hidden="true" /> Modifier
-                      </button>
                       <button className="crud-action is-publish" type="button" onClick={() => handlePublier(produit)}>
                         <i className="fa-solid fa-upload" aria-hidden="true" /> Publier
                       </button>
@@ -196,20 +226,20 @@ export default function Produits() {
                     </>
                   )}
 
-                  {produit.statut === 'BROUILLON' && (
-                    <button className="crud-action is-danger" type="button" onClick={() => setModal({ kind: 'confirm-delete-produit', produit })}>
-                      <i className="fa-solid fa-trash" aria-hidden="true" /> Supprimer
-                    </button>
-                  )}
-                  {produit.statut === 'ACTIF' && (
+                  {produit.statut !== 'ARCHIVE' && (
                     <button className="crud-action is-accent-red" type="button" onClick={() => setModal({ kind: 'confirm-archive-produit', produit })}>
                       <i className="fa-solid fa-box-archive" aria-hidden="true" /> Archiver
                     </button>
                   )}
                   {produit.statut === 'ARCHIVE' && (
-                    <button className="crud-action is-archive" type="button" onClick={() => setModal({ kind: 'confirm-restaurer-produit', produit })}>
-                      <i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Restaurer
-                    </button>
+                    <>
+                      <button className="crud-action is-archive" type="button" onClick={() => setModal({ kind: 'confirm-restaurer-produit', produit })}>
+                        <i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Restaurer
+                      </button>
+                      <button className="crud-action is-danger" type="button" onClick={() => setModal({ kind: 'confirm-delete-produit', produit })}>
+                        <i className="fa-solid fa-trash" aria-hidden="true" /> Supprimer
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -240,13 +270,14 @@ export default function Produits() {
         <ProductPreviewModal
           produit={modal.produit}
           categorieNom={categorieNomParId(modal.produit.categorieId)}
+          isPlatDuJour={modal.produit.categorieId === CATEGORIE_PLATS_DU_JOUR_ID}
           onClose={() => setModal(null)}
         />
       )}
       {modal?.kind === 'confirm-delete-produit' && (
         <ConfirmModal
-          title="Supprimer ce produit ?"
-          message={`« ${modal.produit.nom} » sera définitivement supprimé. Cette action est irréversible.`}
+          title="Supprimer définitivement ce produit ?"
+          message={`« ${modal.produit.nom} » sera définitivement supprimé des archives. Cette action est irréversible.`}
           confirmLabel="Supprimer"
           tone="danger"
           icon="fa-trash"
@@ -257,7 +288,7 @@ export default function Produits() {
       {modal?.kind === 'confirm-archive-produit' && (
         <ConfirmModal
           title="Archiver ce produit ?"
-          message={`« ${modal.produit.nom} » sera retiré de la vente et déplacé dans les archives. Vous pourrez le restaurer plus tard depuis le filtre Archivés.`}
+          message={`« ${modal.produit.nom} » sera déplacé dans les archives. Vous pourrez le restaurer ou le supprimer définitivement depuis le filtre Archivés.`}
           confirmLabel="Archiver"
           tone="danger"
           icon="fa-box-archive"

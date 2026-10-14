@@ -107,6 +107,22 @@ export function AuthProvider({ children }) {
     return 'CUISINE'
   }, [])
 
+  // Acces local sans backend (espace Vendeur/Caissier, V2 — meme logique que
+  // loginDemoCuisine : role purement front, pas encore dans l'enum Role du backend).
+  const loginDemoVendeur = useCallback(() => {
+    clearAuthToken()
+    setAuthToken('demo-vendeur-token')
+    const previousLogin = localStorage.getItem(LAST_LOGIN_KEY)
+    localStorage.setItem(ROLE_KEY, 'VENDEUR')
+    localStorage.setItem(USERNAME_KEY, 'vendeur-demo')
+    if (previousLogin) localStorage.setItem(PREVIOUS_LOGIN_KEY, previousLogin)
+    localStorage.setItem(LAST_LOGIN_KEY, new Date().toISOString())
+    setRole('VENDEUR')
+    setUsername('vendeur-demo')
+    setLastLoginAt(previousLogin)
+    return 'VENDEUR'
+  }, [])
+
   useEffect(() => {
     window.addEventListener(SESSION_EXPIRED_EVENT, logout)
     return () => window.removeEventListener(SESSION_EXPIRED_EVENT, logout)
@@ -114,7 +130,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ role, username, lastLoginAt, login, changeTemporaryPassword, loginDemoCuisine, logout }}
+      value={{ role, username, lastLoginAt, login, changeTemporaryPassword, loginDemoCuisine, loginDemoVendeur, logout }}
     >
       {children}
     </AuthContext.Provider>

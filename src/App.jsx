@@ -27,6 +27,8 @@ const PAGES = {
   '/annonces': lazy(() => import('./features/gerant/Annonces.jsx')),
   '/personnel': lazy(() => import('./features/manager/Personnel.jsx')),
   '/journal-audit': lazy(() => import('./features/manager/JournalAudit.jsx')),
+  '/vente': lazy(() => import('./features/vendeur/Vente.jsx')),
+  '/historique-ventes': lazy(() => import('./features/vendeur/HistoriqueVentes.jsx')),
 }
 
 function RoleHome() {

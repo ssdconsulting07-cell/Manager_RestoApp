@@ -1,11 +1,16 @@
-// Roles du staff, identiques a l'enum Role du contrat (backend/contrat-api/openapi.yaml).
-export const ROLES = ['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR']
+// Roles du staff, identiques a l'enum Role du contrat (backend/contrat-api/openapi.yaml) —
+// a l'exception de VENDEUR (espace Vendeur/Caissier, V2) : role purement front,
+// non reconnu par le backend reel (Role.java n'a pas d'entree VENDEUR), accessible
+// uniquement via la demo sans backend (voir loginDemoVendeur dans AuthContext.jsx),
+// meme logique que CUISINE avant que son compte seed n'existe.
+export const ROLES = ['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR', 'VENDEUR']
 
 export const ROLE_LABELS = {
   CUISINE: 'Cuisine',
   GERANT: 'Gérant',
   MANAGER: 'Manager',
   LIVREUR: 'Livreur',
+  VENDEUR: 'Vendeur',
 }
 
 // Espace d'arrivee de chaque role apres connexion (pas d'ecran de selection manuel).
@@ -14,6 +19,7 @@ export const ROLE_HOME = {
   GERANT: '/dashboard',
   MANAGER: '/dashboard',
   LIVREUR: '/dashboard',
+  VENDEUR: '/dashboard',
 }
 
 // Roles autorises par ecran. Le backend reste l'autorite (403 sur chaque appel),
@@ -31,6 +37,8 @@ export const ROUTE_ROLES = {
   '/livraisons': ['LIVREUR'],
   // Non couvert par les specs MVP : a confirmer avec l'equipe Chez Ketchup.
   '/personnel': ['GERANT'],
+  '/vente': ['VENDEUR'],
+  '/historique-ventes': ['VENDEUR'],
 }
 
 export function isKnownRole(role) {

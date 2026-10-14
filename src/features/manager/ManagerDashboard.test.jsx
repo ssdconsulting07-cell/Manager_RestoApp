@@ -116,4 +116,11 @@ describe('Dashboard by role', () => {
     expect(screen.queryByRole('heading', { name: 'Votre prochaine action' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Bonjour, équipe Cuisine.' })).toBeInTheDocument()
   })
+
+  it('renders the Vendeur dashboard (not the generic one) for VENDEUR', () => {
+    renderFor('VENDEUR')
+    expect(screen.queryByRole('heading', { name: 'Chiffre d’affaires' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Votre prochaine action' })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Bonjour, équipe Vendeur.' })).toBeInTheDocument()
+  })
 })

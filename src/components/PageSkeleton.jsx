@@ -29,6 +29,11 @@ const PAGE_DETAILS = {
     title: 'Journal d’audit',
     description: 'Toutes les actions du personnel, en consultation seule.',
   },
+  'historique-ventes': {
+    eyebrow: 'Vendeur',
+    title: 'Historique de mes ventes',
+    description: 'Vos tickets encaissés aujourd’hui.',
+  },
 }
 
 function SkeletonBlock({ className = '' }) {
@@ -110,7 +115,7 @@ export default function PageSkeleton({ page, contentOnly = false }) {
       <span className="page-skeleton-announcement">Chargement de la page…</span>
       {page === 'dashboard' ? (
         <DashboardSkeleton />
-      ) : page === 'commandes' || page === 'preparation' ? (
+      ) : page === 'commandes' || page === 'preparation' || page === 'vente' ? (
         <>
           {!contentOnly && (
             <div className="page-skeleton-page-heading" aria-hidden="true">

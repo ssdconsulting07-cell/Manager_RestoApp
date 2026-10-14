@@ -5,6 +5,7 @@ import Layout from '../../components/Layout.jsx'
 import CuisineDashboard from '../cuisine/CuisineDashboard.jsx'
 import GerantDashboard from '../gerant/GerantDashboard.jsx'
 import ManagerDashboard from '../manager/ManagerDashboard.jsx'
+import VendeurDashboard from '../vendeur/VendeurDashboard.jsx'
 
 const DASHBOARD_DATA = {
   CUISINE: {
@@ -45,6 +46,7 @@ export default function Dashboard() {
   const { role } = useAuth()
 
   if (role === 'CUISINE') return <CuisineDashboard />
+  if (role === 'VENDEUR') return <VendeurDashboard />
 
   const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.CUISINE
 

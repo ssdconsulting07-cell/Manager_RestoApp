@@ -7,7 +7,7 @@ import ConfirmModal from './crud/ConfirmModal.jsx'
 import '../styles/manager.css'
 
 const NAV_ITEMS = [
-  { path: '/dashboard', label: 'Tableau de bord', icon: 'fa-gauge-high', roles: ['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR'] },
+  { path: '/dashboard', label: 'Tableau de bord', icon: 'fa-gauge-high', roles: ['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR', 'VENDEUR'] },
   { path: '/commandes', label: 'Commandes', icon: 'fa-receipt', roles: ['CUISINE'] },
   { path: '/preparation', label: 'Préparation', icon: 'fa-kitchen-set', roles: ['CUISINE'] },
   { path: '/produits', label: 'Produits', icon: 'fa-utensils', roles: ['GERANT'] },
@@ -16,6 +16,8 @@ const NAV_ITEMS = [
   { path: '/journal-audit', label: 'Journal d’audit', icon: 'fa-clipboard-list', roles: ['MANAGER'] },
   { path: '/personnel', label: 'Utilisateurs', icon: 'fa-users', roles: ['GERANT'] },
   { path: '/livraisons', label: 'Livraisons', icon: 'fa-truck-fast', roles: ['LIVREUR'] },
+  { path: '/vente', label: 'Nouvelle vente', icon: 'fa-cash-register', roles: ['VENDEUR'] },
+  { path: '/historique-ventes', label: 'Historique des ventes', icon: 'fa-receipt', roles: ['VENDEUR'] },
 ]
 
 function initials(username, role) {

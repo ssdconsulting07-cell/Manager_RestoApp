@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import Layout from '../../components/Layout.jsx'
 import Toast from '../../components/Toast.jsx'
 import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
@@ -88,6 +88,15 @@ export default function Vente() {
   const [derniereVente, setDerniereVente] = useState(null)
   const [toast, setToast] = useState(null)
 
+  // Identifiant stable par LIGNE de panier (independant du produit) : deux
+  // lignes du meme produit peuvent coexister des qu'elles ont des
+  // accompagnements differents (voir choisirAccompagnement ci-dessous).
+  const ligneIdCounterRef = useRef(0)
+  function nextLigneId() {
+    ligneIdCounterRef.current += 1
+    return `ligne-${ligneIdCounterRef.current}`
+  }
+
   // Resolution par NOM (pas par id en dur) : robuste si les donnees mock
   // changent, meme logique que categorieNomParId cote Gerant.
   const categorieIds = useMemo(() => ({
@@ -144,14 +153,20 @@ export default function Vente() {
 
   function ajouterAuPanier(produit) {
     setPanier((current) => {
-      const existant = current.find((l) => l.produitId === produit.id)
+      // Fusionne seulement avec une ligne du meme produit SANS accompagnement
+      // deja choisi : des qu'un accompagnement differe d'une unite a
+      // l'autre, impossible de fusionner (chaque unite doit pouvoir garder
+      // le sien — deux burgers peuvent avoir deux accompagnements
+      // differents, Controle explicite).
+      const existant = current.find((l) => l.produitId === produit.id && !l.accompagnementId)
       if (existant) {
-        return current.map((l) => (l.produitId === produit.id ? { ...l, quantite: l.quantite + 1 } : l))
+        return current.map((l) => (l.ligneId === existant.ligneId ? { ...l, quantite: l.quantite + 1 } : l))
       }
       const accompagnementEligible = produit.categorieId === categorieIds.burgers
         || produit.categorieId === categorieIds.platDuJour
         || Boolean(produit.platDuJour)
       return [...current, {
+        ligneId: nextLigneId(),
         produitId: produit.id,
         nom: produit.nom,
         categorieId: produit.categorieId,
@@ -166,35 +181,50 @@ export default function Vente() {
     })
   }
 
-  function changerQuantite(produitId, delta) {
+  function changerQuantite(ligneId, delta) {
     setPanier((current) => current
-      .map((l) => (l.produitId === produitId ? { ...l, quantite: l.quantite + delta } : l))
+      .map((l) => (l.ligneId === ligneId ? { ...l, quantite: l.quantite + delta } : l))
       .filter((l) => l.quantite > 0))
   }
 
-  function retirerDuPanier(produitId) {
-    setPanier((current) => current.filter((l) => l.produitId !== produitId))
+  function retirerDuPanier(ligneId) {
+    setPanier((current) => current.filter((l) => l.ligneId !== ligneId))
   }
 
   function viderPanier() {
     setPanier([])
   }
 
-  function choisirAccompagnement(produitId, accompagnementId) {
-    setPanier((current) => current.map((l) => {
-      if (l.produitId !== produitId) return l
-      if (!accompagnementId) {
-        return { ...l, prix: l.prixBase, accompagnementId: null, accompagnementNom: null }
+  // Change l'accompagnement d'UNE ligne. Si la ligne ne compte qu'une seule
+  // unite, on la modifie directement. Si elle en compte plusieurs (meme
+  // produit ajoute plusieurs fois, pas encore personnalise), l'accompagnement
+  // choisi ne peut s'appliquer qu'a une unite a la fois : on en detache une
+  // dans sa propre ligne et on diminue la ligne d'origine d'une unite — deux
+  // burgers peuvent ainsi garder des accompagnements differents (Controle
+  // explicite : jamais d'application groupee silencieuse sur des unites que
+  // l'utilisateur n'a pas individuellement choisies).
+  function choisirAccompagnement(ligneId, accompagnementId) {
+    setPanier((current) => {
+      const ligne = current.find((l) => l.ligneId === ligneId)
+      if (!ligne) return current
+
+      const accompagnement = accompagnementId
+        ? accompagnementsDisponibles.find((a) => a.id === accompagnementId)
+        : null
+
+      const appliquer = (l) => (accompagnement
+        ? { ...l, prix: l.prixBase + accompagnement.prix, accompagnementId: accompagnement.id, accompagnementNom: accompagnement.nom }
+        : { ...l, prix: l.prixBase, accompagnementId: null, accompagnementNom: null })
+
+      if (ligne.quantite <= 1) {
+        return current.map((l) => (l.ligneId === ligneId ? appliquer(l) : l))
       }
-      const accompagnement = accompagnementsDisponibles.find((a) => a.id === accompagnementId)
-      if (!accompagnement) return l
-      return {
-        ...l,
-        prix: l.prixBase + accompagnement.prix,
-        accompagnementId: accompagnement.id,
-        accompagnementNom: accompagnement.nom,
-      }
-    }))
+
+      const detachee = appliquer({ ...ligne, ligneId: nextLigneId(), quantite: 1 })
+      return current
+        .map((l) => (l.ligneId === ligneId ? { ...l, quantite: l.quantite - 1 } : l))
+        .concat(detachee)
+    })
   }
 
   function confirmerPaiement(modePaiement, montantRecuNombre) {

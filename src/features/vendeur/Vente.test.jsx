@@ -110,6 +110,32 @@ describe('Vente (caisse Vendeur)', () => {
     expect(screen.getAllByText(formatFCFA(5000)).length).toBeGreaterThan(0)
   })
 
+  it('permet à deux unités du même produit d’avoir des accompagnements différents (détache une ligne par unité personnalisée)', () => {
+    renderVente()
+
+    cliquerProduit('Ketchup Burger Classique')
+    cliquerProduit('Ketchup Burger Classique')
+    ouvrirPanier()
+
+    // Une seule ligne, 2 unités, aucun accompagnement choisi encore.
+    expect(screen.getByRole('button', { name: 'Ajouter un accompagnement' })).toBeInTheDocument()
+    expect(screen.getAllByText('Ketchup Burger Classique')).toHaveLength(1)
+
+    // Donner un accompagnement à CETTE ligne ne peut s'appliquer qu'à une
+    // unité à la fois : elle se détache dans sa propre ligne, l'autre unité
+    // reste sans accompagnement — les deux burgers gardent des choix
+    // indépendants plutôt qu'un changement groupé silencieux.
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter un accompagnement' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Frites maison/ }))
+
+    expect(screen.getByRole('button', { name: /Accompagnement : Frites maison/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Ajouter un accompagnement' })).toBeInTheDocument()
+    expect(screen.getAllByText('Ketchup Burger Classique')).toHaveLength(2)
+
+    // 2 burgers (3500 chacun) + 1 frites (1500) = 8500.
+    expect(screen.getAllByText(formatFCFA(8500)).length).toBeGreaterThan(0)
+  })
+
   it('« Retour au catalogue » revient au catalogue en conservant le panier (badge inchangé)', () => {
     renderVente()
 

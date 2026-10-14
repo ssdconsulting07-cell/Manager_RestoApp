@@ -49,7 +49,7 @@ export default function PanierPage({
     : Boolean(modePaiement) && total > 0
 
   const indexEtape = ETAPES_VISIBLES.indexOf(etape)
-  const ligneOuverte = panier.find((l) => l.produitId === ligneAccompagnementOuverte) || null
+  const ligneOuverte = panier.find((l) => l.ligneId === ligneAccompagnementOuverte) || null
 
   function allerAPaiement() {
     if (panier.length === 0) return
@@ -130,7 +130,7 @@ export default function PanierPage({
             ) : (
               <ul className="vendeur-panier-lignes-riches">
                 {panier.map((ligne) => (
-                  <li key={ligne.produitId} className="vendeur-panier-ligne-riche">
+                  <li key={ligne.ligneId} className="vendeur-panier-ligne-riche">
                     <img className="vendeur-panier-ligne-photo" src={ligne.photoUrl} alt="" />
                     <div className="vendeur-panier-ligne-info">
                       <strong>{ligne.nom}</strong>
@@ -139,7 +139,7 @@ export default function PanierPage({
                         <button
                           type="button"
                           className="vendeur-panier-ligne-accomp-bouton"
-                          onClick={() => setLigneAccompagnementOuverte(ligne.produitId)}
+                          onClick={() => setLigneAccompagnementOuverte(ligne.ligneId)}
                         >
                           <i className="fa-solid fa-utensils" aria-hidden="true" />
                           {ligne.accompagnementNom ? `Accompagnement : ${ligne.accompagnementNom}` : 'Ajouter un accompagnement'}
@@ -147,16 +147,16 @@ export default function PanierPage({
                       )}
                     </div>
                     <span className="vendeur-pos-panier-qte">
-                      <button type="button" aria-label={`Retirer un ${ligne.nom}`} onClick={() => onChangerQuantite(ligne.produitId, -1)}>−</button>
+                      <button type="button" aria-label={`Retirer un ${ligne.nom}`} onClick={() => onChangerQuantite(ligne.ligneId, -1)}>−</button>
                       <span>{ligne.quantite}</span>
-                      <button type="button" aria-label={`Ajouter un ${ligne.nom}`} onClick={() => onChangerQuantite(ligne.produitId, 1)}>+</button>
+                      <button type="button" aria-label={`Ajouter un ${ligne.nom}`} onClick={() => onChangerQuantite(ligne.ligneId, 1)}>+</button>
                     </span>
                     <span className="vendeur-panier-ligne-total">{formatFCFA(ligne.prix * ligne.quantite)}</span>
                     <button
                       type="button"
                       className="vendeur-pos-panier-retirer"
                       aria-label={`Retirer ${ligne.nom} du panier`}
-                      onClick={() => onRetirer(ligne.produitId)}
+                      onClick={() => onRetirer(ligne.ligneId)}
                     >
                       <i className="fa-solid fa-xmark" aria-hidden="true" />
                     </button>
@@ -243,7 +243,7 @@ export default function PanierPage({
           ligne={ligneOuverte}
           accompagnementsDisponibles={accompagnementsDisponibles}
           onChoisir={(accompagnementId) => {
-            onChoisirAccompagnement(ligneOuverte.produitId, accompagnementId)
+            onChoisirAccompagnement(ligneOuverte.ligneId, accompagnementId)
             setLigneAccompagnementOuverte(null)
           }}
           onFermer={() => setLigneAccompagnementOuverte(null)}

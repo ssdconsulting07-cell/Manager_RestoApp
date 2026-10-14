@@ -38,8 +38,11 @@ export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente })
       </header>
 
       <ul className="vendeur-recu-lignes">
-        {vente.lignes.map((ligne) => (
-          <li key={ligne.produitId}>
+        {vente.lignes.map((ligne, index) => (
+          // Deux lignes du meme produit (accompagnements differents) sont
+          // possibles depuis le panier : cle par ligneId, avec repli sur
+          // l'index pour les ventes seedees qui n'en ont pas.
+          <li key={ligne.ligneId ?? `${ligne.produitId}-${index}`}>
             <span className="vendeur-recu-ligne-nom">
               {ligne.quantite}× {ligne.nom}
               {ligne.accompagnementNom && (

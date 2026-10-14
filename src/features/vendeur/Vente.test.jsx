@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Vente from './Vente.jsx'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { MenuDataProvider } from '../gerant/MenuDataContext.jsx'
@@ -25,7 +25,14 @@ vi.mock('../../components/Layout.jsx', () => ({
   default: ({ children }) => <>{children}</>,
 }))
 
-afterEach(cleanup)
+beforeEach(() => {
+  vi.spyOn(window, 'print').mockImplementation(() => {})
+})
+
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+})
 
 function renderVente() {
   useAuth.mockReturnValue({ username: 'vendeur-test' })
@@ -38,8 +45,8 @@ function renderVente() {
   )
 }
 
-// Le nom du produit n'apparait qu'une fois tant que le panier (modal) n'est
-// pas ouvert : la carte du catalogue est la seule occurrence.
+// Le nom du produit n'apparait qu'une fois tant que la page Panier n'est pas
+// ouverte : la carte du catalogue est la seule occurrence.
 function cliquerProduit(nom) {
   fireEvent.click(screen.getAllByText(nom)[0])
 }
@@ -48,22 +55,8 @@ function ouvrirPanier() {
   fireEvent.click(screen.getByRole('button', { name: /Ouvrir le panier/ }))
 }
 
-function modal() {
-  return screen.getByRole('dialog')
-}
-
-function cliquerContinuer() {
-  fireEvent.click(within(modal()).getByRole('button', { name: /Continuer/ }))
-}
-
-function choisirAccompagnement(nomLigne, nomOption) {
-  const select = within(modal()).getByLabelText(`Accompagnement pour ${nomLigne}`)
-  const option = within(select).getByRole('option', { name: new RegExp(nomOption) })
-  fireEvent.change(select, { target: { value: option.value } })
-}
-
 describe('Vente (caisse Vendeur)', () => {
-  it('désactive le bouton Panier tant que le panier est vide', () => {
+  it('désactive le bouton Panier tant que le panier est vide, et l’active après ajout', () => {
     renderVente()
 
     expect(screen.getByRole('button', { name: /Ouvrir le panier/ })).toBeDisabled()
@@ -71,121 +64,164 @@ describe('Vente (caisse Vendeur)', () => {
     cliquerProduit('Ketchup Burger Classique')
 
     expect(screen.getByRole('button', { name: /Ouvrir le panier/ })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: /Ouvrir le panier/ })).toHaveTextContent('1')
   })
 
-  it('ajoute un produit au panier (badge du bouton Panier) et affiche le total dans le modal', () => {
+  it('ouvre une page complète (pas un modal) avec nom, prix unitaire, image et bouton Accompagnement pour un produit éligible', () => {
     renderVente()
 
     cliquerProduit('Ketchup Burger Classique')
-    cliquerProduit('Ketchup Burger Classique')
-
-    expect(screen.getByRole('button', { name: /Ouvrir le panier/ })).toHaveTextContent('2')
-
     ouvrirPanier()
 
-    // La ligne du panier et le total partagent le meme montant (7000, un seul
-    // produit) : getAllByText plutot que getByText, qui echouerait sur deux
-    // correspondances.
-    expect(within(modal()).getAllByText(formatFCFA(7000)).length).toBeGreaterThan(0)
-    expect(within(modal()).getByRole('button', { name: /Continuer/ })).not.toBeDisabled()
+    // Page plein ecran : pas de role="dialog" qui englobe tout le flux.
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Panier' })).toBeInTheDocument()
+    expect(screen.getByText('Ketchup Burger Classique')).toBeInTheDocument()
+    expect(screen.getByText(`${formatFCFA(3500)} / unité`)).toBeInTheDocument()
+    expect(document.querySelector('.vendeur-panier-ligne-photo')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Ajouter un accompagnement' })).toBeInTheDocument()
   })
 
-  it('saute l’étape Accompagnements pour un produit non éligible (ex. une boisson)', () => {
+  it('n’affiche pas de bouton Accompagnement pour un produit non éligible (une boisson)', () => {
     renderVente()
 
     fireEvent.click(screen.getByRole('tab', { name: /Boisson/ }))
     cliquerProduit('Jus de bissap')
     ouvrirPanier()
-    cliquerContinuer()
 
-    expect(within(modal()).getByRole('heading', { name: 'Paiement en espèces' })).toBeInTheDocument()
+    expect(screen.getByText('Jus de bissap')).toBeInTheDocument()
+    expect(screen.queryByText(/accompagnement/i)).not.toBeInTheDocument()
   })
 
-  it('permet de choisir un accompagnement, dont le prix s’ajoute au total', () => {
+  it('permet de choisir un accompagnement via le sous-modal, qui se referme et met à jour le total de la ligne', () => {
     renderVente()
 
     cliquerProduit('Ketchup Burger Classique')
     ouvrirPanier()
-    cliquerContinuer()
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter un accompagnement' }))
 
-    expect(within(modal()).getByRole('heading', { name: 'Choisissez un accompagnement' })).toBeInTheDocument()
-    choisirAccompagnement('Ketchup Burger Classique', 'Frites maison')
-
-    // 3500 (burger) + 1500 (frites) = 5000.
-    expect(within(modal()).getAllByText(formatFCFA(5000)).length).toBeGreaterThan(0)
-
-    // Revenir au panier affiche la ligne avec son accompagnement choisi.
-    fireEvent.click(within(modal()).getByRole('button', { name: /Retour/ }))
-    expect(within(modal()).getByText('+ Frites maison')).toBeInTheDocument()
-  })
-
-  it('refuse de confirmer le paiement si le montant reçu est insuffisant', () => {
-    renderVente()
-
-    cliquerProduit('Ketchup Burger Classique')
-    ouvrirPanier()
-    cliquerContinuer()
-    cliquerContinuer()
-    fireEvent.change(within(modal()).getByLabelText(/Montant reçu/), { target: { value: '1000' } })
-
-    expect(within(modal()).getByRole('button', { name: 'Confirmer le paiement' })).toBeDisabled()
-  })
-
-  it('permet de revenir en arrière avec « Retour », en conservant le panier', () => {
-    renderVente()
-
-    cliquerProduit('Ketchup Burger Classique')
-    ouvrirPanier()
-    cliquerContinuer()
-    expect(within(modal()).getByRole('heading', { name: 'Choisissez un accompagnement' })).toBeInTheDocument()
-
-    fireEvent.click(within(modal()).getByRole('button', { name: /Retour/ }))
-    expect(within(modal()).getByText('Ketchup Burger Classique')).toBeInTheDocument()
-    expect(within(modal()).getByRole('button', { name: 'Vider' })).toBeInTheDocument()
-  })
-
-  it('ferme le modal sans perdre le panier (badge inchangé) puis le rouvre à l’étape Panier', () => {
-    renderVente()
-
-    cliquerProduit('Ketchup Burger Classique')
-    ouvrirPanier()
-    cliquerContinuer()
-    fireEvent.click(within(modal()).getByRole('button', { name: 'Fermer le panier' }))
+    const sousModal = screen.getByRole('dialog')
+    expect(within(sousModal).getByText(/Ketchup Burger Classique/)).toBeInTheDocument()
+    fireEvent.click(within(sousModal).getByRole('button', { name: /Frites maison/ }))
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Ouvrir le panier/ })).toHaveTextContent('1')
-
-    ouvrirPanier()
-    expect(within(modal()).getByText('Ketchup Burger Classique')).toBeInTheDocument()
-    expect(within(modal()).getByRole('button', { name: 'Vider' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Accompagnement : Frites maison/ })).toBeInTheDocument()
+    // 3500 (burger) + 1500 (frites) = 5000.
+    expect(screen.getAllByText(formatFCFA(5000)).length).toBeGreaterThan(0)
   })
 
-  it('encaisse un paiement en espèces et affiche le reçu avec la monnaie rendue et l’accompagnement choisi', () => {
+  it('« Retour au catalogue » revient au catalogue en conservant le panier (badge inchangé)', () => {
     renderVente()
 
     cliquerProduit('Ketchup Burger Classique')
     ouvrirPanier()
-    cliquerContinuer()
-    choisirAccompagnement('Ketchup Burger Classique', 'Frites maison')
-    cliquerContinuer()
-    fireEvent.change(within(modal()).getByLabelText(/Montant reçu/), { target: { value: '5000' } })
-    fireEvent.click(within(modal()).getByRole('button', { name: 'Confirmer le paiement' }))
+    fireEvent.click(screen.getByRole('button', { name: /Retour au catalogue/ }))
 
-    // Le recu affiche son propre "Ticket n°" et le toast de confirmation en
-    // reprend un second (« Vente encaissée — Ticket n° X. ») : getAllByText
-    // plutot que getByText, qui echouerait sur plusieurs correspondances.
+    expect(screen.getByRole('heading', { name: 'Nouvelle vente' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Ouvrir le panier/ })).toHaveTextContent('1')
+  })
+
+  it('« Annuler » affiche une confirmation si le panier n’est pas vide, et ne le vide qu’après confirmation', () => {
+    renderVente()
+
+    cliquerProduit('Ketchup Burger Classique')
+    ouvrirPanier()
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    const confirmation = screen.getByRole('dialog')
+    expect(within(confirmation).getByText('Annuler la vente ?')).toBeInTheDocument()
+
+    fireEvent.click(within(confirmation).getByRole('button', { name: 'Non, revenir' }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByText('Ketchup Burger Classique')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Oui, annuler' }))
+
+    expect(screen.getByRole('heading', { name: 'Nouvelle vente' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Ouvrir le panier/ })).toBeDisabled()
+  })
+
+  it('« Annuler » ne demande pas de confirmation si le panier est déjà vide', () => {
+    renderVente()
+
+    cliquerProduit('Ketchup Burger Classique')
+    ouvrirPanier()
+    fireEvent.click(screen.getByRole('button', { name: /Retirer Ketchup Burger Classique du panier/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Nouvelle vente' })).toBeInTheDocument()
+  })
+
+  it('étape Paiement en espèces : affiche Montant reçu / Monnaie à rendre, et désactive la confirmation si insuffisant', () => {
+    renderVente()
+
+    cliquerProduit('Ketchup Burger Classique')
+    ouvrirPanier()
+    fireEvent.click(screen.getByRole('button', { name: 'Continuer →' }))
+    fireEvent.click(screen.getByRole('radio', { name: 'Espèces' }))
+
+    expect(screen.getByLabelText(/Montant reçu/)).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText(/Montant reçu/), { target: { value: '1000' } })
+
+    expect(screen.getByRole('button', { name: 'Confirmer le paiement' })).toBeDisabled()
+
+    fireEvent.change(screen.getByLabelText(/Montant reçu/), { target: { value: '5000' } })
+    // toHaveValue lit la valeur brute de l'input, sans normaliser les espaces :
+    // on compare donc au format reel (espace fine insecable comprise).
+    expect(screen.getByLabelText(/Monnaie à rendre/)).toHaveValue(rawFormatFCFA(1500))
+    expect(screen.getByRole('button', { name: 'Confirmer le paiement' })).not.toBeDisabled()
+  })
+
+  it('étape Paiement : un autre mode (Wave) n’affiche pas les champs espèces et confirme directement', () => {
+    renderVente()
+
+    cliquerProduit('Ketchup Burger Classique')
+    ouvrirPanier()
+    fireEvent.click(screen.getByRole('button', { name: 'Continuer →' }))
+    fireEvent.click(screen.getByRole('radio', { name: 'Wave' }))
+
+    expect(screen.queryByLabelText(/Montant reçu/)).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Confirmer le paiement' })).not.toBeDisabled()
+  })
+
+  it('encaisse la vente, affiche le reçu détaillé (mode de paiement) et déclenche l’impression automatique une seule fois', () => {
+    renderVente()
+
+    cliquerProduit('Ketchup Burger Classique')
+    ouvrirPanier()
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter un accompagnement' }))
+    fireEvent.click(screen.getByRole('button', { name: /Frites maison/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continuer →' }))
+    fireEvent.click(screen.getByRole('radio', { name: 'Espèces' }))
+    fireEvent.change(screen.getByLabelText(/Montant reçu/), { target: { value: '5000' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmer le paiement' }))
+
     expect(screen.getAllByText(/Ticket n°/).length).toBeGreaterThan(0)
     // 3500 (burger) + 1500 (frites) = 5000, le total de la vente.
     expect(screen.getAllByText(formatFCFA(5000)).length).toBeGreaterThan(0)
-    expect(screen.getByText('+ Frites maison')).toBeInTheDocument()
+    expect(screen.getByText('Espèces')).toBeInTheDocument()
     expect(screen.getByText(formatFCFA(0))).toBeInTheDocument()
     expect(screen.getByText(/Vente encaissée/)).toBeInTheDocument()
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(window.print).toHaveBeenCalledTimes(1)
 
     fireEvent.click(screen.getByRole('button', { name: 'Nouvelle vente' }))
     expect(screen.getByText('Ketchup Burger Classique')).toBeInTheDocument()
-    // Panier vide : le bouton Panier n'affiche plus de badge numérique.
-    const boutonPanier = screen.getByRole('button', { name: /Ouvrir le panier \(0 article\)/ })
-    expect(within(boutonPanier).queryByText(/^\d+$/)).not.toBeInTheDocument()
+    expect(window.print).toHaveBeenCalledTimes(1)
+  })
+
+  it('n’affiche pas les lignes Montant reçu / Monnaie rendue sur le reçu pour un paiement non-espèces', () => {
+    renderVente()
+
+    cliquerProduit('Ketchup Burger Classique')
+    ouvrirPanier()
+    fireEvent.click(screen.getByRole('button', { name: 'Continuer →' }))
+    fireEvent.click(screen.getByRole('radio', { name: 'Orange Money' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmer le paiement' }))
+
+    expect(screen.getByText('Orange Money')).toBeInTheDocument()
+    expect(screen.queryByText('Montant reçu (espèces)')).not.toBeInTheDocument()
+    expect(screen.queryByText('Monnaie rendue')).not.toBeInTheDocument()
   })
 })

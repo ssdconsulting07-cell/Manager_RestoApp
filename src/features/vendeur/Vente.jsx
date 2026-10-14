@@ -3,7 +3,7 @@ import Layout from '../../components/Layout.jsx'
 import Toast from '../../components/Toast.jsx'
 import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
 import Pagination from '../../components/crud/Pagination.jsx'
-import PanierModal from './PanierModal.jsx'
+import PanierPage from './PanierPage.jsx'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { useMenuData } from '../gerant/MenuDataContext.jsx'
 import { CATEGORIE_PLATS_DU_JOUR_ID } from '../gerant/menuData.js'
@@ -20,11 +20,13 @@ import './vendeur-pos.css'
 // Page catalogue a une seule colonne, homogene avec l'espace Gerant
 // (StatFilterCards + toolbar + grille + pagination, cf. Produits.jsx) : plus
 // de panier en colonne permanente (Homogeneite des interfaces). Le panier
-// vit derriere un bouton "Panier" (badge = nombre d'articles, Controle
-// explicite — l'etat reste visible sans devoir l'ouvrir) qui ouvre un modal
-// reprenant le parcours en etapes Panier -> Accompagnements -> Paiement
-// (voir PanierModal.jsx). Ajouter un produit au panier (clic sur une carte)
-// garde exactement la meme logique qu'avant ce changement.
+// vit derriere un bouton "Panier" (badge = nombre d'articles, desactive si
+// vide, Controle explicite — l'etat reste visible sans devoir l'ouvrir) qui
+// bascule vers une page plein ecran dediee (PanierPage.jsx, meme pattern
+// que le ticket qui remplace deja toute la page apres encaissement) : le
+// panier n'est pas un modal, il a sa propre page avec son stepper (Panier
+// -> Paiement). Ajouter un produit au panier (clic sur une carte) garde
+// exactement la meme logique qu'avant ce changement.
 const CATEGORIE_FILTRES = [
   {
     key: 'plats',
@@ -82,7 +84,7 @@ export default function Vente() {
   const [page, setPage] = useState(1)
   const [rows, setRows] = useState(ROWS_OPTIONS[0])
   const [panier, setPanier] = useState([])
-  const [panierOuvert, setPanierOuvert] = useState(false)
+  const [vue, setVue] = useState('catalogue')
   const [derniereVente, setDerniereVente] = useState(null)
   const [toast, setToast] = useState(null)
 
@@ -153,6 +155,7 @@ export default function Vente() {
         produitId: produit.id,
         nom: produit.nom,
         categorieId: produit.categorieId,
+        photoUrl: produit.photoUrl,
         prixBase: produit.prix,
         prix: produit.prix,
         accompagnementEligible,
@@ -194,11 +197,11 @@ export default function Vente() {
     }))
   }
 
-  function confirmerPaiement(montantRecuNombre) {
-    const vente = enregistrerVente({ lignes: panier, montantRecu: montantRecuNombre, vendeur: username })
+  function confirmerPaiement(modePaiement, montantRecuNombre) {
+    const vente = enregistrerVente({ lignes: panier, montantRecu: montantRecuNombre, modePaiement, vendeur: username })
     setDerniereVente(vente)
     setPanier([])
-    setPanierOuvert(false)
+    setVue('catalogue')
     setToast({ id: Date.now(), type: 'success', message: `Vente encaissée — Ticket n° ${vente.numero}.` })
   }
 
@@ -214,6 +217,21 @@ export default function Vente() {
         </section>
         <Toast toast={toast} onClose={() => setToast(null)} />
       </Layout>
+    )
+  }
+
+  if (vue === 'panier') {
+    return (
+      <PanierPage
+        panier={panier}
+        accompagnementsDisponibles={accompagnementsDisponibles}
+        onChangerQuantite={changerQuantite}
+        onRetirer={retirerDuPanier}
+        onChoisirAccompagnement={choisirAccompagnement}
+        onConfirmerPaiement={confirmerPaiement}
+        onRetourCatalogue={() => setVue('catalogue')}
+        onAnnuler={() => { viderPanier(); setVue('catalogue') }}
+      />
     )
   }
 
@@ -262,7 +280,7 @@ export default function Vente() {
             type="button"
             className="vendeur-pos-cart-button"
             disabled={nombreArticlesPanier === 0}
-            onClick={() => setPanierOuvert(true)}
+            onClick={() => setVue('panier')}
             aria-label={`Ouvrir le panier (${nombreArticlesPanier} article${nombreArticlesPanier > 1 ? 's' : ''})`}
           >
             <i className="fa-solid fa-cart-shopping" aria-hidden="true" />
@@ -303,19 +321,6 @@ export default function Vente() {
           rowsOptions={ROWS_OPTIONS}
         />
       </div>
-
-      {panierOuvert && (
-        <PanierModal
-          panier={panier}
-          accompagnementsDisponibles={accompagnementsDisponibles}
-          onChangerQuantite={changerQuantite}
-          onRetirer={retirerDuPanier}
-          onVider={viderPanier}
-          onChoisirAccompagnement={choisirAccompagnement}
-          onConfirmer={confirmerPaiement}
-          onFermer={() => setPanierOuvert(false)}
-        />
-      )}
 
       <Toast toast={toast} onClose={() => setToast(null)} />
     </Layout>

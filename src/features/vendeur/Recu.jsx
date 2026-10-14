@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react'
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
+import { libelleModePaiement } from './modesPaiement.jsx'
 
 function formatHeure(iso) {
   return new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
@@ -10,8 +12,21 @@ function formatDate(iso) {
 
 // Recu de vente comptoir — reutilise juste apres l'encaissement (Vente.jsx) et
 // dans le detail de l'historique (HistoriqueVentes.jsx), pour un seul rendu a
-// maintenir.
+// maintenir. onNouvelleVente n'est fourni que dans le premier cas (juste
+// apres l'encaissement) : c'est ce qui distingue "vente fraichement payee" de
+// "consultation d'une vente passee" — utilise aussi pour ne declencher
+// l'impression automatique qu'une seule fois, a la sortie de caisse, jamais
+// en rouvrant l'historique.
 export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente }) {
+  const dejaImprime = useRef(false)
+
+  useEffect(() => {
+    if (onNouvelleVente && !dejaImprime.current) {
+      dejaImprime.current = true
+      window.print()
+    }
+  }, [onNouvelleVente])
+
   return (
     <div className="vendeur-recu">
       <header className="vendeur-recu-head">
@@ -42,14 +57,24 @@ export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente })
           <strong>{formatFCFA(vente.total)}</strong>
         </div>
         <div className="vendeur-recu-total-row">
-          <span>Montant reçu (espèces)</span>
-          <span>{formatFCFA(vente.montantRecu)}</span>
+          <span>Mode de paiement</span>
+          <span>{libelleModePaiement(vente.modePaiement)}</span>
         </div>
-        <div className="vendeur-recu-total-row">
-          <span>Monnaie rendue</span>
-          <span>{formatFCFA(vente.monnaieRendue)}</span>
-        </div>
+        {vente.modePaiement === 'especes' && (
+          <>
+            <div className="vendeur-recu-total-row">
+              <span>Montant reçu (espèces)</span>
+              <span>{formatFCFA(vente.montantRecu)}</span>
+            </div>
+            <div className="vendeur-recu-total-row">
+              <span>Monnaie rendue</span>
+              <span>{formatFCFA(vente.monnaieRendue)}</span>
+            </div>
+          </>
+        )}
       </div>
+
+      <p className="vendeur-recu-merci">Merci de votre visite — à bientôt chez SenYummies !</p>
 
       <div className="vendeur-recu-actions">
         {onNouvelleVente && (

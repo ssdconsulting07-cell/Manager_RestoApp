@@ -39,6 +39,7 @@ const VENTES_INITIALES = [
   { numero: 105, lignes: [ligne('produit-4', 1)], montantRecu: 1000, createdAt: ilYA(40) },
 ].map((v) => ({
   id: `vente-${v.numero}`,
+  numero: v.numero,
   vendeur: SEED_VENDEUR,
   lignes: v.lignes,
   total: totalLignes(v.lignes),

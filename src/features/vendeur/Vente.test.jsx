@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import Vente from './Vente.jsx'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { MenuDataProvider } from '../gerant/MenuDataContext.jsx'
@@ -24,10 +24,6 @@ vi.mock('../../auth/AuthContext.jsx', () => ({
 vi.mock('../../components/Layout.jsx', () => ({
   default: ({ children }) => <>{children}</>,
 }))
-
-beforeEach(() => {
-  vi.spyOn(window, 'print').mockImplementation(() => {})
-})
 
 afterEach(() => {
   cleanup()
@@ -219,7 +215,7 @@ describe('Vente (caisse Vendeur)', () => {
     expect(screen.getByRole('button', { name: 'Confirmer le paiement' })).not.toBeDisabled()
   })
 
-  it('encaisse la vente, affiche le reçu détaillé (mode de paiement), et n’imprime que sur clic manuel', () => {
+  it('encaisse la vente, affiche le reçu détaillé (mode de paiement), et n’imprime le ticket que sur clic manuel, dans un nouvel onglet', () => {
     renderVente()
 
     cliquerProduit('Ketchup Burger Classique')
@@ -237,11 +233,19 @@ describe('Vente (caisse Vendeur)', () => {
     expect(screen.getByText('Espèces')).toBeInTheDocument()
     expect(screen.getByText(formatFCFA(0))).toBeInTheDocument()
     expect(screen.getByText(/Vente encaissée/)).toBeInTheDocument()
-    // L'impression est manuelle uniquement : pas d'appel a l'affichage du recu.
-    expect(window.print).not.toHaveBeenCalled()
+
+    // Impression manuelle uniquement, dans un onglet dedie : jsdom n'implemente
+    // pas window.open, on simule donc la fenetre qu'il renverrait.
+    const fenetre = { document: { write: vi.fn(), close: vi.fn() }, focus: vi.fn(), print: vi.fn() }
+    const ouvrir = vi.spyOn(window, 'open').mockReturnValue(fenetre)
+    expect(ouvrir).not.toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Imprimer' }))
-    expect(window.print).toHaveBeenCalledTimes(1)
+
+    expect(ouvrir).toHaveBeenCalledTimes(1)
+    expect(fenetre.document.write).toHaveBeenCalledTimes(1)
+    expect(fenetre.document.write.mock.calls[0][0]).toContain('Ticket n°')
+    expect(fenetre.print).toHaveBeenCalledTimes(1)
 
     fireEvent.click(screen.getByRole('button', { name: 'Nouvelle vente' }))
     expect(screen.getByText('Ketchup Burger Classique')).toBeInTheDocument()

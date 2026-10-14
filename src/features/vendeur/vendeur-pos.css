@@ -1037,35 +1037,19 @@
   }
 }
 
-/* Ticket de caisse thermique (80mm), imprime uniquement sur clic manuel
-   (bouton "Imprimer" du recu, jamais automatiquement). Pas de mise en page
-   A4 : la page et le ticket sont tous deux fixes a la largeur d'une bobine
-   thermique 80mm, sans marges, et l'habillage ecran (carte flottante,
-   ombre, coins arrondis, page centree) est retire pour l'impression. */
-@page {
-  size: 80mm auto;
-  margin: 0;
-}
-
+/* Le ticket s'imprime desormais depuis un onglet dedie, cree a part par
+   Recu.jsx (ouvrirEtImprimerTicket) avec son propre HTML/CSS autonome au
+   format 80mm — donc pas de regle @page ici : elle serait globale a tout
+   l'onglet principal et affecterait n'importe quelle impression lancee
+   ailleurs dans l'appli (retour utilisateur). Cette regle masque juste le
+   chrome de l'appli (sidebar, en-tete, pied de page, actions du recu) si
+   quelqu'un imprime la page Vente elle-meme (Ctrl+P), en dehors du bouton
+   "Imprimer". */
 @media print {
   .manager-shell > .manager-sidebar,
   .manager-header,
   .manager-workarea-footer,
   .vendeur-recu-actions {
     display: none !important;
-  }
-
-  .vendeur-recu-page {
-    display: block;
-    padding: 0;
-  }
-
-  .vendeur-recu {
-    width: 100%;
-    max-width: none;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 4mm 3mm;
   }
 }

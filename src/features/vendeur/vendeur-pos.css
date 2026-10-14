@@ -1,10 +1,8 @@
 /* Caisse (Vente.jsx) */
 
-.vendeur-pos {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 18px;
-  align-items: start;
+.vendeur-pos-page {
+  display: flex;
+  flex-direction: column;
 }
 
 .vendeur-pos-head {
@@ -22,7 +20,61 @@
   font-size: 13px;
 }
 
-/* Stepper (Produits -> Accompagnements -> Paiement) */
+/* Bouton Panier (badge = nombre d'articles), ouvre PanierModal — a cote du
+   tri, dans le toolbar, en rouge (couleur d'accent de l'app) pour rester
+   bien visible pendant la prise de commande. */
+
+.vendeur-pos-cart-button {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #a6192e;
+  border-radius: 999px;
+  padding: 10px 18px;
+  background: #a6192e;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 10px 22px rgb(166 25 46 / 20%);
+  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.vendeur-pos-cart-button:hover {
+  background: #8f1526;
+  border-color: #8f1526;
+  transform: translateY(-1px);
+}
+
+.vendeur-pos-cart-button:disabled {
+  background: #d8a4ad;
+  border-color: #d8a4ad;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.vendeur-pos-cart-button i {
+  color: #fff;
+}
+
+.vendeur-pos-cart-badge {
+  display: inline-grid;
+  min-width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 999px;
+  padding: 0 5px;
+  background: #fff;
+  color: #a6192e;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Stepper (Panier -> Accompagnements -> Paiement), utilise dans PanierModal */
 
 .vendeur-stepper {
   display: flex;
@@ -91,7 +143,9 @@
   color: #a6192e;
 }
 
-/* Panneau centre, utilise pour les etapes Accompagnements et Paiement */
+/* Panneau des etapes Accompagnements et Paiement, hors modal (non utilise
+   actuellement, conserve pour un panneau plein-page eventuel) et a
+   l'interieur du modal via le modificateur .vendeur-stepper-panel-modal. */
 
 .vendeur-stepper-panel {
   max-width: 460px;
@@ -103,9 +157,9 @@
   box-shadow: 0 14px 32px rgb(20 20 20 / 5%);
 }
 
-.vendeur-stepper-panel h2 {
+.vendeur-stepper-panel h3 {
   margin: 0 0 6px;
-  font-size: 17px;
+  font-size: 16px;
 }
 
 .vendeur-stepper-panel-hint {
@@ -114,11 +168,22 @@
   font-size: 12px;
 }
 
+/* A l'interieur du modal, .manager-modal fournit deja le cadre (bordure,
+   fond, ombre, padding) : le panneau n'a pas besoin du sien. */
+
+.vendeur-stepper-panel-modal {
+  max-width: none;
+  margin: 0;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
 .vendeur-accomp-liste {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin: 0;
+  margin: 0 0 16px;
   padding: 0;
   list-style: none;
 }
@@ -233,30 +298,43 @@
   margin-bottom: 18px;
 }
 
-/* Panier */
+/* Panier — contenu reutilise a l'interieur de PanierModal */
 
-.vendeur-pos-panier {
-  position: sticky;
-  top: 16px;
+.vendeur-panier-modal-corps {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  border: 1px solid #ead9dd;
-  border-radius: 16px;
-  padding: 16px;
-  background: #fff;
-  box-shadow: 0 14px 32px rgb(20 20 20 / 5%);
+  gap: 14px;
+}
+
+.vendeur-panier-modal-sous-titre {
+  color: #6b6b6b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.vendeur-panier-modal-fermer {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: #6b6b6b;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.vendeur-panier-modal-fermer:hover {
+  background: #f3eceb;
+  color: #141414;
 }
 
 .vendeur-pos-panier-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.vendeur-pos-panier-head h2 {
-  margin: 0;
-  font-size: 16px;
 }
 
 .vendeur-pos-vider {
@@ -281,7 +359,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  max-height: 46vh;
+  max-height: 40vh;
   overflow-y: auto;
 }
 
@@ -310,11 +388,6 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-}
-
-.vendeur-pos-panier-qte-figee {
-  color: #6b6b6b;
-  font-weight: 600;
 }
 
 .vendeur-pos-panier-qte button {
@@ -364,17 +437,6 @@
 
 .vendeur-pos-panier-total strong {
   font-size: 20px;
-}
-
-.vendeur-pos-panier-nav {
-  display: flex;
-  gap: 8px;
-}
-
-.vendeur-pos-encaisser {
-  flex: 1;
-  width: 100%;
-  text-align: center;
 }
 
 /* Total / monnaie, reutilise par l'etape Paiement */
@@ -580,8 +642,6 @@
 /* Thème sombre */
 
 .manager-shell.is-dark .vendeur-pos-card,
-.manager-shell.is-dark .vendeur-pos-panier,
-.manager-shell.is-dark .vendeur-pos-panier-qte button,
 .manager-shell.is-dark .vendeur-recu,
 .manager-shell.is-dark .vendeur-stepper-panel,
 .manager-shell.is-dark .vendeur-historique-head,
@@ -591,8 +651,44 @@
   background: #1c1c20;
 }
 
+.manager-shell.is-dark .vendeur-pos-panier-qte button {
+  border-color: #2a2a2e;
+  background: #1c1c20;
+}
+
 .manager-shell.is-dark .vendeur-pos-card-photo {
   background-color: #222226;
+}
+
+.manager-shell.is-dark .vendeur-pos-cart-button {
+  border-color: #e14b64;
+  background: #e14b64;
+  color: #141414;
+}
+
+.manager-shell.is-dark .vendeur-pos-cart-button:hover {
+  background: #c93f55;
+  border-color: #c93f55;
+}
+
+.manager-shell.is-dark .vendeur-pos-cart-button:disabled {
+  background: #5c3038;
+  border-color: #5c3038;
+  color: #9a9a9e;
+}
+
+.manager-shell.is-dark .vendeur-pos-cart-button i {
+  color: #141414;
+}
+
+.manager-shell.is-dark .vendeur-pos-cart-badge {
+  background: #141414;
+  color: #e14b64;
+}
+
+.manager-shell.is-dark .vendeur-panier-modal-fermer:hover {
+  background: #26262a;
+  color: #f2f2f2;
 }
 
 .manager-shell.is-dark .vendeur-stepper-step {
@@ -639,14 +735,6 @@
 }
 
 @media (max-width: 980px) {
-  .vendeur-pos {
-    grid-template-columns: 1fr;
-  }
-
-  .vendeur-pos-panier {
-    position: static;
-  }
-
   .vendeur-historique-ligne {
     grid-template-columns: auto 1fr auto;
     row-gap: 4px;

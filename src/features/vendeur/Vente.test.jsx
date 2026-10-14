@@ -219,7 +219,7 @@ describe('Vente (caisse Vendeur)', () => {
     expect(screen.getByRole('button', { name: 'Confirmer le paiement' })).not.toBeDisabled()
   })
 
-  it('encaisse la vente, affiche le reçu détaillé (mode de paiement) et déclenche l’impression automatique une seule fois', () => {
+  it('encaisse la vente, affiche le reçu détaillé (mode de paiement), et n’imprime que sur clic manuel', () => {
     renderVente()
 
     cliquerProduit('Ketchup Burger Classique')
@@ -237,11 +237,14 @@ describe('Vente (caisse Vendeur)', () => {
     expect(screen.getByText('Espèces')).toBeInTheDocument()
     expect(screen.getByText(formatFCFA(0))).toBeInTheDocument()
     expect(screen.getByText(/Vente encaissée/)).toBeInTheDocument()
+    // L'impression est manuelle uniquement : pas d'appel a l'affichage du recu.
+    expect(window.print).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Imprimer' }))
     expect(window.print).toHaveBeenCalledTimes(1)
 
     fireEvent.click(screen.getByRole('button', { name: 'Nouvelle vente' }))
     expect(screen.getByText('Ketchup Burger Classique')).toBeInTheDocument()
-    expect(window.print).toHaveBeenCalledTimes(1)
   })
 
   it('n’affiche pas les lignes Montant reçu / Monnaie rendue sur le reçu pour un paiement non-espèces', () => {

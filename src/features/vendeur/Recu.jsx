@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react'
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
 import { libelleModePaiement } from './modesPaiement.jsx'
 
@@ -14,19 +13,10 @@ function formatDate(iso) {
 // dans le detail de l'historique (HistoriqueVentes.jsx), pour un seul rendu a
 // maintenir. onNouvelleVente n'est fourni que dans le premier cas (juste
 // apres l'encaissement) : c'est ce qui distingue "vente fraichement payee" de
-// "consultation d'une vente passee" — utilise aussi pour ne declencher
-// l'impression automatique qu'une seule fois, a la sortie de caisse, jamais
-// en rouvrant l'historique.
+// "consultation d'une vente passee". L'impression est manuelle uniquement —
+// bouton "Imprimer" — jamais declenchee automatiquement a l'affichage du
+// recu (retour utilisateur : l'impression auto n'etait pas souhaitee).
 export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente }) {
-  const dejaImprime = useRef(false)
-
-  useEffect(() => {
-    if (onNouvelleVente && !dejaImprime.current) {
-      dejaImprime.current = true
-      window.print()
-    }
-  }, [onNouvelleVente])
-
   return (
     <div className="vendeur-recu">
       <header className="vendeur-recu-head">

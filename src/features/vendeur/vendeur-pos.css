@@ -191,20 +191,14 @@
   color: #a6192e;
 }
 
-/* Corps de chaque etape de PanierPage. L'etape Panier reste pleine largeur
-   (les lignes ont besoin de place) ; l'etape Paiement est centree, plus
-   lisible pour un formulaire court (Guidage). */
+/* Corps de chaque etape de PanierPage : pleine largeur partout (les lignes
+   du panier comme les modes de paiement ont besoin de place, pas de colonne
+   centree qui laisse du vide — retour utilisateur). */
 
 .vendeur-panier-corps {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.vendeur-panier-corps-paiement {
-  max-width: 560px;
-  margin: 0 auto;
-  width: 100%;
 }
 
 .vendeur-panier-corps-paiement h2 {

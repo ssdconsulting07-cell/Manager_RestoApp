@@ -5,16 +5,24 @@
 // des reseaux, et le billet pour les especes est une icone standard (pas une
 // marque).
 //
-// Wave / Orange Money / Mixx by Yas n'ont pas d'icone Font Awesome : ce
-// sont des fintechs ouest-africaines. Cet environnement n'a pas d'acces
-// reseau sortant vers les CDN de logos (itunes.apple.com, wikimedia, etc. —
-// testes et bloques par le proxy), donc impossible de recuperer les
-// fichiers officiels ici. Les badges ci-dessous sont des reconstitutions
-// maison aux couleurs de marque reelles (Wave = bleu nuit, Orange Money =
-// orange Orange, Mixx by Yas = degrade violet/turquoise de Yas), pas des
+// Orange Money utilise le vrai logo de marque Orange (le repere carre avec
+// l'encoche, identite "Orange is here" lancee en 2024), recupere depuis
+// simple-icons (github.com/simple-icons/simple-icons, licence MIT, tracés
+// verifies pour le respect des marques) — seul depot de logos accessible
+// depuis cet environnement : raw.githubusercontent.com est autorise par le
+// proxy, mais itunes.apple.com, les domaines Wikipedia/Wikimedia,
+// cdn.jsdelivr.net, unpkg.com, cdnjs.cloudflare.com et
+// avatars.githubusercontent.com sont bloques.
+//
+// Wave et Mixx by Yas n'ont pas d'icone Font Awesome et ne sont pas dans
+// simple-icons (plusieurs variantes de nom testees : wave, wavemoney,
+// wave-money, mixx, mixxbyyas, freesenegal, yas — toutes en 404) : ce sont
+// des fintechs ouest-africaines trop recentes/niche pour ce depot. Leurs
+// badges restent des reconstitutions maison aux couleurs de marque reelles
+// (Wave = bleu nuit, Mixx by Yas = degrade violet/turquoise), pas des
 // emojis ni des icones generiques. Pour les logos officiels exacts, deposer
-// les fichiers dans public/logos-paiement/ (wave.svg, orange-money.svg,
-// mixx-yas.svg) et remplacer les composants *Logo ci-dessous par
+// les fichiers dans public/logos-paiement/ (wave.svg, mixx-yas.svg) et
+// remplacer les composants *Logo correspondants par
 // <img src="/logos-paiement/....svg" alt="" />.
 function WaveLogo() {
   return (
@@ -33,12 +41,14 @@ function WaveLogo() {
 }
 
 function OrangeMoneyLogo() {
+  // Trace reel de la marque Orange (simple-icons, licence MIT), repris sans
+  // modification dans le badge arrondi aux couleurs Orange Money.
   return (
     <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true" focusable="false">
       <rect width="48" height="48" rx="12" fill="#FF7900" />
-      <rect x="12" y="19" width="24" height="15" rx="2.4" fill="#fff" />
-      <path d="M13 19v-3.2a2.2 2.2 0 0 1 2.2-2.2H33" stroke="#fff" strokeWidth="2.4" fill="none" strokeLinecap="round" />
-      <circle cx="29.5" cy="26.5" r="2.8" fill="#FF7900" />
+      <g transform="translate(9 9) scale(1.25)">
+        <path d="M0 0h24v24H0V0Zm3.43 20.572h17.143v-3.429H3.43v3.429Z" fill="#fff" />
+      </g>
     </svg>
   )
 }

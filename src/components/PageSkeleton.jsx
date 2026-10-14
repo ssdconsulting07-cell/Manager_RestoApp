@@ -65,6 +65,39 @@ function OrderCardsSkeleton() {
   )
 }
 
+function PosSkeleton() {
+  return (
+    <div className="page-skeleton-pos" aria-hidden="true">
+      <div className="page-skeleton-pos-catalogue">
+        <div className="page-skeleton-pos-tabs">
+          {Array.from({ length: 5 }, (_, index) => (
+            <SkeletonBlock className="is-pos-tab" key={index} />
+          ))}
+        </div>
+        <div className="page-skeleton-pos-grid">
+          {Array.from({ length: 8 }, (_, index) => (
+            <article className="page-skeleton-pos-card" key={index}>
+              <SkeletonBlock className="is-pos-photo" />
+              <div className="page-skeleton-pos-card-body">
+                <SkeletonBlock className="is-pos-card-title" />
+                <SkeletonBlock className="is-pos-card-price" />
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+      <aside className="page-skeleton-pos-panier">
+        <SkeletonBlock className="is-pos-panier-heading" />
+        {Array.from({ length: 3 }, (_, index) => (
+          <SkeletonBlock className="is-pos-panier-line" key={index} />
+        ))}
+        <SkeletonBlock className="is-pos-panier-total" />
+        <SkeletonBlock className="is-pos-panier-action" />
+      </aside>
+    </div>
+  )
+}
+
 function DashboardSkeleton() {
   return (
     <div className="page-skeleton-dashboard" aria-hidden="true">
@@ -115,7 +148,9 @@ export default function PageSkeleton({ page, contentOnly = false }) {
       <span className="page-skeleton-announcement">Chargement de la page…</span>
       {page === 'dashboard' ? (
         <DashboardSkeleton />
-      ) : page === 'commandes' || page === 'preparation' || page === 'vente' ? (
+      ) : page === 'vente' ? (
+        <PosSkeleton />
+      ) : page === 'commandes' || page === 'preparation' ? (
         <>
           {!contentOnly && (
             <div className="page-skeleton-page-heading" aria-hidden="true">

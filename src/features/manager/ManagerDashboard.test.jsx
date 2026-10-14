@@ -117,10 +117,15 @@ describe('Dashboard by role', () => {
     expect(screen.getByRole('heading', { name: 'Bonjour, équipe Cuisine.' })).toBeInTheDocument()
   })
 
-  it('renders the Vendeur dashboard (not the generic one) for VENDEUR', () => {
+  it('renders the Vendeur dashboard on the same generic pattern as Gerant/Manager', () => {
     renderFor('VENDEUR')
     expect(screen.queryByRole('heading', { name: 'Chiffre d’affaires' })).not.toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Votre prochaine action' })).not.toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Bonjour, équipe Vendeur.' })).toBeInTheDocument()
+    // Meme dispatch que Gerant/Manager (voir dashboard/Dashboard.jsx) : intro
+    // generique (tableau de bord + badge de role), pas son propre Layout/hero.
+    expect(screen.getByRole('heading', { name: 'Tableau de bord', level: 1 })).toBeInTheDocument()
+    expect(screen.getByText('Vendeur')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Ventes du jour' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Derniers tickets' })).toBeInTheDocument()
   })
 })

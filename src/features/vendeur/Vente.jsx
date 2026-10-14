@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import Layout from '../../components/Layout.jsx'
+import Toast from '../../components/Toast.jsx'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { useMenuData } from '../gerant/MenuDataContext.jsx'
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
@@ -19,6 +20,7 @@ export default function Vente() {
   const [paiementOuvert, setPaiementOuvert] = useState(false)
   const [montantRecu, setMontantRecu] = useState('')
   const [derniereVente, setDerniereVente] = useState(null)
+  const [toast, setToast] = useState(null)
 
   const categoriesDisponibles = categories.filter((c) => c.statut === 'ACTIF')
   const produitsDisponibles = produits.filter((p) => p.statut === 'ACTIF' && p.disponibilite === 'EN_STOCK')
@@ -69,6 +71,7 @@ export default function Vente() {
     setDerniereVente(vente)
     setPaiementOuvert(false)
     setPanier([])
+    setToast({ id: Date.now(), type: 'success', message: `Vente encaissée — Ticket n° ${vente.numero}.` })
   }
 
   function nouvelleVente() {
@@ -82,6 +85,7 @@ export default function Vente() {
         <section className="vendeur-recu-page">
           <Recu vente={derniereVente} vendeurLabel={username || 'Vendeur'} onNouvelleVente={nouvelleVente} />
         </section>
+        <Toast toast={toast} onClose={() => setToast(null)} />
       </Layout>
     )
   }
@@ -234,6 +238,8 @@ export default function Vente() {
           </section>
         </div>
       )}
+
+      <Toast toast={toast} onClose={() => setToast(null)} />
     </Layout>
   )
 }

@@ -280,6 +280,20 @@
 .page-skeleton-block.is-order-line.is-short { width: 58%; }
 .page-skeleton-block.is-order-line.is-medium { width: 72%; }
 .page-skeleton-block.is-order-action { width: 100%; height: 39px; margin-top: 3px; border-radius: 6px; }
+.page-skeleton-pos { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
+.page-skeleton-pos-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.page-skeleton-block.is-pos-tab { width: 76px; height: 29px; border-radius: 999px; }
+.page-skeleton-pos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.page-skeleton-pos-card { overflow: hidden; border: 1px solid #e8e4e1; border-radius: 10px; background: #fff; }
+.page-skeleton-block.is-pos-photo { height: 92px; border-radius: 0; }
+.page-skeleton-pos-card-body { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px 12px; }
+.page-skeleton-block.is-pos-card-title { width: 80%; height: 13px; }
+.page-skeleton-block.is-pos-card-price { width: 50%; height: 12px; }
+.page-skeleton-pos-panier { display: flex; min-height: 420px; flex-direction: column; gap: 14px; border: 1px solid #e5e5e3; border-radius: 14px; padding: 18px; background: #fff; }
+.page-skeleton-block.is-pos-panier-heading { width: 90px; height: 18px; margin-bottom: 4px; }
+.page-skeleton-block.is-pos-panier-line { width: 100%; height: 34px; border-radius: 8px; }
+.page-skeleton-block.is-pos-panier-total { width: 100%; height: 22px; margin-top: auto; }
+.page-skeleton-block.is-pos-panier-action { width: 100%; height: 44px; border-radius: 6px; }
 .page-skeleton-placeholder { min-height: 190px; }
 .page-skeleton-block.is-placeholder-title { width: min(300px, 70%); height: 28px; margin-bottom: 12px; }
 .page-skeleton-block.is-placeholder-copy { width: min(460px, 90%); height: 14px; }
@@ -287,6 +301,8 @@
 .manager-shell.is-dark .page-skeleton-block { background: linear-gradient(100deg, #232327 20%, #313136 40%, #232327 60%); background-size: 200% 100%; }
 .manager-shell.is-dark .page-skeleton-stat-card,
 .manager-shell.is-dark .page-skeleton-order-card,
+.manager-shell.is-dark .page-skeleton-pos-card,
+.manager-shell.is-dark .page-skeleton-pos-panier,
 .manager-shell.is-dark .page-skeleton-panel { border-color: #2a2a2e; background-color: #1c1c20; }
 .manager-shell.is-dark .page-skeleton-panel.is-muted { background-color: #17171a; }
 .manager-modal-backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; border: 0; padding: 20px; background: rgb(20 20 20 / 45%); cursor: default; }

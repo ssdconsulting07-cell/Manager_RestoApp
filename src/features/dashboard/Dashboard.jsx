@@ -40,13 +40,17 @@ const DASHBOARD_DATA = {
     ],
     action: ['Voir les livraisons', '/livraisons'],
   },
+  VENDEUR: {
+    eyebrow: 'Poste de caisse',
+    title: 'Tableau de bord',
+    description: 'Ventes du jour, total encaissé et derniers tickets : tout en un coup d’œil.',
+  },
 }
 
 export default function Dashboard() {
   const { role } = useAuth()
 
   if (role === 'CUISINE') return <CuisineDashboard />
-  if (role === 'VENDEUR') return <VendeurDashboard />
 
   const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.CUISINE
 
@@ -65,6 +69,8 @@ export default function Dashboard() {
         <GerantDashboard />
       ) : role === 'MANAGER' ? (
         <ManagerDashboard />
+      ) : role === 'VENDEUR' ? (
+        <VendeurDashboard />
       ) : (
         <>
           <section className="dashboard-stat-grid" aria-label="Résumé de l’activité">

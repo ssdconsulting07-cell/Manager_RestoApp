@@ -15,9 +15,12 @@
 //   (couleurs officielles appliquees ici — bleu Visa #1A1F71, cercles rouge
 //   #EB001B / orange #F79E1B de Mastercard avec fusion "multiply" pour la
 //   zone de recouvrement, comme sur les vraies cartes).
-// - Orange Money : le vrai logo de marque Orange (le repere carre avec
-//   l'encoche, identite "Orange is here" lancee en 2024), aussi depuis
-//   simple-icons.
+// - Orange Money : le symbole officiel du service (deux fleches croisees),
+//   traces repris du SVG publie sur orange.sn
+//   (sites/default/files/images/orange-money-white.svg, version blanche pour
+//   fond orange), recolores comme l'icone officielle couleur de Sonatel
+//   (fleche montante noire, fleche descendante orange #FF7900) sur badge
+//   blanc. Ce n'est PAS le carre Orange, qui est le logo de l'operateur.
 // - Especes : icone standard Font Awesome (billet), pas une marque.
 //
 // Les logos Wave et Mixx by Yas sont des fichiers statiques (public/), dans
@@ -31,14 +34,24 @@ function WaveLogo() {
 }
 
 function OrangeMoneyLogo() {
-  // Trace reel de la marque Orange (simple-icons, licence MIT), repris sans
-  // modification dans le badge arrondi aux couleurs Orange Money.
+  // Traces officiels des deux fleches (orange.sn), sans modification de forme.
+  // Le viewBox recadre sur les fleches (le SVG d'origine fait 40x40 avec
+  // beaucoup de marge) pour qu'elles remplissent le badge comme les autres.
   return (
     <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true" focusable="false">
-      <rect width="48" height="48" rx="12" fill="#FF7900" />
-      <g transform="translate(9 9) scale(1.25)">
-        <path d="M0 0h24v24H0V0Zm3.43 20.572h17.143v-3.429H3.43v3.429Z" fill="#fff" />
-      </g>
+      <rect width="48" height="48" rx="12" fill="#fff" />
+      <svg x="5" y="5" width="38" height="38" viewBox="3 4.5 32 32">
+        <path
+          fill="#000"
+          transform="translate(4 13.765)"
+          d="M3.413.333c-1.034 0-1.871.832-1.871 1.858 0 1.027.837 1.859 1.87 1.859h4.699L.548 11.56a1.85 1.85 0 0 0 0 2.628 1.88 1.88 0 0 0 2.646 0l7.562-7.512v4.667c0 1.026.837 1.858 1.871 1.858 1.033 0 1.87-.832 1.87-1.858V2.19a1.864 1.864 0 0 0-1.87-1.858H3.413z"
+        />
+        <path
+          fill="#FF7900"
+          transform="translate(19.867 12.065)"
+          d="M2.372 14.902h9.215c1.033 0 1.87-.832 1.87-1.858a1.864 1.864 0 0 0-1.87-1.858H6.889l7.562-7.512a1.85 1.85 0 0 0 0-2.628 1.88 1.88 0 0 0-2.645 0L4.243 8.558V3.892a1.865 1.865 0 0 0-1.87-1.859c-1.034 0-1.871.832-1.871 1.859v9.152c0 1.026.837 1.858 1.87 1.858"
+        />
+      </svg>
     </svg>
   )
 }

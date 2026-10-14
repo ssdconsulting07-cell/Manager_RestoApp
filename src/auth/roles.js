@@ -1,8 +1,7 @@
-// Roles du staff, identiques a l'enum Role du contrat (backend/contrat-api/openapi.yaml) —
-// a l'exception de VENDEUR (espace Vendeur/Caissier, V2) : role purement front,
-// non reconnu par le backend reel (Role.java n'a pas d'entree VENDEUR), accessible
-// uniquement via la demo sans backend (voir loginDemoVendeur dans AuthContext.jsx),
-// meme logique que CUISINE avant que son compte seed n'existe.
+// Roles du staff, identiques a l'enum Role du contrat (backend/contrat-api/openapi.yaml).
+// VENDEUR (espace Vendeur/Caissier, V2) est desormais un role backend a part
+// entiere (compte seed "vendeur", voir StaffUserSeed cote Backend_RestoApp),
+// au meme titre que les autres.
 export const ROLES = ['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR', 'VENDEUR']
 
 export const ROLE_LABELS = {

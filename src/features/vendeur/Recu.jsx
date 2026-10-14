@@ -27,6 +27,9 @@ export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente })
           <li key={ligne.produitId}>
             <span className="vendeur-recu-ligne-nom">
               {ligne.quantite}× {ligne.nom}
+              {ligne.accompagnementNom && (
+                <span className="vendeur-recu-ligne-accomp"> + {ligne.accompagnementNom}</span>
+              )}
             </span>
             <span className="vendeur-recu-ligne-prix">{formatFCFA(ligne.prix * ligne.quantite)}</span>
           </li>

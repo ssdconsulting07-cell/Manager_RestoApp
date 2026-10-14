@@ -225,8 +225,8 @@
 /* === Journal d'audit (Manager) — memes patterns que Produits/Personnel (barre d'outils, panneau, modal) === */
 .audit-toolbar { flex-wrap: wrap; }
 .audit-toolbar .crud-search { flex: 1 1 240px; }
-.audit-select { flex: 0 0 auto; border: 1px solid #e5e5e3; border-radius: 999px; padding: 10px 36px 10px 16px; color: #141414; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239a9a9e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center; font: inherit; font-size: 13px; outline: none; cursor: pointer; appearance: none; }
-.audit-select:focus { border-color: #a6192e; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
+.audit-select, .crud-select { flex: 0 0 auto; border: 1px solid #e5e5e3; border-radius: 999px; padding: 10px 36px 10px 16px; color: #141414; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239a9a9e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center; font: inherit; font-size: 13px; outline: none; cursor: pointer; appearance: none; }
+.audit-select:focus, .crud-select:focus { border-color: #a6192e; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
 .audit-panel { min-height: 0; margin-bottom: 18px; }
 .audit-day + .audit-day { margin-top: 16px; border-top: 1px solid #f0efed; padding-top: 16px; }
 .audit-panel .audit-day-heading { margin: 0 0 6px; color: #6b6b6b; font-size: 11px; font-weight: 700; letter-spacing: .04em; line-height: 1.4; text-transform: uppercase; }
@@ -387,7 +387,7 @@
 .manager-shell.is-dark .dashboard-activity-text span { color: #9a9a9e; }
 .manager-shell.is-dark .dashboard-activity-time { color: #9a9a9e; }
 .manager-shell.is-dark .dashboard-activity-row.is-static:hover { background: transparent; }
-.manager-shell.is-dark .audit-select { border-color: #2f2f33; color: #f2f2f2; background-color: #121214; color-scheme: dark; }
+.manager-shell.is-dark .audit-select, .manager-shell.is-dark .crud-select { border-color: #2f2f33; color: #f2f2f2; background-color: #121214; color-scheme: dark; }
 .manager-shell.is-dark .audit-day + .audit-day { border-color: #2a2a2e; }
 .manager-shell.is-dark .audit-panel .audit-day-heading,
 .manager-shell.is-dark .audit-export-hint { color: #9a9a9e; }
@@ -400,7 +400,7 @@
 /* Journal d'audit sur petit ecran : l'horodatage passe sous la phrase pour lui laisser toute la largeur. */
 @media (max-width: 600px) {
   .audit-toolbar .crud-search { flex: 1 1 100%; max-width: none; }
-  .audit-select { flex: 1 1 0; min-width: 146px; }
+  .audit-select, .crud-select { flex: 1 1 0; min-width: 146px; }
   .audit-toolbar .crud-toolbar-spacer { display: none; }
   .audit-toolbar .crud-add-button { flex: 1 1 100%; justify-content: center; }
   .audit-export-dates { grid-template-columns: 1fr; }
@@ -445,6 +445,10 @@
 }
 /* === Système CRUD (espace Gérant — Produits / Catégories / Aperçu client) === */
 .crud-filter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+.crud-filter-grid.is-4col { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 860px) {
+  .crud-filter-grid.is-4col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .crud-filter-card { display: flex; flex-direction: column; gap: 6px; border: 1px solid #e7e4e1; border-radius: 14px; padding: 16px 18px; text-align: left; color: #141414; background: linear-gradient(180deg, #fff 0%, #f9f8f7 100%); cursor: pointer; font: inherit; box-shadow: 0 10px 24px rgb(20 20 20 / 4%); transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
 .crud-filter-card:hover { transform: translateY(-2px); box-shadow: 0 16px 28px rgb(20 20 20 / 8%); }
 .crud-filter-card.is-selected { border-color: var(--stat-accent); background: var(--stat-accent-bg); }

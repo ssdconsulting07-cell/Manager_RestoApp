@@ -1,6 +1,6 @@
-export default function StatFilterCards({ items, selected, onSelect }) {
+export default function StatFilterCards({ items, selected, onSelect, ariaLabel = 'Filtrer par statut', className = '' }) {
   return (
-    <div className="crud-filter-grid" role="tablist" aria-label="Filtrer par statut">
+    <div className={`crud-filter-grid ${className}`} role="tablist" aria-label={ariaLabel}>
       {items.map((item) => (
         <button
           key={item.key}

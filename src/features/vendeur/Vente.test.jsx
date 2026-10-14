@@ -132,6 +132,13 @@ describe('Vente (caisse Vendeur)', () => {
     expect(screen.getByRole('button', { name: 'Ajouter un accompagnement' })).toBeInTheDocument()
     expect(screen.getAllByText('Ketchup Burger Classique')).toHaveLength(2)
 
+    // Le badge doit se distinguer visuellement entre les deux lignes du même
+    // produit : rempli pour celle qui a un accompagnement, pointillé pour
+    // l'autre — pas juste le texte, sinon les deux se ressemblent trop au
+    // premier coup d'œil (retour utilisateur sur une capture d'écran).
+    expect(screen.getByRole('button', { name: /Accompagnement : Frites maison/ })).toHaveClass('is-selected')
+    expect(screen.getByRole('button', { name: 'Ajouter un accompagnement' })).not.toHaveClass('is-selected')
+
     // 2 burgers (3500 chacun) + 1 frites (1500) = 8500.
     expect(screen.getAllByText(formatFCFA(8500)).length).toBeGreaterThan(0)
   })

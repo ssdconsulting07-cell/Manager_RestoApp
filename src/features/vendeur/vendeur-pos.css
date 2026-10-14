@@ -282,6 +282,21 @@
   background: #f3d9dd;
 }
 
+/* Rempli (plutot que pointille) des qu'un accompagnement est choisi, pour
+   distinguer d'un coup d'oeil, sur plusieurs lignes du meme produit,
+   celles qui en ont un de celles qui n'en ont pas encore (ex. deux
+   burgers, un seul avec frites). */
+.vendeur-panier-ligne-accomp-bouton.is-selected {
+  border-style: solid;
+  border-color: #a6192e;
+  background: #a6192e;
+  color: #fff;
+}
+
+.vendeur-panier-ligne-accomp-bouton.is-selected:hover {
+  background: #8a1426;
+}
+
 .vendeur-panier-ligne-total {
   min-width: 72px;
   color: #141414;
@@ -875,6 +890,16 @@
   border-color: #5c3038;
   background: #2a1a1d;
   color: #e14b64;
+}
+
+.manager-shell.is-dark .vendeur-panier-ligne-accomp-bouton.is-selected {
+  border-color: #e14b64;
+  background: #e14b64;
+  color: #1a1a1d;
+}
+
+.manager-shell.is-dark .vendeur-panier-ligne-accomp-bouton.is-selected:hover {
+  background: #c93f56;
 }
 
 .manager-shell.is-dark .vendeur-panier-ligne-total,

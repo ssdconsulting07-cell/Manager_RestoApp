@@ -138,10 +138,10 @@ export default function PanierPage({
                       {ligne.accompagnementEligible && (
                         <button
                           type="button"
-                          className="vendeur-panier-ligne-accomp-bouton"
+                          className={`vendeur-panier-ligne-accomp-bouton ${ligne.accompagnementNom ? 'is-selected' : ''}`}
                           onClick={() => setLigneAccompagnementOuverte(ligne.ligneId)}
                         >
-                          <i className="fa-solid fa-utensils" aria-hidden="true" />
+                          <i className={`fa-solid ${ligne.accompagnementNom ? 'fa-circle-check' : 'fa-utensils'}`} aria-hidden="true" />
                           {ligne.accompagnementNom ? `Accompagnement : ${ligne.accompagnementNom}` : 'Ajouter un accompagnement'}
                         </button>
                       )}

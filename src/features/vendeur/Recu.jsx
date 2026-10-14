@@ -135,9 +135,10 @@ function ouvrirEtImprimerTicket(vente, vendeurLabel) {
 // dans le detail de l'historique (HistoriqueVentes.jsx), pour un seul rendu a
 // maintenir. onNouvelleVente n'est fourni que dans le premier cas (juste
 // apres l'encaissement) : c'est ce qui distingue "vente fraichement payee" de
-// "consultation d'une vente passee". L'impression est manuelle uniquement —
-// bouton "Imprimer" — et s'ouvre dans un nouvel onglet dedie au ticket,
-// jamais sur la page Vente elle-meme (retour utilisateur).
+// "consultation d'une vente passee". Le bouton "Imprimer" est toujours
+// affiche (utile aussi depuis l'historique, pour reimprimer un ticket deja
+// encaisse — retour utilisateur) ; il ouvre un nouvel onglet dedie au
+// ticket, jamais la page courante.
 export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente }) {
   return (
     <div className="vendeur-recu">
@@ -197,15 +198,13 @@ export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente })
             Nouvelle vente
           </button>
         )}
-        {onNouvelleVente && (
-          <button
-            type="button"
-            className="manager-button manager-button-quiet"
-            onClick={() => ouvrirEtImprimerTicket(vente, vendeurLabel)}
-          >
-            Imprimer
-          </button>
-        )}
+        <button
+          type="button"
+          className="manager-button manager-button-quiet"
+          onClick={() => ouvrirEtImprimerTicket(vente, vendeurLabel)}
+        >
+          Imprimer
+        </button>
         {onFermer && (
           <button type="button" className="manager-button manager-button-quiet" onClick={onFermer}>
             Fermer

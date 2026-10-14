@@ -770,6 +770,13 @@
   font-size: 13px;
 }
 
+/* .manager-button n'annule pas le soulignement par defaut d'un <a> : ici
+   c'est un <Link> (bouton "Nouvelle vente"), donc on le retire explicitement
+   (retour utilisateur). */
+.vendeur-historique-nouvelle-vente {
+  text-decoration: none;
+}
+
 .vendeur-historique-stats {
   display: flex;
   flex-wrap: wrap;

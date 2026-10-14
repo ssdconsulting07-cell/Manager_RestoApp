@@ -21,10 +21,11 @@ function totalLignes(lignes) {
   return lignes.reduce((somme, l) => somme + l.prix * l.quantite, 0)
 }
 
-// Historique de demarrage pour le compte demo (sans backend) : quelques
-// ventes deja encaissees aujourd'hui, pour que l'historique et le dashboard
-// Vendeur ne soient pas vides a la premiere connexion.
-const SEED_VENDEUR = 'vendeur-demo'
+// Historique de demarrage pour le compte vendeur seede (voir StaffUserSeed
+// cote Backend_RestoApp) : quelques ventes deja encaissees aujourd'hui, pour
+// que l'historique et le dashboard Vendeur ne soient pas vides a la
+// premiere connexion.
+const SEED_VENDEUR = 'vendeur'
 
 function ilYA(minutes) {
   return new Date(Date.now() - minutes * 60000).toISOString()

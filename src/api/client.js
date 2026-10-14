@@ -27,7 +27,7 @@ function authHeaders() {
 
 async function handleResponse(res) {
   const token = getAuthToken()
-  if (res.status === 401 && token && token !== 'demo-cuisine-token') {
+  if (res.status === 401 && token) {
     clearAuthToken()
     window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT))
   }

@@ -42,7 +42,7 @@ function PasswordInput({ value, onChange, autoComplete, autoFocus, required, min
 }
 
 export default function Connexion() {
-  const { role, login, changeTemporaryPassword, loginDemoCuisine, loginDemoVendeur } = useAuth()
+  const { role, login, changeTemporaryPassword } = useAuth()
   const navigate = useNavigate()
   const from = useLocation().state?.from
   const [mode, setMode] = useState('login')
@@ -224,34 +224,6 @@ export default function Connexion() {
                 ? submitting ? 'Enregistrement…' : 'Enregistrer et accéder à mon espace'
                 : submitting ? 'Connexion…' : 'Se connecter'}
             </span>
-          </button>
-        )}
-
-        {mode === 'login' && (
-          <button
-            type="button"
-            className="auth-submit"
-            style={{ marginTop: 10, background: 'transparent', color: '#a6192e', border: '1px solid #e6c2c9' }}
-            onClick={() => {
-              const receivedRole = loginDemoCuisine()
-              navigate(destinationFor(receivedRole, from), { replace: true })
-            }}
-          >
-            <span>Entrer en démo Cuisine (sans backend)</span>
-          </button>
-        )}
-
-        {mode === 'login' && (
-          <button
-            type="button"
-            className="auth-submit"
-            style={{ marginTop: 10, background: 'transparent', color: '#a6192e', border: '1px solid #e6c2c9' }}
-            onClick={() => {
-              const receivedRole = loginDemoVendeur()
-              navigate(destinationFor(receivedRole, from), { replace: true })
-            }}
-          >
-            <span>Entrer en démo Vendeur (sans backend)</span>
           </button>
         )}
 

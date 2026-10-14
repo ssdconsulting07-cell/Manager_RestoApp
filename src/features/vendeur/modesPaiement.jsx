@@ -1,23 +1,29 @@
 // Modes de paiement acceptes au comptoir.
 //
-// Carte bancaire et Especes utilisent de vraies icones (Font Awesome, deja
-// charge par l'app — voir index.html) : Visa/Mastercard sont les logos reels
-// des reseaux, et le billet pour les especes est une icone standard (pas une
-// marque).
+// Carte bancaire, Orange Money et Especes utilisent de vrais logos :
+// - Visa et Mastercard : tracés reels recuperes depuis simple-icons
+//   (couleurs officielles appliquees ici — bleu Visa #1A1F71, cercles rouge
+//   #EB001B / orange #F79E1B de Mastercard avec fusion "multiply" pour la
+//   zone de recouvrement, comme sur les vraies cartes).
+// - Orange Money : le vrai logo de marque Orange (le repere carre avec
+//   l'encoche, identite "Orange is here" lancee en 2024), aussi depuis
+//   simple-icons.
+// - Especes : icone standard Font Awesome (billet), pas une marque.
 //
-// Orange Money utilise le vrai logo de marque Orange (le repere carre avec
-// l'encoche, identite "Orange is here" lancee en 2024), recupere depuis
 // simple-icons (github.com/simple-icons/simple-icons, licence MIT, tracés
-// verifies pour le respect des marques) — seul depot de logos accessible
-// depuis cet environnement : raw.githubusercontent.com est autorise par le
-// proxy, mais itunes.apple.com, les domaines Wikipedia/Wikimedia,
-// cdn.jsdelivr.net, unpkg.com, cdnjs.cloudflare.com et
-// avatars.githubusercontent.com sont bloques.
+// verifies pour le respect des marques) est le seul depot de logos
+// accessible depuis cet environnement : raw.githubusercontent.com est
+// autorise par le proxy, mais itunes.apple.com, les domaines
+// Wikipedia/Wikimedia, cdn.jsdelivr.net, unpkg.com, cdnjs.cloudflare.com,
+// avatars.githubusercontent.com, cdn.simpleicons.org, img.logo.dev,
+// logo.clearbit.com et cdn.brandfetch.io sont tous bloques.
 //
 // Wave et Mixx by Yas n'ont pas d'icone Font Awesome et ne sont pas dans
 // simple-icons (plusieurs variantes de nom testees : wave, wavemoney,
-// wave-money, mixx, mixxbyyas, freesenegal, yas — toutes en 404) : ce sont
-// des fintechs ouest-africaines trop recentes/niche pour ce depot. Leurs
+// wave-money, mixx, mixxbyyas, freesenegal, yas — toutes en 404), et les
+// services de logos alternatifs testes ci-dessus sont tous bloques par le
+// proxy : ce sont des fintechs ouest-africaines trop recentes/niche pour
+// ces depots, impossible d'obtenir leurs fichiers officiels ici. Leurs
 // badges restent des reconstitutions maison aux couleurs de marque reelles
 // (Wave = bleu nuit, Mixx by Yas = degrade violet/turquoise), pas des
 // emojis ni des icones generiques. Pour les logos officiels exacts, deposer
@@ -68,11 +74,42 @@ function MixxLogo() {
   )
 }
 
+function VisaLogo() {
+  // Trace reel du mot-symbole Visa (simple-icons, licence MIT), sur fond
+  // blanc, aux couleurs de marque (bleu Visa #1A1F71).
+  return (
+    <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true" focusable="false">
+      <rect width="48" height="48" rx="12" fill="#fff" />
+      <svg x="8" y="8" width="32" height="32" viewBox="0 0 24 24">
+        <path
+          fill="#1A1F71"
+          d="M9.112 8.262L5.97 15.758H3.92L2.374 9.775c-.094-.368-.175-.503-.461-.658C1.447 8.864.677 8.627 0 8.479l.046-.217h3.3a.904.904 0 01.894.764l.817 4.338 2.018-5.102zm8.033 5.049c.008-1.979-2.736-2.088-2.717-2.972.006-.269.262-.555.822-.628a3.66 3.66 0 011.913.336l.34-1.59a5.207 5.207 0 00-1.814-.333c-1.917 0-3.266 1.02-3.278 2.479-.012 1.079.963 1.68 1.698 2.04.756.367 1.01.603 1.006.931-.005.504-.602.725-1.16.734-.975.015-1.54-.263-1.992-.473l-.351 1.642c.453.208 1.289.39 2.156.398 2.037 0 3.37-1.006 3.377-2.564m5.061 2.447H24l-1.565-7.496h-1.656a.883.883 0 00-.826.55l-2.909 6.946h2.036l.405-1.12h2.488zm-2.163-2.656l1.02-2.815.588 2.815zm-8.16-4.84l-1.603 7.496H8.34l1.605-7.496z"
+        />
+      </svg>
+    </svg>
+  )
+}
+
+function MastercardLogo() {
+  // Les deux cercles entrelaces, aux couleurs officielles de la charte
+  // Mastercard (rouge #EB001B, orange #F79E1B, fusion "multiply" sur la
+  // zone de recouvrement pour obtenir la teinte orangee du vrai logo).
+  return (
+    <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true" focusable="false">
+      <rect width="48" height="48" rx="12" fill="#fff" />
+      <g style={{ isolation: 'isolate' }}>
+        <circle cx="19" cy="24" r="9" fill="#EB001B" />
+        <circle cx="29" cy="24" r="9" fill="#F79E1B" style={{ mixBlendMode: 'multiply' }} />
+      </g>
+    </svg>
+  )
+}
+
 function CarteBancaireLogo() {
   return (
     <span className="vendeur-paiement-mode-carte-icones" aria-hidden="true">
-      <i className="fa-brands fa-cc-visa" />
-      <i className="fa-brands fa-cc-mastercard" />
+      <VisaLogo />
+      <MastercardLogo />
     </span>
   )
 }

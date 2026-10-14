@@ -403,14 +403,12 @@
 }
 
 .vendeur-paiement-mode-carte-icones {
+  /* Visa et Mastercard sont maintenant deux vrais logos colores (badges SVG
+     a fond blanc, comme Wave/Orange Money/Mixx by Yas) : pas de recoloration
+     via currentColor ici, leur couleur de marque reste fixe, selectionne ou
+     non — meme logique que les 3 autres modes. */
   display: flex;
-  gap: 4px;
-  font-size: 22px;
-  color: #141414;
-}
-
-.vendeur-paiement-mode.is-selected .vendeur-paiement-mode-carte-icones {
-  color: #a6192e;
+  gap: 6px;
 }
 
 .vendeur-paiement-mode .fa-money-bill-wave {
@@ -913,12 +911,10 @@
   color: #e14b64;
 }
 
-.manager-shell.is-dark .vendeur-paiement-mode-carte-icones,
 .manager-shell.is-dark .vendeur-paiement-mode .fa-money-bill-wave {
   color: #f2f2f2;
 }
 
-.manager-shell.is-dark .vendeur-paiement-mode.is-selected .vendeur-paiement-mode-carte-icones,
 .manager-shell.is-dark .vendeur-paiement-mode.is-selected .fa-money-bill-wave {
   color: #e14b64;
 }

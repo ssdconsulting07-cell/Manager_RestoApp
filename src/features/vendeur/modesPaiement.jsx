@@ -1,6 +1,16 @@
 // Modes de paiement acceptes au comptoir.
 //
-// Carte bancaire, Orange Money et Especes utilisent de vrais logos :
+// Tous les modes utilisent de vrais logos :
+// - Wave : icone officielle de l'appli (le pingouin sur fond bleu ciel),
+//   recuperee sur wave.com (/img/favicon.png, PNG 192x192), servie depuis
+//   public/logos-paiement/wave.png. Wave ne publie pas de kit presse ni de
+//   version SVG.
+// - Mixx by Yas : logo officiel (mot "mixx" jaune + "By yas"), SVG recupere
+//   sur la page Mixx du site Yas Senegal (yas.sn/mixx-by-yas,
+//   wp-content/uploads/2025/09/Visuel-mixx-site-web_logo.svg), servi depuis
+//   public/logos-paiement/mixx-yas.svg, pose sur le bleu marine de la
+//   marque (#003881) comme sur leurs visuels. Mixx by Yas est l'ex Free
+//   Money de l'operateur Free, renomme Yas (groupe AXIAN) en 2024.
 // - Visa et Mastercard : tracés reels recuperes depuis simple-icons
 //   (couleurs officielles appliquees ici — bleu Visa #1A1F71, cercles rouge
 //   #EB001B / orange #F79E1B de Mastercard avec fusion "multiply" pour la
@@ -10,39 +20,13 @@
 //   simple-icons.
 // - Especes : icone standard Font Awesome (billet), pas une marque.
 //
-// simple-icons (github.com/simple-icons/simple-icons, licence MIT, tracés
-// verifies pour le respect des marques) est le seul depot de logos
-// accessible depuis cet environnement : raw.githubusercontent.com est
-// autorise par le proxy, mais itunes.apple.com, les domaines
-// Wikipedia/Wikimedia, cdn.jsdelivr.net, unpkg.com, cdnjs.cloudflare.com,
-// avatars.githubusercontent.com, cdn.simpleicons.org, img.logo.dev,
-// logo.clearbit.com et cdn.brandfetch.io sont tous bloques.
-//
-// Wave et Mixx by Yas n'ont pas d'icone Font Awesome et ne sont pas dans
-// simple-icons (plusieurs variantes de nom testees : wave, wavemoney,
-// wave-money, mixx, mixxbyyas, freesenegal, yas — toutes en 404), et les
-// services de logos alternatifs testes ci-dessus sont tous bloques par le
-// proxy : ce sont des fintechs ouest-africaines trop recentes/niche pour
-// ces depots, impossible d'obtenir leurs fichiers officiels ici. Leurs
-// badges restent des reconstitutions maison aux couleurs de marque reelles
-// (Wave = bleu nuit, Mixx by Yas = degrade violet/turquoise), pas des
-// emojis ni des icones generiques. Pour les logos officiels exacts, deposer
-// les fichiers dans public/logos-paiement/ (wave.svg, mixx-yas.svg) et
-// remplacer les composants *Logo correspondants par
-// <img src="/logos-paiement/....svg" alt="" />.
+// Les logos Wave et Mixx by Yas sont des fichiers statiques (public/), dans
+// le meme badge arrondi 26x26 que les logos SVG inline des autres modes.
 function WaveLogo() {
   return (
-    <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true" focusable="false">
-      <rect width="48" height="48" rx="12" fill="#001A72" />
-      <path
-        d="M7 28c2.6-6.4 5-6.4 7.5 0s4.9 6.4 7.5 0 4.9-6.4 7.5 0 4.9 6.4 7.5 0 4.9-6.4 7.5 0"
-        stroke="#fff"
-        strokeWidth="3"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <span className="vendeur-paiement-logo-badge" aria-hidden="true">
+      <img src="/logos-paiement/wave.png" alt="" />
+    </span>
   )
 }
 
@@ -61,16 +45,9 @@ function OrangeMoneyLogo() {
 
 function MixxLogo() {
   return (
-    <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="vendeur-mixx-grad" x1="0" y1="0" x2="48" y2="48">
-          <stop offset="0" stopColor="#7B2FF7" />
-          <stop offset="1" stopColor="#00C2A8" />
-        </linearGradient>
-      </defs>
-      <rect width="48" height="48" rx="12" fill="url(#vendeur-mixx-grad)" />
-      <text x="24" y="30" textAnchor="middle" fontSize="15" fontWeight="800" fill="#fff" fontFamily="inherit">Mixx</text>
-    </svg>
+    <span className="vendeur-paiement-logo-badge is-mixx" aria-hidden="true">
+      <img src="/logos-paiement/mixx-yas.svg" alt="" />
+    </span>
   )
 }
 

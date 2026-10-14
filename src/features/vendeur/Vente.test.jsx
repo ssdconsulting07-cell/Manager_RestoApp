@@ -78,12 +78,16 @@ describe('Vente (caisse Vendeur)', () => {
     fireEvent.change(screen.getByLabelText(/Montant reçu/), { target: { value: '5000' } })
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer le paiement' }))
 
-    expect(screen.getByText(/Ticket n°/)).toBeInTheDocument()
+    // Le recu affiche son propre "Ticket n°" et le toast de confirmation en
+    // reprend un second (« Vente encaissée — Ticket n° X. ») : getAllByText
+    // plutot que getByText, qui echouerait sur plusieurs correspondances.
+    expect(screen.getAllByText(/Ticket n°/).length).toBeGreaterThan(0)
     // Le total de la vente et la ligne unique partagent le meme montant (3500) :
     // getAllByText plutot que getByText, qui echouerait sur plusieurs correspondances.
     expect(screen.getAllByText(formatFCFA(3500)).length).toBeGreaterThan(0)
     expect(screen.getByText(formatFCFA(5000))).toBeInTheDocument()
     expect(screen.getByText(formatFCFA(1500))).toBeInTheDocument()
+    expect(screen.getByText(/Vente encaissée/)).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Nouvelle vente' }))
     expect(screen.getByText('Ketchup Burger Classique')).toBeInTheDocument()

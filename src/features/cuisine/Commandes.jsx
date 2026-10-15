@@ -127,7 +127,7 @@ export default function Commandes() {
 
         {filter !== 'TOUS' && (
           <p className="crud-filter-hint">
-            {counts.TOUS} commande{counts.TOUS > 1 ? 's' : ''} au total · cliquez à nouveau sur « {FILTER_LABELS[filter]} » pour tout réafficher
+            {counts.TOUS} commande{counts.TOUS > 1 ? 's' : ''} au total · appuyez à nouveau sur « {FILTER_LABELS[filter]} » pour tout réafficher
           </p>
         )}
 

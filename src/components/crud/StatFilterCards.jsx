@@ -15,7 +15,7 @@ export default function StatFilterCards({ items, selected, onSelect, ariaLabel =
           <span className="crud-filter-icon" aria-hidden="true"><i className={`fa-solid ${item.icon}`} /></span>
           <strong>{item.value}</strong>
           <span className="crud-filter-label">{item.label}</span>
-          {selected === item.key && <span className="crud-filter-selected">Sélectionné</span>}
+          {selected === item.key && <span className="crud-filter-selected" aria-hidden={toggleable ? 'true' : undefined}>Sélectionné</span>}
         </button>
       ))}
     </div>

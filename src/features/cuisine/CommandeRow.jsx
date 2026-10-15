@@ -40,10 +40,11 @@ const LABEL_COURT = {
  * badge de retard (20 min) s'applique donc a n'importe quelle etape, pas
  * seulement en preparation comme avant — une commande prete oubliee 20 min
  * en attente de retrait est tout aussi digne d'etre signalee.
- * emptyActionLabel s'affiche a la place du bouton d'action quand transitions
- * est vide (etape "Prêtes" : CUISINE n'a aucune transition sortante depuis
- * PRETE, voir transitions.js) pour confirmer l'etat plutot que de laisser
- * un espace vide.
+ * emptyActionLabel (+ emptyActionIcon) s'affiche a la place du bouton
+ * d'action quand transitions est vide (PRETE en retrait/comptoir, ou
+ * EN_LIVRAISON : CUISINE n'a aucune transition sortante depuis l'un ou
+ * l'autre, voir transitions.js) pour confirmer l'etat plutot que de
+ * laisser un espace vide.
  *
  * Partie depliee (cuisine-row-details) : retour utilisateur — trop serree
  * (photos 40px, texte 12-13px, pas de separation entre plats) pour un vrai
@@ -68,6 +69,7 @@ export default function CommandeRow({
   onTransition,
   showDuree = false,
   emptyActionLabel = null,
+  emptyActionIcon = 'fa-circle-check',
 }) {
   const [deplie, setDeplie] = useState(false)
   const [confirmation, setConfirmation] = useState(null)
@@ -75,6 +77,7 @@ export default function CommandeRow({
   const urgente = showDuree && Date.now() - new Date(commande.creeLe).getTime() > 20 * 60_000
   const enPreparation = commande.statut === 'EN_PREPARATION'
   const prete = commande.statut === 'PRETE'
+  const enLivraison = commande.statut === 'EN_LIVRAISON'
   const lignes = commande.lignes || []
   const duree = formatDuree(commande.creeLe)
   const texteDuree = duree === 'À l’instant' ? duree : `il y a ${duree}`
@@ -89,7 +92,7 @@ export default function CommandeRow({
 
   return (
     <article
-      className={`cuisine-row${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}${urgente ? ' is-urgent' : ''}${deplie ? ' is-expanded' : ''}`}
+      className={`cuisine-row${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}${enLivraison ? ' is-delivering' : ''}${urgente ? ' is-urgent' : ''}${deplie ? ' is-expanded' : ''}`}
     >
       <div className="cuisine-row-head" onClick={() => setDeplie((v) => !v)}>
         <div className="cuisine-row-top">
@@ -141,7 +144,7 @@ export default function CommandeRow({
               ))
             ) : emptyActionLabel ? (
               <span className="cuisine-row-ready-note">
-                <i className="fa-solid fa-circle-check" aria-hidden="true" />
+                <i className={`fa-solid ${emptyActionIcon}`} aria-hidden="true" />
                 {emptyActionLabel}
               </span>
             ) : null}
@@ -218,7 +221,7 @@ export default function CommandeRow({
       {confirmation && (
         <ConfirmModal
           title="Envoyer cette commande au livreur ?"
-          message={`La commande #${ticketId} sera marquée « En livraison » et quittera le tableau cuisine. Cette action ne peut pas être annulée.`}
+          message={`La commande #${ticketId} sera marquée « En livraison » et visible sous ce filtre jusqu'à sa livraison. Cette action ne peut pas être annulée.`}
           confirmLabel="Envoyer"
           tone="warning"
           icon="fa-motorcycle"

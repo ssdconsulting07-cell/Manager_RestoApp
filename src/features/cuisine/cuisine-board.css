@@ -82,6 +82,13 @@
   --card-accent: #1f6f57;
 }
 
+/* Etape "En livraison" : commande envoyee au livreur, reste visible sur le
+   tableau (retour utilisateur) — accent bleu distinct, coherent avec le
+   badge App/canal (voir cuisine-row-pill.is-canal). */
+.cuisine-row.is-delivering {
+  --card-accent: #2f6fed;
+}
+
 .cuisine-row.is-urgent {
   --card-accent: #a6192e;
   border-color: #e6c2c9;
@@ -470,6 +477,10 @@
 
 .manager-shell.is-dark .cuisine-row.is-ready {
   --card-accent: #3fae84;
+}
+
+.manager-shell.is-dark .cuisine-row.is-delivering {
+  --card-accent: #7c9dfb;
 }
 
 .manager-shell.is-dark .cuisine-row.is-expanded .cuisine-row-head {

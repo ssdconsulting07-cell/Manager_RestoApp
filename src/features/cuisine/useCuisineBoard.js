@@ -5,16 +5,20 @@ import { STATUT_LABELS } from '../../auth/transitions.js'
 import { avecDemoSiVide, getDemoCommandes, isDemoId, mergeProduitsDemo, patchDemoStatut } from './cuisineDemo.js'
 import { REFRESH_MS, filtrerParStatuts, mapProduitsParId } from './cuisineUtils.js'
 
-// Les 3 statuts geres par le poste cuisine, dans l'ordre du flux.
-const STATUTS_CUISINE = ['PAYEE', 'EN_PREPARATION', 'PRETE']
+// Les 4 statuts geres par le poste cuisine, dans l'ordre du flux.
+const STATUTS_CUISINE = ['PAYEE', 'EN_PREPARATION', 'PRETE', 'EN_LIVRAISON']
 
 /**
- * Charge / rafraichit les commandes cuisine pour le tableau unique a 3
- * colonnes (Recues / En preparation / Pretes) — retour utilisateur sur
- * l'ancien decoupage en 2 pages (Commandes.jsx / Preparation.jsx) qui
- * obligeait a changer d'ecran pour suivre un seul ticket, et qui ne
- * montrait nulle part les commandes PRETE (elles disparaissaient purement
- * et simplement de la vue une fois marquees pretes).
+ * Charge / rafraichit les commandes cuisine pour le tableau unique a 4
+ * colonnes (Recues / En preparation / Pretes / En livraison) — retour
+ * utilisateur sur l'ancien decoupage en 2 pages (Commandes.jsx /
+ * Preparation.jsx) qui obligeait a changer d'ecran pour suivre un seul
+ * ticket, et qui ne montrait nulle part les commandes PRETE (elles
+ * disparaissaient purement et simplement de la vue une fois marquees
+ * pretes). EN_LIVRAISON a rejoint la liste pour la meme raison (retour
+ * utilisateur) : une commande envoyee au livreur ne doit pas non plus
+ * disparaitre du tableau — seule LIVREE (vraiment livree, role LIVREUR,
+ * hors de ce tableau) sort pour de bon.
  *
  * Branche deja : GET /commandes, GET /produits, PATCH /commandes/:id/statut.
  * La demo ne s'active que si aucune commande active n'arrive (voir

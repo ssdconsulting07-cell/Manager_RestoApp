@@ -13,6 +13,10 @@ export const STATUT_META = {
   PAYEE: { label: 'Reçue', icon: 'fa-receipt', accent: '#9c6b0c', accentBg: '#f6ecd9' },
   EN_PREPARATION: { label: 'En préparation', icon: 'fa-fire-burner', accent: '#141414', accentBg: '#ececea' },
   PRETE: { label: 'Prête', icon: 'fa-circle-check', accent: '#1f6f57', accentBg: '#e2f2ec' },
+  // Commande envoyee au livreur (voir transitions.js) : retour utilisateur —
+  // ne doit plus disparaitre du tableau cuisine une fois envoyee, comme
+  // PRETE auparavant (meme bug, meme correction, voir useCuisineBoard.js).
+  EN_LIVRAISON: { label: 'En livraison', icon: 'fa-motorcycle', accent: '#2f6fed', accentBg: '#e8eefc' },
 }
 
 const PHOTO_FALLBACK =

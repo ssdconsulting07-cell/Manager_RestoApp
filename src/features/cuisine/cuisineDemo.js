@@ -34,7 +34,7 @@ function minutesAgo(n) {
   return new Date(Date.now() - n * 60_000).toISOString()
 }
 
-const DEMO_VERSION = 6
+const DEMO_VERSION = 7
 
 const DEMO_SEED = [
   // --- File d'attente (PAYEE) ---
@@ -192,6 +192,18 @@ const DEMO_SEED = [
       { produitId: 'p-dessert', quantite: 2 },
     ],
   },
+  // --- En livraison (reste visible, ne disparait plus — retour utilisateur) ---
+  {
+    id: 'demo-1042',
+    statut: 'EN_LIVRAISON',
+    canal: 'APP',
+    mode: 'LIVRAISON',
+    creeLe: minutesAgo(44),
+    lignes: [
+      { produitId: 'p-wrap', quantite: 1 },
+      { produitId: 'p-jus', quantite: 1 },
+    ],
+  },
 ]
 
 /** @type {{ version: number, active: boolean, commandes: typeof DEMO_SEED } | null} */
@@ -226,7 +238,7 @@ export function patchDemoStatut(id, statut) {
 export function avecDemoSiVide(commandesApi) {
   const liste = Array.isArray(commandesApi) ? commandesApi : []
   const aActives = liste.some(
-    (c) => c.statut === 'PAYEE' || c.statut === 'EN_PREPARATION' || c.statut === 'PRETE',
+    (c) => c.statut === 'PAYEE' || c.statut === 'EN_PREPARATION' || c.statut === 'PRETE' || c.statut === 'EN_LIVRAISON',
   )
   if (aActives) {
     demoState = { version: DEMO_VERSION, active: false, commandes: [] }

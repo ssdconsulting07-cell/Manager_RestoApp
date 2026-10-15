@@ -14,9 +14,12 @@ import './cuisine-board.css'
 // Tableau du poste cuisine, aligne sur le meme patron que les autres listes
 // de l'appli (Produits, Journal d'audit, ...) : cartes de statistiques qui
 // servent aussi de filtres, barre de recherche, grille de cartes, pagination
-// — retour utilisateur. Les 3 etapes (recue / en preparation / prete) ne
-// sont plus 3 colonnes paralleles mais un seul statut filtrable a la fois.
-// Pas de carte "Toutes" (retour utilisateur) : seulement les 3 cartes de
+// — retour utilisateur. Les 4 etapes (recue / en preparation / prete / en
+// livraison) ne sont plus des colonnes paralleles mais un seul statut
+// filtrable a la fois. EN_LIVRAISON a rejoint les 3 etapes d'origine pour
+// la meme raison qu'elles (retour utilisateur) : une commande envoyee au
+// livreur ne doit pas disparaitre du tableau (voir useCuisineBoard.js).
+// Pas de carte "Toutes" (retour utilisateur) : seulement les cartes de
 // statut, toujours une seule active a la fois — exactement comme Produits/
 // Categories/Annonces (voir changerFiltre). Il y a eu une version
 // intermediaire ou re-cliquer la carte active desactivait le filtre pour
@@ -32,10 +35,21 @@ const FILTER_DEFS = [
   { key: 'PAYEE', ...STATUT_META.PAYEE, label: 'Reçues' },
   { key: 'EN_PREPARATION', ...STATUT_META.EN_PREPARATION },
   { key: 'PRETE', ...STATUT_META.PRETE, label: 'Prêtes' },
+  { key: 'EN_LIVRAISON', ...STATUT_META.EN_LIVRAISON },
 ]
 
 const FILTER_LABELS = Object.fromEntries(FILTER_DEFS.map((f) => [f.key, f.label]))
 const ROWS_OPTIONS = [5, 10, 25]
+
+// Note statique affichee a la place du bouton d'action quand CUISINE n'a
+// aucune transition sortante (voir transitions.js) : PRETE en mode retrait/
+// comptoir (rien a faire, client vient chercher) et EN_LIVRAISON (rien a
+// faire non plus, c'est au tour de LIVREUR). PRETE en mode livraison a sa
+// propre transition ("Envoyer au livreur"), donc ne passe jamais par ici.
+const EMPTY_ACTION = {
+  PRETE: { label: 'En attente de retrait', icon: 'fa-circle-check' },
+  EN_LIVRAISON: { label: 'En livraison', icon: 'fa-motorcycle' },
+}
 
 function correspondRecherche(commande, produits, query) {
   if (!query) return true
@@ -86,7 +100,7 @@ export default function Commandes() {
   }
 
   const counts = useMemo(() => {
-    const parStatut = { PAYEE: 0, EN_PREPARATION: 0, PRETE: 0 }
+    const parStatut = { PAYEE: 0, EN_PREPARATION: 0, PRETE: 0, EN_LIVRAISON: 0 }
     for (const commande of commandes) parStatut[commande.statut] += 1
     return parStatut
   }, [commandes])
@@ -122,13 +136,16 @@ export default function Commandes() {
       </section>
 
       <section>
-        {/* 3 cartes de statut, toujours une seule active (voir changerFiltre
-            plus haut) — grille par defaut (3 colonnes), comme Produits. */}
+        {/* 4 cartes de statut, toujours une seule active (voir changerFiltre
+            plus haut) — is-4col (meme variante que Vente.jsx) plutot que la
+            grille 3 colonnes par defaut, depuis l'ajout de la carte
+            "En livraison". */}
         <StatFilterCards
           items={FILTER_DEFS.map((f) => ({ ...f, value: counts[f.key] }))}
           selected={filter}
           onSelect={changerFiltre}
           ariaLabel="Filtrer les commandes par statut"
+          className="is-4col"
         />
 
         <div className="crud-toolbar">
@@ -191,7 +208,8 @@ export default function Commandes() {
                 transitions={allowedTransitions(commande, role)}
                 pending={pendingId === commande.id}
                 onTransition={(statut) => changerStatut(commande, statut)}
-                emptyActionLabel={commande.statut === 'PRETE' ? 'En attente de retrait' : null}
+                emptyActionLabel={EMPTY_ACTION[commande.statut]?.label ?? null}
+                emptyActionIcon={EMPTY_ACTION[commande.statut]?.icon}
               />
             ))}
           </div>

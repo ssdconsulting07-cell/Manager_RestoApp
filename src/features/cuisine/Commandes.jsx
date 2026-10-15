@@ -14,11 +14,13 @@ import './cuisine-board.css'
 // Tableau du poste cuisine, aligne sur le meme patron que les autres listes
 // de l'appli (Produits, Journal d'audit, ...) : cartes de statistiques qui
 // servent aussi de filtres, barre de recherche, grille de cartes, pagination
-// — retour utilisateur. Les 4 etapes (recue / en preparation / prete / en
-// livraison) ne sont plus des colonnes paralleles mais un seul statut
-// filtrable a la fois. EN_LIVRAISON a rejoint les 3 etapes d'origine pour
-// la meme raison qu'elles (retour utilisateur) : une commande envoyee au
-// livreur ne doit pas disparaitre du tableau (voir useCuisineBoard.js).
+// — retour utilisateur. Seulement 3 cartes de statut (recue / en
+// preparation / prete) : EN_LIVRAISON ne forme pas une 4e carte a part
+// (retour utilisateur explicite : "laisse ça en prête") — une commande
+// envoyee au livreur reste rangee sous le filtre "Prêtes" (voir counts et
+// filtrees plus bas), avec juste une note "En livraison" a la place du
+// bouton d'action (voir EMPTY_ACTION et CommandeRow.jsx) pour la
+// distinguer visuellement sans lui dedier son propre filtre.
 // Pas de carte "Toutes" (retour utilisateur) : seulement les cartes de
 // statut, toujours une seule active a la fois — exactement comme Produits/
 // Categories/Annonces (voir changerFiltre). Il y a eu une version
@@ -35,7 +37,6 @@ const FILTER_DEFS = [
   { key: 'PAYEE', ...STATUT_META.PAYEE, label: 'Reçues' },
   { key: 'EN_PREPARATION', ...STATUT_META.EN_PREPARATION },
   { key: 'PRETE', ...STATUT_META.PRETE, label: 'Prêtes' },
-  { key: 'EN_LIVRAISON', ...STATUT_META.EN_LIVRAISON },
 ]
 
 const FILTER_LABELS = Object.fromEntries(FILTER_DEFS.map((f) => [f.key, f.label]))
@@ -99,15 +100,28 @@ export default function Commandes() {
     }
   }
 
+  // EN_LIVRAISON compte avec PRETE (une seule carte "Prêtes" pour les deux,
+  // voir FILTER_DEFS plus haut) : la commande envoyee au livreur reste
+  // comptee ici, pas sous une carte separee.
   const counts = useMemo(() => {
-    const parStatut = { PAYEE: 0, EN_PREPARATION: 0, PRETE: 0, EN_LIVRAISON: 0 }
-    for (const commande of commandes) parStatut[commande.statut] += 1
+    const parStatut = { PAYEE: 0, EN_PREPARATION: 0, PRETE: 0 }
+    for (const commande of commandes) {
+      const cle = commande.statut === 'EN_LIVRAISON' ? 'PRETE' : commande.statut
+      if (parStatut[cle] !== undefined) parStatut[cle] += 1
+    }
     return parStatut
   }, [commandes])
 
+  // Meme logique : le filtre "PRETE" englobe aussi EN_LIVRAISON, pour que
+  // la commande reste visible au meme endroit une fois envoyee au livreur
+  // (voir le commentaire sur FILTER_DEFS).
   const filtrees = useMemo(() => {
     const query = search.trim().toLowerCase()
-    return commandes.filter((c) => c.statut === filter && correspondRecherche(c, produits, query))
+    return commandes.filter(
+      (c) =>
+        (c.statut === filter || (filter === 'PRETE' && c.statut === 'EN_LIVRAISON')) &&
+        correspondRecherche(c, produits, query),
+    )
   }, [commandes, filter, search, produits])
 
   // filtrees retrecit toute seule (rafraichissement 15 s, retrait, changement
@@ -136,16 +150,14 @@ export default function Commandes() {
       </section>
 
       <section>
-        {/* 4 cartes de statut, toujours une seule active (voir changerFiltre
-            plus haut) — is-4col (meme variante que Vente.jsx) plutot que la
-            grille 3 colonnes par defaut, depuis l'ajout de la carte
-            "En livraison". */}
+        {/* 3 cartes de statut, toujours une seule active (voir changerFiltre
+            plus haut) — EN_LIVRAISON n'a pas sa propre carte (retour
+            utilisateur), elle est comptee avec "Prêtes" (voir counts). */}
         <StatFilterCards
           items={FILTER_DEFS.map((f) => ({ ...f, value: counts[f.key] }))}
           selected={filter}
           onSelect={changerFiltre}
           ariaLabel="Filtrer les commandes par statut"
-          className="is-4col"
         />
 
         <div className="crud-toolbar">

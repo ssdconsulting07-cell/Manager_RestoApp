@@ -221,7 +221,7 @@ export default function CommandeRow({
       {confirmation && (
         <ConfirmModal
           title="Envoyer cette commande au livreur ?"
-          message={`La commande #${ticketId} sera marquée « En livraison » et visible sous ce filtre jusqu'à sa livraison. Cette action ne peut pas être annulée.`}
+          message={`La commande #${ticketId} sera marquée « En livraison » et restera visible sous « Prêtes » jusqu'à sa livraison. Cette action ne peut pas être annulée.`}
           confirmLabel="Envoyer"
           tone="warning"
           icon="fa-motorcycle"

@@ -7,6 +7,7 @@ import {
   nomProduit,
   noteCommande,
   photoProduit,
+  resumePlats,
   textePersonnalisation,
 } from './cuisineUtils.js'
 
@@ -53,63 +54,70 @@ export default function CommandeRow({
       className={`cuisine-row${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}${urgente ? ' is-urgent' : ''}${deplie ? ' is-expanded' : ''}`}
     >
       <div className="cuisine-row-head">
-        <div className="cuisine-row-info">
-          <span className="cuisine-row-id">#{ticketId}</span>
-          {statutMeta && (
-            <span
-              className={`cuisine-row-status${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}`}
-              style={{ '--status-accent': statutMeta.accent, '--status-bg': statutMeta.accentBg }}
-            >
-              <i className={`fa-solid ${statutMeta.icon}`} aria-hidden="true" />
-              {statutMeta.label}
-            </span>
-          )}
-          <span className="cuisine-row-pill">
-            <i
-              className={`fa-solid ${commande.mode === 'LIVRAISON' ? 'fa-motorcycle' : 'fa-bag-shopping'}`}
-              aria-hidden="true"
-            />
-            {modeLabel(commande.mode)}
-          </span>
-          <span className={`cuisine-row-pill is-time${urgente ? ' is-late' : ''}`}>
-            <i className="fa-solid fa-clock" aria-hidden="true" />
-            {formatHeure(commande.creeLe)}
-            {showDuree ? ` · ${formatDuree(commande.creeLe)}` : ''}
-          </span>
-          {urgente && <span className="cuisine-row-pill is-alert">Priorité</span>}
-        </div>
-
-        <div className="cuisine-row-primary">
-          {transitions.length > 0 ? (
-            transitions.map((t) => (
-              <button
-                key={t.to}
-                type="button"
-                disabled={pending}
-                onClick={() => onTransition(t.to)}
-                className="manager-button manager-button-primary"
+        <div className="cuisine-row-top">
+          <div className="cuisine-row-info">
+            <span className="cuisine-row-id">#{ticketId}</span>
+            {statutMeta && (
+              <span
+                className={`cuisine-row-status${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}`}
+                style={{ '--status-accent': statutMeta.accent, '--status-bg': statutMeta.accentBg }}
               >
-                {pending ? '…' : LABEL_COURT[t.to] || t.label}
-              </button>
-            ))
-          ) : emptyActionLabel ? (
-            <span className="cuisine-row-ready-note">
-              <i className="fa-solid fa-circle-check" aria-hidden="true" />
-              {emptyActionLabel}
+                <i className={`fa-solid ${statutMeta.icon}`} aria-hidden="true" />
+                {statutMeta.label}
+              </span>
+            )}
+            <span className="cuisine-row-pill">
+              <i
+                className={`fa-solid ${commande.mode === 'LIVRAISON' ? 'fa-motorcycle' : 'fa-bag-shopping'}`}
+                aria-hidden="true"
+              />
+              {modeLabel(commande.mode)}
             </span>
-          ) : null}
+            <span className={`cuisine-row-pill is-time${urgente ? ' is-late' : ''}`}>
+              <i className="fa-solid fa-clock" aria-hidden="true" />
+              {formatHeure(commande.creeLe)}
+              {showDuree ? ` · ${formatDuree(commande.creeLe)}` : ''}
+            </span>
+            {urgente && <span className="cuisine-row-pill is-alert">Priorité</span>}
+          </div>
+
+          <div className="cuisine-row-primary">
+            {transitions.length > 0 ? (
+              transitions.map((t) => (
+                <button
+                  key={t.to}
+                  type="button"
+                  disabled={pending}
+                  onClick={() => onTransition(t.to)}
+                  className="manager-button manager-button-primary"
+                >
+                  {pending ? '…' : LABEL_COURT[t.to] || t.label}
+                </button>
+              ))
+            ) : emptyActionLabel ? (
+              <span className="cuisine-row-ready-note">
+                <i className="fa-solid fa-circle-check" aria-hidden="true" />
+                {emptyActionLabel}
+              </span>
+            ) : null}
+          </div>
+
+          <button
+            type="button"
+            className="cuisine-row-toggle"
+            onClick={() => setDeplie((v) => !v)}
+            aria-expanded={deplie}
+            aria-controls={detailsId}
+            aria-label={deplie ? `Masquer le détail de la commande ${ticketId}` : `Voir le détail de la commande ${ticketId}`}
+          >
+            <i className={`fa-solid ${deplie ? 'fa-chevron-up' : 'fa-chevron-down'}`} aria-hidden="true" />
+          </button>
         </div>
 
-        <button
-          type="button"
-          className="cuisine-row-toggle"
-          onClick={() => setDeplie((v) => !v)}
-          aria-expanded={deplie}
-          aria-controls={detailsId}
-          aria-label={deplie ? `Masquer le détail de la commande ${ticketId}` : `Voir le détail de la commande ${ticketId}`}
-        >
-          <i className={`fa-solid ${deplie ? 'fa-chevron-up' : 'fa-chevron-down'}`} aria-hidden="true" />
-        </button>
+        {/* Toujours visible, meme repliee : retour utilisateur — sans ça,
+            le personnel ne voit plus du tout quoi preparer sans deplier
+            chaque ticket un par un en plein service. */}
+        <p className="cuisine-row-summary">{resumePlats(lignes, produits)}</p>
       </div>
 
       {deplie && (

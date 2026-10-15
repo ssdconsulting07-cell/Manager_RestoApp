@@ -44,14 +44,20 @@
 
 .cuisine-row-head {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 6px;
   padding: 12px 14px;
 }
 
 .cuisine-row.is-expanded .cuisine-row-head {
   border-bottom: 1px solid #f0ece9;
+}
+
+.cuisine-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 }
 
 .cuisine-row-info {
@@ -61,6 +67,18 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+}
+
+/* Resume des plats (voir resumePlats dans cuisineUtils.js) : seule info
+   sur les plats encore visible une fois la ligne repliee. Tronque sur une
+   ligne — le detail complet reste a un clic via cuisine-row-toggle. */
+.cuisine-row-summary {
+  overflow: hidden;
+  margin: 0;
+  color: #6b6b6b;
+  font-size: 12.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cuisine-row-id {
@@ -358,6 +376,10 @@
 }
 
 .manager-shell.is-dark .cuisine-row-line-copy span {
+  color: #9a9a9e;
+}
+
+.manager-shell.is-dark .cuisine-row-summary {
   color: #9a9a9e;
 }
 

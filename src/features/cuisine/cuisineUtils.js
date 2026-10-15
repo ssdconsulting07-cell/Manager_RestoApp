@@ -103,6 +103,21 @@ export function nomProduit(produits, produitId) {
   return ficheProduit(produits, produitId)?.nom || `Produit ${produitId}`
 }
 
+/** Resume compact des plats d'une commande, ex. "2× Burger, 1× Frites +1" —
+ * partage entre l'apercu du tableau de bord (CuisineDashboard.jsx) et
+ * l'en-tete repliee d'une ligne de commande (CommandeRow.jsx) : les deux
+ * doivent donner une idee de ce qu'il y a a preparer sans tout deplier
+ * (retour utilisateur : repliee par defaut, une ligne de commande ne
+ * montrait plus du tout les plats). Les `max` premiers sont nommes, le
+ * reste est juste compte. */
+export function resumePlats(lignes, produits, max = 2) {
+  const liste = lignes || []
+  if (liste.length === 0) return 'Sans lignes'
+  const nommes = liste.slice(0, max).map((l) => `${l.quantite}× ${nomProduit(produits, l.produitId)}`)
+  const reste = liste.length - nommes.length
+  return reste > 0 ? `${nommes.join(', ')} +${reste}` : nommes.join(', ')
+}
+
 export function photoProduit(produits, produitId) {
   const fiche = ficheProduit(produits, produitId)
   return fiche?.photo || fiche?.image || fiche?.imageUrl || PHOTO_FALLBACK

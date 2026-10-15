@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import Toast from '../../components/Toast.jsx'
 import { KpiCard, formatRelativeTime } from '../../components/dashboard/DashboardWidgets.jsx'
-import { nomProduit } from './cuisineUtils.js'
+import { resumePlats } from './cuisineUtils.js'
 import { useAlerteNouvelleCommande } from './useAlerteNouvelleCommande.js'
 import { useCuisineBoard } from './useCuisineBoard.js'
 
@@ -71,30 +71,24 @@ export default function CuisineDashboard() {
           </p>
         ) : (
           <ul className="dashboard-activity-list">
-            {apercu.map((c) => {
-              const premiere = c.lignes?.[0]
-              return (
-                <li key={c.id}>
-                  <Link className="dashboard-activity-row" to="/commandes">
-                    <span className="dashboard-activity-icon" aria-hidden="true">
-                      <i className={`fa-solid ${c.statut === 'EN_PREPARATION' ? 'fa-fire-burner' : 'fa-receipt'}`} />
+            {apercu.map((c) => (
+              <li key={c.id}>
+                <Link className="dashboard-activity-row" to="/commandes">
+                  <span className="dashboard-activity-icon" aria-hidden="true">
+                    <i className={`fa-solid ${c.statut === 'EN_PREPARATION' ? 'fa-fire-burner' : 'fa-receipt'}`} />
+                  </span>
+                  <span className="dashboard-activity-text">
+                    <strong>#{String(c.id).replace(/^demo-/, '')}</strong>
+                    <span>
+                      {resumePlats(c.lignes, produits)}
+                      {' · '}
+                      {c.statut === 'EN_PREPARATION' ? 'En préparation' : 'Reçue'}
                     </span>
-                    <span className="dashboard-activity-text">
-                      <strong>#{String(c.id).replace(/^demo-/, '')}</strong>
-                      <span>
-                        {premiere
-                          ? `${premiere.quantite}× ${nomProduit(produits, premiere.produitId)}`
-                          : 'Sans lignes'}
-                        {(c.lignes?.length || 0) > 1 ? ` +${c.lignes.length - 1}` : ''}
-                        {' · '}
-                        {c.statut === 'EN_PREPARATION' ? 'En préparation' : 'Reçue'}
-                      </span>
-                    </span>
-                    <span className="dashboard-activity-time">{formatRelativeTime(c.creeLe)}</span>
-                  </Link>
-                </li>
-              )
-            })}
+                  </span>
+                  <span className="dashboard-activity-time">{formatRelativeTime(c.creeLe)}</span>
+                </Link>
+              </li>
+            ))}
           </ul>
         )}
       </section>

@@ -224,8 +224,8 @@
 .cuisine-row-details {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px 14px 14px;
+  gap: 18px;
+  padding: 18px 20px 20px;
   animation: cuisine-row-details-in 160ms ease;
 }
 
@@ -239,10 +239,22 @@
   }
 }
 
+/* Libelle de section (retour utilisateur : la partie depliee doit se lire
+   comme un vrai detail de commande, pas une continuation compacte de la
+   ligne — un titre explicite plutot que d'enchainer directement la liste. */
+.cuisine-row-section-title {
+  margin: 0 0 12px;
+  color: #9a9a9e;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .cuisine-row-lines {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -250,20 +262,30 @@
 
 .cuisine-row-line {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: 60px minmax(0, 1fr);
+  gap: 14px;
   align-items: start;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f0ece9;
+}
+
+.cuisine-row-line:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 /* Une photo par plat : chaque ligne de la commande a sa propre miniature,
    plutot qu'une collette de 1 a 3 photos sans lien visible avec chaque
-   plat quand la commande en compte plusieurs (retour utilisateur). */
+   plat quand la commande en compte plusieurs (retour utilisateur). Taille
+   remontee a 60px (etait 40px) : trop petite pour reconnaitre le plat d'un
+   coup d'œil une fois depliee (retour utilisateur — "prend l'espace
+   normal"). */
 .cuisine-row-line-photo {
   position: relative;
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
   overflow: hidden;
   background: #efeae7;
 }
@@ -280,7 +302,7 @@
   display: grid;
   place-items: center;
   color: #b5a79f;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .cuisine-row-line-qty {
@@ -288,15 +310,15 @@
   right: -4px;
   bottom: -4px;
   display: inline-grid;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
   place-items: center;
   border-radius: 999px;
   border: 2px solid #fff;
   background: #a6192e;
   color: #fff;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
 }
 
@@ -304,18 +326,23 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 2px;
+  justify-content: center;
+  gap: 5px;
 }
 
 .cuisine-row-line-copy strong {
-  font-size: 13px;
+  color: #141414;
+  font-size: 15px;
   line-height: 1.3;
 }
 
 .cuisine-row-line-copy span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   color: #6b6b6b;
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 /* Accompagnement choisi (ex. "Frites" sur un burger) : distinct de la
@@ -330,25 +357,37 @@
 
 .cuisine-row-line-accomp i {
   color: #9c6b0c;
-  margin-right: 2px;
+}
+
+.cuisine-row-line-perso i {
+  color: #a6192e;
 }
 
 .cuisine-row-note {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  border-radius: 10px;
-  padding: 9px 10px;
+  gap: 10px;
+  border-radius: 12px;
+  padding: 12px 14px;
   color: #6b5310;
   background: #fff8e8;
   border: 1px solid #f0d9a0;
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .cuisine-row-note i {
-  margin-top: 2px;
+  margin-top: 3px;
   color: #a6192e;
+}
+
+.cuisine-row-note-title {
+  margin: 0 0 3px;
+  color: #9c6b0c;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .manager-shell.is-dark .cuisine-row {
@@ -418,12 +457,24 @@
   border-color: rgba(225, 75, 100, 0.35);
 }
 
+.manager-shell.is-dark .cuisine-row-section-title {
+  color: #7a7a7e;
+}
+
+.manager-shell.is-dark .cuisine-row-line {
+  border-bottom-color: #2a2a2e;
+}
+
 .manager-shell.is-dark .cuisine-row-line-photo {
   background: #2a2a2e;
 }
 
 .manager-shell.is-dark .cuisine-row-line-qty {
   border-color: #1c1c20;
+}
+
+.manager-shell.is-dark .cuisine-row-line-copy strong {
+  color: #f2f2f2;
 }
 
 .manager-shell.is-dark .cuisine-row-line-copy span {
@@ -438,6 +489,10 @@
   color: #d69a2d;
 }
 
+.manager-shell.is-dark .cuisine-row-line-perso i {
+  color: #e14b64;
+}
+
 .manager-shell.is-dark .cuisine-row-summary {
   color: #9a9a9e;
 }
@@ -446,4 +501,8 @@
   color: #f3d9a4;
   background: rgba(214, 154, 45, 0.12);
   border-color: rgba(214, 154, 45, 0.28);
+}
+
+.manager-shell.is-dark .cuisine-row-note-title {
+  color: #d69a2d;
 }

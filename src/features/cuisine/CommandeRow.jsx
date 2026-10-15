@@ -35,7 +35,15 @@ const LABEL_COURT = {
  * emptyActionLabel s'affiche a la place du bouton d'action quand transitions
  * est vide (etape "Prêtes" : CUISINE n'a aucune transition sortante depuis
  * PRETE, voir transitions.js) pour confirmer l'etat plutot que de laisser
- * un espace vide. */
+ * un espace vide.
+ *
+ * Partie depliee (cuisine-row-details) : retour utilisateur — trop serree
+ * (photos 40px, texte 12-13px, pas de separation entre plats) pour un vrai
+ * detail de commande en cuisine. Espacement et tailles alignes sur le reste
+ * de l'appli (cf. crud-filter-card) plutot que sur la ligne compacte
+ * au-dessus, avec un libelle de section ("Plats commandes (N)"), un
+ * separateur entre chaque plat et un libelle "Note du client" explicite
+ * plutot qu'une simple icone. */
 export default function CommandeRow({
   commande,
   produits,
@@ -141,34 +149,44 @@ export default function CommandeRow({
 
       {deplie && (
         <div className="cuisine-row-details" id={detailsId}>
-          <ul className="cuisine-row-lines">
-            {lignes.map((ligne, i) => {
-              const perso = textePersonnalisation(ligne)
-              const accompagnement = texteAccompagnement(ligne)
-              return (
-                <li key={i} className="cuisine-row-line">
-                  <span className="cuisine-row-line-photo">
-                    <CoverPhoto src={photoProduit(produits, ligne.produitId)} />
-                    <span className="cuisine-row-line-qty">{ligne.quantite}×</span>
-                  </span>
-                  <div className="cuisine-row-line-copy">
-                    <strong>{ligne.quantite}× {nomProduit(produits, ligne.produitId)}</strong>
-                    {accompagnement && (
-                      <span className="cuisine-row-line-accomp">
-                        <i className="fa-solid fa-utensils" aria-hidden="true" /> {accompagnement}
-                      </span>
-                    )}
-                    {perso && <span>{perso}</span>}
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
+          <div className="cuisine-row-section">
+            <p className="cuisine-row-section-title">Plats commandés ({lignes.length})</p>
+            <ul className="cuisine-row-lines">
+              {lignes.map((ligne, i) => {
+                const perso = textePersonnalisation(ligne)
+                const accompagnement = texteAccompagnement(ligne)
+                return (
+                  <li key={i} className="cuisine-row-line">
+                    <span className="cuisine-row-line-photo">
+                      <CoverPhoto src={photoProduit(produits, ligne.produitId)} />
+                      <span className="cuisine-row-line-qty">{ligne.quantite}×</span>
+                    </span>
+                    <div className="cuisine-row-line-copy">
+                      <strong>{ligne.quantite}× {nomProduit(produits, ligne.produitId)}</strong>
+                      {accompagnement && (
+                        <span className="cuisine-row-line-accomp">
+                          <i className="fa-solid fa-utensils" aria-hidden="true" /> Avec {accompagnement}
+                        </span>
+                      )}
+                      {perso && (
+                        <span className="cuisine-row-line-perso">
+                          <i className="fa-solid fa-pen" aria-hidden="true" /> {perso}
+                        </span>
+                      )}
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
 
           {note && (
             <div className="cuisine-row-note">
               <i className="fa-solid fa-comment" aria-hidden="true" />
-              <span>{note}</span>
+              <div>
+                <p className="cuisine-row-note-title">Note du client</p>
+                <span>{note}</span>
+              </div>
             </div>
           )}
         </div>

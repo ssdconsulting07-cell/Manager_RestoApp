@@ -113,6 +113,16 @@
   white-space: nowrap;
 }
 
+.cuisine-row-pill.is-canal {
+  color: #2f6fed;
+  background: #e8eefc;
+}
+
+.cuisine-row-pill.is-canal.is-comptoir {
+  color: #9c6b0c;
+  background: #f6ecd9;
+}
+
 .cuisine-row-pill.is-time {
   color: #a6192e;
   background: #f8e9ec;
@@ -371,6 +381,16 @@
 .manager-shell.is-dark .cuisine-row-pill {
   background: #2a2a2e;
   color: #cfcfd2;
+}
+
+.manager-shell.is-dark .cuisine-row-pill.is-canal {
+  background: rgba(79, 125, 243, 0.18);
+  color: #7c9dfb;
+}
+
+.manager-shell.is-dark .cuisine-row-pill.is-canal.is-comptoir {
+  background: rgba(214, 154, 45, 0.16);
+  color: #d69a2d;
 }
 
 .manager-shell.is-dark .cuisine-row-pill.is-time {

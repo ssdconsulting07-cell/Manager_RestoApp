@@ -34,13 +34,14 @@ function minutesAgo(n) {
   return new Date(Date.now() - n * 60_000).toISOString()
 }
 
-const DEMO_VERSION = 5
+const DEMO_VERSION = 6
 
 const DEMO_SEED = [
   // --- File d'attente (PAYEE) ---
   {
     id: 'demo-1051',
     statut: 'PAYEE',
+    canal: 'APP',
     mode: 'RETRAIT',
     creeLe: minutesAgo(2),
     note: 'Sans oignon s’il vous plaît',
@@ -53,7 +54,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1055',
     statut: 'PAYEE',
-    mode: 'RETRAIT',
+    canal: 'COMPTOIR',
     creeLe: minutesAgo(4),
     note: 'Commande express — 1 seul article',
     lignes: [{ produitId: 'p-burger', quantite: 1, personnalisation: 'Bien cuit' }],
@@ -61,6 +62,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1052',
     statut: 'PAYEE',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(5),
     note: 'Sonner à l’interphone B12',
@@ -73,6 +75,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1056',
     statut: 'PAYEE',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(7),
     lignes: [{ produitId: 'p-nuggets12', quantite: 1 }],
@@ -80,6 +83,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1053',
     statut: 'PAYEE',
+    canal: 'APP',
     mode: 'RETRAIT',
     creeLe: minutesAgo(9),
     lignes: [
@@ -92,6 +96,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1054',
     statut: 'PAYEE',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(11),
     lignes: [
@@ -104,6 +109,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1046',
     statut: 'EN_PREPARATION',
+    canal: 'APP',
     mode: 'RETRAIT',
     creeLe: minutesAgo(14),
     note: 'Retour client — bien cuit',
@@ -115,7 +121,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1057',
     statut: 'EN_PREPARATION',
-    mode: 'RETRAIT',
+    canal: 'COMPTOIR',
     creeLe: minutesAgo(15),
     note: 'Ticket simple — un seul plat',
     lignes: [{ produitId: 'p-salade', quantite: 1, personnalisation: 'Sans croûtons' }],
@@ -123,6 +129,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1047',
     statut: 'EN_PREPARATION',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(17),
     lignes: [
@@ -134,6 +141,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1058',
     statut: 'EN_PREPARATION',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(19),
     lignes: [{ produitId: 'p-dessert', quantite: 2 }],
@@ -141,6 +149,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1048',
     statut: 'EN_PREPARATION',
+    canal: 'APP',
     mode: 'RETRAIT',
     creeLe: minutesAgo(21),
     note: 'Allergie sésame',
@@ -153,6 +162,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1049',
     statut: 'EN_PREPARATION',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(25),
     lignes: [
@@ -166,13 +176,14 @@ const DEMO_SEED = [
   {
     id: 'demo-1044',
     statut: 'PRETE',
-    mode: 'RETRAIT',
+    canal: 'COMPTOIR',
     creeLe: minutesAgo(32),
     lignes: [{ produitId: 'p-cheese', quantite: 1 }],
   },
   {
     id: 'demo-1045',
     statut: 'PRETE',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(38),
     lignes: [

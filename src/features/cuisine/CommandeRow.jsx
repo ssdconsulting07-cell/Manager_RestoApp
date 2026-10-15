@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import {
+  canalLabel,
+  estComptoir,
   formatDuree,
   formatHeure,
   modeLabel,
@@ -51,6 +53,7 @@ export default function CommandeRow({
   const lignes = commande.lignes || []
   const duree = formatDuree(commande.creeLe)
   const texteDuree = duree === 'À l’instant' ? duree : `il y a ${duree}`
+  const comptoir = estComptoir(commande)
   const ticketId = String(commande.id).replace(/^demo-/, '')
   const detailsId = `commande-detail-${ticketId}`
 
@@ -65,13 +68,19 @@ export default function CommandeRow({
         >
           <div className="cuisine-row-info">
             <span className="cuisine-row-id">#{ticketId}</span>
-            <span className="cuisine-row-pill">
-              <i
-                className={`fa-solid ${commande.mode === 'LIVRAISON' ? 'fa-motorcycle' : 'fa-bag-shopping'}`}
-                aria-hidden="true"
-              />
-              {modeLabel(commande.mode)}
+            <span className={`cuisine-row-pill is-canal${comptoir ? ' is-comptoir' : ''}`}>
+              <i className={`fa-solid ${comptoir ? 'fa-store' : 'fa-mobile-screen-button'}`} aria-hidden="true" />
+              {canalLabel(commande)}
             </span>
+            {!comptoir && (
+              <span className="cuisine-row-pill">
+                <i
+                  className={`fa-solid ${commande.mode === 'LIVRAISON' ? 'fa-motorcycle' : 'fa-bag-shopping'}`}
+                  aria-hidden="true"
+                />
+                {modeLabel(commande.mode)}
+              </span>
+            )}
             <span className={`cuisine-row-pill is-time${urgente ? ' is-late' : ''}`}>
               <i className="fa-solid fa-clock" aria-hidden="true" />
               {showDuree ? texteDuree : formatHeure(commande.creeLe)}

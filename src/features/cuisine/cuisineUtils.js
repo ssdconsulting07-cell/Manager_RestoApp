@@ -92,6 +92,22 @@ export function modeLabel(mode) {
   return mode === 'LIVRAISON' ? 'Livraison' : 'Retrait'
 }
 
+// Canal de la commande : passee sur l'app (client chez lui) ou prise au
+// comptoir (client deja sur place) — retour utilisateur : les deux se
+// confondaient avant, alors que le mode livraison/retrait n'a de sens que
+// pour une commande app (une commande comptoir est par definition "sur
+// place", donc on ne lui affiche pas de pastille mode). Absence du champ
+// canal (donnees API reelles, le contrat /commandes n'expose pas encore ce
+// champ) -> on suppose APP par defaut, pour ne rien changer au rendu
+// existant tant que le backend ne l'envoie pas.
+export function estComptoir(commande) {
+  return commande?.canal === 'COMPTOIR'
+}
+
+export function canalLabel(commande) {
+  return estComptoir(commande) ? 'Sur place' : 'App'
+}
+
 function ficheProduit(produits, produitId) {
   const p = produits?.[produitId]
   if (!p) return null

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import {
   canalLabel,
   estComptoir,
@@ -50,7 +51,15 @@ const LABEL_COURT = {
  * de l'appli (cf. crud-filter-card) plutot que sur la ligne compacte
  * au-dessus, avec un libelle de section ("Plats commandes (N)"), un
  * separateur entre chaque plat et un libelle "Note du client" explicite
- * plutot qu'une simple icone. */
+ * plutot qu'une simple icone.
+ *
+ * "Envoyer au livreur" (PRETE -> EN_LIVRAISON, voir transitions.js) passe
+ * par une confirmation (ConfirmModal) avant d'appeler onTransition — relu
+ * par l'agent local : aucune transition retour n'existe depuis EN_LIVRAISON,
+ * un appui accidentel sur une tablette de cuisine enverrait la commande
+ * sans recours. Les autres transitions (Commencer/Marquer prete) restent
+ * directes, sans confirmation : erreur sans consequence reelle, on avance
+ * juste le ticket d'une etape qu'on allait franchir de toute facon. */
 export default function CommandeRow({
   commande,
   produits,
@@ -61,6 +70,7 @@ export default function CommandeRow({
   emptyActionLabel = null,
 }) {
   const [deplie, setDeplie] = useState(false)
+  const [confirmation, setConfirmation] = useState(null)
   const note = noteCommande(commande)
   const urgente = showDuree && Date.now() - new Date(commande.creeLe).getTime() > 20 * 60_000
   const enPreparation = commande.statut === 'EN_PREPARATION'
@@ -120,7 +130,11 @@ export default function CommandeRow({
                     // utilisateur) — sans stopPropagation, agir sur la
                     // commande la deplierait/replierait aussi par accident.
                     event.stopPropagation()
-                    onTransition(t.to)
+                    if (t.to === 'EN_LIVRAISON') {
+                      setConfirmation(t)
+                    } else {
+                      onTransition(t.to)
+                    }
                   }}
                   className="manager-button manager-button-primary"
                 >
@@ -202,6 +216,20 @@ export default function CommandeRow({
             </div>
           )}
         </div>
+      )}
+      {confirmation && (
+        <ConfirmModal
+          title="Envoyer cette commande au livreur ?"
+          message={`La commande #${ticketId} sera marquée « En livraison » et quittera le tableau cuisine. Cette action ne peut pas être annulée.`}
+          confirmLabel="Envoyer"
+          tone="warning"
+          icon="fa-motorcycle"
+          onConfirm={() => {
+            onTransition(confirmation.to)
+            setConfirmation(null)
+          }}
+          onCancel={() => setConfirmation(null)}
+        />
       )}
     </article>
   )

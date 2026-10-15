@@ -8,6 +8,7 @@ import {
   noteCommande,
   photoProduit,
   resumePlats,
+  texteAccompagnement,
   textePersonnalisation,
 } from './cuisineUtils.js'
 
@@ -17,10 +18,12 @@ const LABEL_COURT = {
 }
 
 /** Ligne de commande cuisine, repliable — retour utilisateur : le ticket,
- * le badge de statut et le bouton d'action principal doivent se voir et se
- * faire d'un coup d'œil, sans avoir a ouvrir quoi que ce soit ; les plats
- * (avec leur photo), les personnalisations et la note client ne sont donc
- * affiches que si on deplie la ligne pour en voir le detail complet.
+ * le badge de statut, l'heure et le bouton d'action principal doivent se
+ * voir d'un coup d'œil, sans avoir a ouvrir quoi que ce soit (l'heure est
+ * donc repetee dans le resume, en plus de la pastille duree/retard). Les
+ * plats (avec leur photo, leur quantite et leur accompagnement eventuel),
+ * les personnalisations et la note client ne sont affiches que si on
+ * deplie la ligne pour en voir le detail complet.
  *
  * showDuree est passe par tous les appelants desormais (tableau unique) : le
  * badge de retard (20 min) s'applique donc a n'importe quelle etape, pas
@@ -115,9 +118,11 @@ export default function CommandeRow({
         </div>
 
         {/* Toujours visible, meme repliee : retour utilisateur — sans ça,
-            le personnel ne voit plus du tout quoi preparer sans deplier
-            chaque ticket un par un en plein service. */}
-        <p className="cuisine-row-summary">{resumePlats(lignes, produits)}</p>
+            le personnel ne voit plus du tout l'heure ni quoi preparer sans
+            deplier chaque ticket un par un en plein service. */}
+        <p className="cuisine-row-summary">
+          {formatHeure(commande.creeLe)} · {resumePlats(lignes, produits)}
+        </p>
       </div>
 
       {deplie && (
@@ -125,6 +130,7 @@ export default function CommandeRow({
           <ul className="cuisine-row-lines">
             {lignes.map((ligne, i) => {
               const perso = textePersonnalisation(ligne)
+              const accompagnement = texteAccompagnement(ligne)
               return (
                 <li key={i} className="cuisine-row-line">
                   <span className="cuisine-row-line-photo">
@@ -132,7 +138,12 @@ export default function CommandeRow({
                     <span className="cuisine-row-line-qty">{ligne.quantite}×</span>
                   </span>
                   <div className="cuisine-row-line-copy">
-                    <strong>{nomProduit(produits, ligne.produitId)}</strong>
+                    <strong>{ligne.quantite}× {nomProduit(produits, ligne.produitId)}</strong>
+                    {accompagnement && (
+                      <span className="cuisine-row-line-accomp">
+                        <i className="fa-solid fa-utensils" aria-hidden="true" /> {accompagnement}
+                      </span>
+                    )}
                     {perso && <span>{perso}</span>}
                   </div>
                 </li>

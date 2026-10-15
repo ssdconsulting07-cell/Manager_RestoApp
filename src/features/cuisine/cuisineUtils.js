@@ -135,6 +135,25 @@ export function textePersonnalisation(ligne) {
   return null
 }
 
+/** Accompagnement choisi pour une ligne (ex. "Frites" sur un burger), s'il
+ * y en a un — meme champ que cote Vendeur (accompagnementNom, voir
+ * Vente.jsx) pour une ligne provenant d'une vraie commande, avec repli sur
+ * un tableau accompagnements si le backend finit par en exposer plusieurs
+ * par ligne. */
+export function texteAccompagnement(ligne) {
+  if (!ligne) return null
+  if (typeof ligne.accompagnementNom === 'string' && ligne.accompagnementNom.trim()) {
+    return ligne.accompagnementNom.trim()
+  }
+  if (Array.isArray(ligne.accompagnements) && ligne.accompagnements.length) {
+    return ligne.accompagnements
+      .map((a) => (typeof a === 'string' ? a : a?.nom))
+      .filter(Boolean)
+      .join(', ')
+  }
+  return null
+}
+
 export function noteCommande(commande) {
   const note = commande?.note ?? commande?.commentaire ?? commande?.messageClient
   return typeof note === 'string' && note.trim() ? note.trim() : null

@@ -278,6 +278,21 @@
   line-height: 1.35;
 }
 
+/* Accompagnement choisi (ex. "Frites" sur un burger) : distinct de la
+   personnalisation libre juste au-dessus (retour utilisateur : a ne pas
+   oublier au depli). Selecteur plus specifique que ".cuisine-row-line-copy
+   span" ci-dessus (meme avec une seule classe, il serait sinon moins
+   specifique que ce selecteur classe+element et perdrait la couleur). */
+.cuisine-row-line-copy span.cuisine-row-line-accomp {
+  color: #141414;
+  font-weight: 600;
+}
+
+.cuisine-row-line-accomp i {
+  color: #9c6b0c;
+  margin-right: 2px;
+}
+
 .cuisine-row-note {
   display: flex;
   align-items: flex-start;
@@ -377,6 +392,14 @@
 
 .manager-shell.is-dark .cuisine-row-line-copy span {
   color: #9a9a9e;
+}
+
+.manager-shell.is-dark .cuisine-row-line-copy span.cuisine-row-line-accomp {
+  color: #f2f2f2;
+}
+
+.manager-shell.is-dark .cuisine-row-line-accomp i {
+  color: #d69a2d;
 }
 
 .manager-shell.is-dark .cuisine-row-summary {

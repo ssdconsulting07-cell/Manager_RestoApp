@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { allowedTransitions } from '../../auth/transitions.js'
 import Layout from '../../components/Layout.jsx'
 import PageSkeleton from '../../components/PageSkeleton.jsx'
@@ -6,7 +6,8 @@ import Toast from '../../components/Toast.jsx'
 import Pagination from '../../components/crud/Pagination.jsx'
 import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
 import CommandeRow from './CommandeRow.jsx'
-import { jouerAlerteSonore, nomProduit, noteCommande } from './cuisineUtils.js'
+import { nomProduit, noteCommande } from './cuisineUtils.js'
+import { useAlerteNouvelleCommande } from './useAlerteNouvelleCommande.js'
 import { useCuisineBoard } from './useCuisineBoard.js'
 import './cuisine-board.css'
 
@@ -87,30 +88,10 @@ export default function Commandes() {
   const pageCourante = Math.min(page, pageCount)
   const visibles = filtrees.slice((pageCourante - 1) * rows, pageCourante * rows)
 
-  // Toast + bip sonore sur une nouvelle commande payee (retour utilisateur :
-  // le personnel ne doit pas avoir a fixer l'ecran en continu pour ne rien
-  // manquer). nouvelleAlerte ne change d'identite que lorsqu'une nouvelle
-  // commande arrive reellement (voir useCuisineBoard) : useMemo evite de
-  // reconstruire un objet toast different a chaque re-rendu, ce qui aurait
-  // sans cesse relance le minuteur d'auto-fermeture du Toast. Le bip est
-  // joue a part, dans un useEffect (useMemo doit rester pur, sans effet de
-  // bord — React peut l'invoquer plus d'une fois par rendu, ex. StrictMode).
-  const toast = useMemo(() => {
-    if (!nouvelleAlerte) return null
-    const n = nouvelleAlerte.commandes.length
-    return {
-      id: nouvelleAlerte.at,
-      type: 'info',
-      message:
-        n === 1
-          ? `Nouvelle commande reçue — #${String(nouvelleAlerte.commandes[0].id).replace(/^demo-/, '')}`
-          : `${n} nouvelles commandes reçues`,
-    }
-  }, [nouvelleAlerte])
-
-  useEffect(() => {
-    if (nouvelleAlerte) jouerAlerteSonore()
-  }, [nouvelleAlerte])
+  // Toast + bip sonore sur une nouvelle commande payee : logique partagee
+  // avec CuisineDashboard.jsx (meme hook, voir useAlerteNouvelleCommande.js)
+  // pour que les deux ecrans reagissent pareil.
+  const toast = useAlerteNouvelleCommande(nouvelleAlerte)
 
   return (
     <Layout>

@@ -1,8 +1,9 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import Toast from '../../components/Toast.jsx'
 import { KpiCard, formatRelativeTime } from '../../components/dashboard/DashboardWidgets.jsx'
-import { jouerAlerteSonore, nomProduit } from './cuisineUtils.js'
+import { nomProduit } from './cuisineUtils.js'
+import { useAlerteNouvelleCommande } from './useAlerteNouvelleCommande.js'
 import { useCuisineBoard } from './useCuisineBoard.js'
 
 // Tableau de bord Cuisine — meme structure et memes briques que les
@@ -28,27 +29,11 @@ export default function CuisineDashboard() {
     [commandes],
   )
 
-  // Meme bip + toast que Commandes.jsx (retour relecture : la cuisine arrive
-  // sur ce tableau de bord apres connexion — voir ROLE_HOME dans roles.js —
-  // donc un poste qui y reste doit lui aussi entendre les nouvelles
-  // commandes, pas seulement le tableau filtrable). nouvelleAlerte vient du
-  // meme useCuisineBoard, pas d'une detection dupliquee ici.
-  const toast = useMemo(() => {
-    if (!nouvelleAlerte) return null
-    const n = nouvelleAlerte.commandes.length
-    return {
-      id: nouvelleAlerte.at,
-      type: 'info',
-      message:
-        n === 1
-          ? `Nouvelle commande reçue — #${String(nouvelleAlerte.commandes[0].id).replace(/^demo-/, '')}`
-          : `${n} nouvelles commandes reçues`,
-    }
-  }, [nouvelleAlerte])
-
-  useEffect(() => {
-    if (nouvelleAlerte) jouerAlerteSonore()
-  }, [nouvelleAlerte])
+  // Meme bip + toast que Commandes.jsx, via le hook partage (retour
+  // relecture : la cuisine arrive sur ce tableau de bord apres connexion —
+  // voir ROLE_HOME dans roles.js — donc un poste qui y reste doit lui aussi
+  // entendre les nouvelles commandes, pas seulement le tableau filtrable).
+  const toast = useAlerteNouvelleCommande(nouvelleAlerte)
 
   return (
     <>

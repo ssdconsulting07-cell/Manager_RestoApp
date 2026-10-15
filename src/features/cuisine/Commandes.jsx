@@ -154,7 +154,7 @@ export default function Commandes() {
               : `Aucune commande « ${FILTER_LABELS[filter].toLowerCase()} » pour le moment.`}
           </p>
         ) : (
-          <div className="crud-grid">
+          <div className="crud-list">
             {visibles.map((commande) => (
               <CommandeRow
                 key={commande.id}

@@ -15,17 +15,18 @@ const LABEL_COURT = {
   PRETE: 'Marquer prête',
 }
 
-/** Carte ticket cuisine — numero de ticket et statut en tete, en texte net
- * (plus en overlay sur une photo, illisible selon le plat), une photo par
- * plat au lieu d'une collette ambigue en haut de carte quand il y a
- * plusieurs plats differents, note client, action de statut.
+/** Ligne de commande cuisine, repliable — retour utilisateur : le ticket,
+ * le badge de statut et le bouton d'action principal doivent se voir et se
+ * faire d'un coup d'œil, sans avoir a ouvrir quoi que ce soit ; les plats
+ * (avec leur photo), les personnalisations et la note client ne sont donc
+ * affiches que si on deplie la ligne pour en voir le detail complet.
  *
  * showDuree est passe par tous les appelants desormais (tableau unique) : le
  * badge de retard (20 min) s'applique donc a n'importe quelle etape, pas
  * seulement en preparation comme avant — une commande prete oubliee 20 min
  * en attente de retrait est tout aussi digne d'etre signalee.
- * emptyActionLabel s'affiche a la place des actions quand transitions est
- * vide (etape "Prêtes" : CUISINE n'a aucune transition sortante depuis
+ * emptyActionLabel s'affiche a la place du bouton d'action quand transitions
+ * est vide (etape "Prêtes" : CUISINE n'a aucune transition sortante depuis
  * PRETE, voir transitions.js) pour confirmer l'etat plutot que de laisser
  * un espace vide. */
 export default function CommandeRow({
@@ -37,73 +38,48 @@ export default function CommandeRow({
   showDuree = false,
   emptyActionLabel = null,
 }) {
+  const [deplie, setDeplie] = useState(false)
   const note = noteCommande(commande)
   const urgente = showDuree && Date.now() - new Date(commande.creeLe).getTime() > 20 * 60_000
   const enPreparation = commande.statut === 'EN_PREPARATION'
   const prete = commande.statut === 'PRETE'
   const lignes = commande.lignes || []
   const statutMeta = STATUT_META[commande.statut]
+  const ticketId = String(commande.id).replace(/^demo-/, '')
+  const detailsId = `commande-detail-${ticketId}`
 
   return (
     <article
-      className={`cuisine-card${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}${urgente ? ' is-urgent' : ''}`}
+      className={`cuisine-row${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}${urgente ? ' is-urgent' : ''}${deplie ? ' is-expanded' : ''}`}
     >
-      <div className="cuisine-card-head">
-        <span className="cuisine-card-id">#{String(commande.id).replace(/^demo-/, '')}</span>
-        {statutMeta && (
-          <span
-            className={`cuisine-card-status${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}`}
-            style={{ '--status-accent': statutMeta.accent, '--status-bg': statutMeta.accentBg }}
-          >
-            <i className={`fa-solid ${statutMeta.icon}`} aria-hidden="true" />
-            {statutMeta.label}
-          </span>
-        )}
-      </div>
-
-      <div className="cuisine-card-body">
-        <div className="cuisine-card-meta">
-          <span className="cuisine-card-pill">
+      <div className="cuisine-row-head">
+        <div className="cuisine-row-info">
+          <span className="cuisine-row-id">#{ticketId}</span>
+          {statutMeta && (
+            <span
+              className={`cuisine-row-status${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}`}
+              style={{ '--status-accent': statutMeta.accent, '--status-bg': statutMeta.accentBg }}
+            >
+              <i className={`fa-solid ${statutMeta.icon}`} aria-hidden="true" />
+              {statutMeta.label}
+            </span>
+          )}
+          <span className="cuisine-row-pill">
             <i
               className={`fa-solid ${commande.mode === 'LIVRAISON' ? 'fa-motorcycle' : 'fa-bag-shopping'}`}
               aria-hidden="true"
             />
             {modeLabel(commande.mode)}
           </span>
-          <span className={`cuisine-card-pill is-time${urgente ? ' is-late' : ''}`}>
+          <span className={`cuisine-row-pill is-time${urgente ? ' is-late' : ''}`}>
             <i className="fa-solid fa-clock" aria-hidden="true" />
             {formatHeure(commande.creeLe)}
             {showDuree ? ` · ${formatDuree(commande.creeLe)}` : ''}
           </span>
-          {urgente && <span className="cuisine-card-pill is-alert">Priorité</span>}
+          {urgente && <span className="cuisine-row-pill is-alert">Priorité</span>}
         </div>
 
-        <ul className="cuisine-card-lines">
-          {lignes.map((ligne, i) => {
-            const perso = textePersonnalisation(ligne)
-            return (
-              <li key={i} className="cuisine-card-line">
-                <span className="cuisine-card-line-photo">
-                  <CoverPhoto src={photoProduit(produits, ligne.produitId)} />
-                  <span className="cuisine-card-line-qty">{ligne.quantite}×</span>
-                </span>
-                <div className="cuisine-card-line-copy">
-                  <strong>{nomProduit(produits, ligne.produitId)}</strong>
-                  {perso && <span>{perso}</span>}
-                </div>
-              </li>
-            )
-          })}
-        </ul>
-
-        {note && (
-          <div className="cuisine-card-note">
-            <i className="fa-solid fa-comment" aria-hidden="true" />
-            <span>{note}</span>
-          </div>
-        )}
-
-        <div className="cuisine-card-actions">
+        <div className="cuisine-row-primary">
           {transitions.length > 0 ? (
             transitions.map((t) => (
               <button
@@ -117,13 +93,53 @@ export default function CommandeRow({
               </button>
             ))
           ) : emptyActionLabel ? (
-            <span className="cuisine-card-ready-note">
+            <span className="cuisine-row-ready-note">
               <i className="fa-solid fa-circle-check" aria-hidden="true" />
               {emptyActionLabel}
             </span>
           ) : null}
         </div>
+
+        <button
+          type="button"
+          className="cuisine-row-toggle"
+          onClick={() => setDeplie((v) => !v)}
+          aria-expanded={deplie}
+          aria-controls={detailsId}
+          aria-label={deplie ? `Masquer le détail de la commande ${ticketId}` : `Voir le détail de la commande ${ticketId}`}
+        >
+          <i className={`fa-solid ${deplie ? 'fa-chevron-up' : 'fa-chevron-down'}`} aria-hidden="true" />
+        </button>
       </div>
+
+      {deplie && (
+        <div className="cuisine-row-details" id={detailsId}>
+          <ul className="cuisine-row-lines">
+            {lignes.map((ligne, i) => {
+              const perso = textePersonnalisation(ligne)
+              return (
+                <li key={i} className="cuisine-row-line">
+                  <span className="cuisine-row-line-photo">
+                    <CoverPhoto src={photoProduit(produits, ligne.produitId)} />
+                    <span className="cuisine-row-line-qty">{ligne.quantite}×</span>
+                  </span>
+                  <div className="cuisine-row-line-copy">
+                    <strong>{nomProduit(produits, ligne.produitId)}</strong>
+                    {perso && <span>{perso}</span>}
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+
+          {note && (
+            <div className="cuisine-row-note">
+              <i className="fa-solid fa-comment" aria-hidden="true" />
+              <span>{note}</span>
+            </div>
+          )}
+        </div>
+      )}
     </article>
   )
 }
@@ -132,7 +148,7 @@ function CoverPhoto({ src }) {
   const [broken, setBroken] = useState(false)
   if (broken || !src) {
     return (
-      <span className="cuisine-card-line-photo-fallback">
+      <span className="cuisine-row-line-photo-fallback">
         <i className="fa-solid fa-utensils" />
       </span>
     )

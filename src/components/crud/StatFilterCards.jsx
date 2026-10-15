@@ -1,12 +1,13 @@
-export default function StatFilterCards({ items, selected, onSelect, ariaLabel = 'Filtrer par statut', className = '' }) {
+export default function StatFilterCards({ items, selected, onSelect, ariaLabel = 'Filtrer par statut', className = '', toggleable = false }) {
   return (
-    <div className={`crud-filter-grid ${className}`} role="tablist" aria-label={ariaLabel}>
+    <div className={`crud-filter-grid ${className}`} role={toggleable ? 'group' : 'tablist'} aria-label={ariaLabel}>
       {items.map((item) => (
         <button
           key={item.key}
           type="button"
-          role="tab"
-          aria-selected={selected === item.key}
+          role={toggleable ? undefined : 'tab'}
+          aria-selected={toggleable ? undefined : selected === item.key}
+          aria-pressed={toggleable ? selected === item.key : undefined}
           className={`crud-filter-card ${selected === item.key ? 'is-selected' : ''}`}
           style={{ '--stat-accent': item.accent, '--stat-accent-bg': item.accentBg }}
           onClick={() => onSelect(item.key)}

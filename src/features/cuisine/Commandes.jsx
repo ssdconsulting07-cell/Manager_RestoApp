@@ -112,13 +112,24 @@ export default function Commandes() {
 
       <section>
         {/* 3 cartes desormais (plus de "Toutes"), donc la grille par defaut
-            (3 colonnes) suffit — plus besoin de la variante is-4col. */}
+            (3 colonnes) suffit — plus besoin de la variante is-4col.
+            toggleable : aucune carte n'est forcement active (on peut tout
+            desactiver), donc on sort du patron "onglets" (role=tab suppose
+            toujours un onglet selectionne) pour un groupe de boutons a
+            bascule (aria-pressed) — voir StatFilterCards.jsx. */}
         <StatFilterCards
           items={FILTER_DEFS.map((f) => ({ ...f, value: counts[f.key] }))}
           selected={filter}
           onSelect={changerFiltre}
           ariaLabel="Filtrer les commandes par statut"
+          toggleable
         />
+
+        {filter !== 'TOUS' && (
+          <p className="crud-filter-hint">
+            {counts.TOUS} commande{counts.TOUS > 1 ? 's' : ''} au total · cliquez à nouveau sur « {FILTER_LABELS[filter]} » pour tout réafficher
+          </p>
+        )}
 
         <div className="crud-toolbar">
           <div className="crud-search">

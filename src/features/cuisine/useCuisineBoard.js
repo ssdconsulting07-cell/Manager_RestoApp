@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { apiGet, apiPatch } from '../../api/client.js'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { STATUT_LABELS } from '../../auth/transitions.js'
@@ -121,15 +121,9 @@ export function useCuisineBoard() {
     }
   }
 
-  const recues = useMemo(() => filtrerParStatuts(commandes, ['PAYEE']), [commandes])
-  const enPreparation = useMemo(() => filtrerParStatuts(commandes, ['EN_PREPARATION']), [commandes])
-  const pretes = useMemo(() => filtrerParStatuts(commandes, ['PRETE']), [commandes])
-
   return {
     role,
-    recues,
-    enPreparation,
-    pretes,
+    commandes,
     produits,
     loading,
     error,

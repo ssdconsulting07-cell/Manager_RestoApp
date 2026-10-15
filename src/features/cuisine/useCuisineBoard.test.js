@@ -49,7 +49,7 @@ describe('useCuisineBoard', () => {
 
       expect(result.current.demo).toBe(false)
       expect(result.current.nouvelleAlerte?.commandes).toEqual([nouvelleCommande])
-      expect(result.current.recues.map((c) => c.id)).toContain('c-1059')
+      expect(result.current.commandes.map((c) => c.id)).toContain('c-1059')
 
       unmount()
     },

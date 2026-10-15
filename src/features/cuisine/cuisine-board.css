@@ -1,128 +1,7 @@
-.cuisine-board-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-  border: 1px solid #ead9dd;
-  border-radius: 16px;
-  padding: 16px 18px;
-  background:
-    radial-gradient(100% 120% at 100% 0%, rgba(166, 25, 46, 0.08) 0%, transparent 50%),
-    #fff;
-}
-
-.cuisine-board-head h1 {
-  margin: 0 0 4px;
-  font-size: clamp(22px, 2.4vw, 28px);
-}
-
-.cuisine-board-head p {
-  margin: 0;
-  color: #6b6b6b;
-  font-size: 13px;
-}
-
-.cuisine-board-tools {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.cuisine-board-tool {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid #e5e5e3;
-  border-radius: 8px;
-  padding: 0;
-  background: #fff;
-  color: #6b6b6b;
-  cursor: pointer;
-  font: inherit;
-}
-
-.cuisine-board-tool:hover {
-  color: #a6192e;
-  border-color: #e6c2c9;
-}
-
 .cuisine-board-error {
   margin: 0 0 12px;
   color: #a6192e;
   font-size: 13px;
-}
-
-/* Les 3 etapes d'une commande (recue / en preparation / prete) cote a cote
-   sur un seul ecran — plus besoin de changer de page pour suivre un ticket
-   (retour utilisateur sur l'ancien decoupage Commandes / Preparation). */
-.cuisine-board-columns {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  align-items: start;
-}
-
-.cuisine-board-column {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-}
-
-.cuisine-board-column-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  border-bottom: 2px solid #ead9dd;
-  padding-bottom: 8px;
-}
-
-.cuisine-board-column-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #141414;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.cuisine-board-column-title i {
-  color: #a6192e;
-}
-
-.cuisine-board-column-count {
-  display: inline-grid;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 7px;
-  place-items: center;
-  border-radius: 999px;
-  background: #f3f1ef;
-  color: #5a5a5a;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.cuisine-board-column-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.cuisine-board-column-empty {
-  margin: 0;
-  border: 1px dashed #ddd8d4;
-  border-radius: 12px;
-  padding: 16px;
-  background: #faf9f8;
-  color: #6b6b6b;
-  font-size: 13px;
-  text-align: center;
 }
 
 .cuisine-card {
@@ -366,35 +245,15 @@
   text-align: center;
 }
 
-.manager-shell.is-dark .cuisine-board-head {
-  border-color: #3a2a2e;
-  background:
-    radial-gradient(100% 120% at 100% 0%, rgba(225, 75, 100, 0.14) 0%, transparent 50%),
-    #1c1c20;
-}
-
-.manager-shell.is-dark .cuisine-board-head p,
-.manager-shell.is-dark .cuisine-card-line-copy span,
-.manager-shell.is-dark .cuisine-board-column-empty {
+.manager-shell.is-dark .cuisine-card-line-copy span {
   color: #9a9a9e;
 }
 
-.manager-shell.is-dark .cuisine-board-tool,
-.manager-shell.is-dark .cuisine-card,
-.manager-shell.is-dark .cuisine-board-column-empty {
+.manager-shell.is-dark .cuisine-card {
   border-color: #2a2a2e;
   background: #1c1c20;
   color: #f2f2f2;
   box-shadow: 0 12px 28px rgb(0 0 0 / 35%);
-}
-
-.manager-shell.is-dark .cuisine-board-column-head {
-  border-color: #3a2a2e;
-}
-
-.manager-shell.is-dark .cuisine-board-column-count {
-  background: #2a2a2e;
-  color: #cfcfd2;
 }
 
 .manager-shell.is-dark .cuisine-card.is-urgent {
@@ -438,21 +297,4 @@
 .manager-shell.is-dark .cuisine-card-cover,
 .manager-shell.is-dark .cuisine-card-cover-fallback {
   background: #2a2a2e;
-}
-
-.manager-shell.is-dark .cuisine-board-tool:hover {
-  color: #e14b64;
-  border-color: rgba(225, 75, 100, 0.35);
-}
-
-@media (max-width: 1080px) {
-  .cuisine-board-columns {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px) {
-  .cuisine-board-columns {
-    grid-template-columns: 1fr;
-  }
 }

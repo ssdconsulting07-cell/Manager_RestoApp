@@ -15,17 +15,19 @@ import './cuisine-board.css'
 // de l'appli (Produits, Journal d'audit, ...) : cartes de statistiques qui
 // servent aussi de filtres, barre de recherche, grille de cartes, pagination
 // — retour utilisateur. Les 3 etapes (recue / en preparation / prete) ne
-// sont plus 3 colonnes paralleles mais un seul statut filtrable a la fois,
-// avec "Toutes" selectionne par defaut pour ne rien cacher d'entree : une
-// commande marquee prete reste donc toujours visible sans aucune action du
-// personnel — c'est le filtre "Toutes" par defaut qui le garantit, pas la
-// mise en page (l'ancien decoupage en 3 colonnes n'est plus necessaire pour
-// ca, voir cuisineDemo.js pour l'historique du bug que ca corrigeait).
-// Derive de STATUT_META (cuisineUtils.js), partage avec le badge de statut
-// de chaque carte (CommandeRow.jsx) : memes couleurs des deux cotes. Seul
-// "Toutes" n'est pas un vrai statut et reste donc defini ici.
+// sont plus 3 colonnes paralleles mais un seul statut filtrable a la fois.
+// Pas de carte "Toutes" (retour utilisateur) : les 3 cartes de statut
+// fonctionnent comme des filtres a bascule — cliquer la carte deja active
+// la deselectionne et revient a tout afficher (voir changerFiltre), plutot
+// que d'occuper une 4e carte juste pour ça. Rien n'est cache par defaut
+// pour autant : le filtre interne demarre a "TOUS", donc une commande
+// marquee prete reste visible sans aucune action du personnel tant qu'aucun
+// des 3 filtres n'est choisi (voir cuisineDemo.js pour l'historique du bug
+// que ça corrigeait).
+// FILTER_DEFS derive de STATUT_META (cuisineUtils.js), partage avec le
+// badge de statut de chaque ligne (CommandeRow.jsx) : memes couleurs des
+// deux cotes.
 const FILTER_DEFS = [
-  { key: 'TOUS', label: 'Toutes', icon: 'fa-layer-group', accent: '#a6192e', accentBg: '#f8e9ec' },
   { key: 'PAYEE', ...STATUT_META.PAYEE, label: 'Reçues' },
   { key: 'EN_PREPARATION', ...STATUT_META.EN_PREPARATION },
   { key: 'PRETE', ...STATUT_META.PRETE, label: 'Prêtes' },
@@ -64,7 +66,9 @@ export default function Commandes() {
   const [rows, setRows] = useState(ROWS_OPTIONS[1])
 
   function changerFiltre(key) {
-    setFilter(key)
+    // Carte deja active -> on la desactive et on revient a "tout afficher"
+    // (TOUS), puisqu'il n'y a plus de carte dediee pour ça (voir plus haut).
+    setFilter((actuel) => (actuel === key ? 'TOUS' : key))
     setPage(1)
   }
 
@@ -107,8 +111,9 @@ export default function Commandes() {
       </section>
 
       <section>
+        {/* 3 cartes desormais (plus de "Toutes"), donc la grille par defaut
+            (3 colonnes) suffit — plus besoin de la variante is-4col. */}
         <StatFilterCards
-          className="is-4col"
           items={FILTER_DEFS.map((f) => ({ ...f, value: counts[f.key] }))}
           selected={filter}
           onSelect={changerFiltre}

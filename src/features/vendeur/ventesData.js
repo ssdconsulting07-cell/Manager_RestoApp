@@ -24,7 +24,8 @@ function totalLignes(lignes) {
 // Historique de demarrage pour le compte vendeur seede (voir StaffUserSeed
 // cote Backend_RestoApp) : quelques ventes deja encaissees aujourd'hui, pour
 // que l'historique et le dashboard Vendeur ne soient pas vides a la
-// premiere connexion.
+// premiere connexion. Toutes en especes (modePaiement), seul mode qui
+// existait avant l'ajout des modes mobile money / carte.
 const SEED_VENDEUR = 'vendeur'
 
 function ilYA(minutes) {
@@ -43,6 +44,7 @@ const VENTES_INITIALES = [
   vendeur: SEED_VENDEUR,
   lignes: v.lignes,
   total: totalLignes(v.lignes),
+  modePaiement: 'especes',
   montantRecu: v.montantRecu,
   monnaieRendue: Math.max(0, v.montantRecu - totalLignes(v.lignes)),
   createdAt: v.createdAt,
@@ -51,8 +53,11 @@ const VENTES_INITIALES = [
 let prochainNumero = 106
 const ventes = [...VENTES_INITIALES]
 
-// Enregistre une vente encaissee et renvoie le recu correspondant.
-export function enregistrerVente({ lignes, montantRecu, vendeur }) {
+// Enregistre une vente encaissee et renvoie le recu correspondant. modePaiement
+// est l'une des cles de MODES_PAIEMENT (voir modesPaiement.jsx) : 'wave',
+// 'orange-money', 'mixx-yas', 'carte' ou 'especes'. montantRecu vaut le
+// montant total pour un mode non-especes (pas de monnaie a rendre).
+export function enregistrerVente({ lignes, montantRecu, modePaiement, vendeur }) {
   const total = totalLignes(lignes)
   const vente = {
     id: `vente-${prochainNumero}`,
@@ -60,6 +65,7 @@ export function enregistrerVente({ lignes, montantRecu, vendeur }) {
     vendeur,
     lignes,
     total,
+    modePaiement,
     montantRecu,
     monnaieRendue: Math.max(0, montantRecu - total),
     createdAt: new Date().toISOString(),

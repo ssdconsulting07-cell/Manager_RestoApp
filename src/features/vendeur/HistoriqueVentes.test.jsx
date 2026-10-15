@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import HistoriqueVentes from './HistoriqueVentes.jsx'
@@ -38,6 +38,10 @@ describe('Historique des ventes (Vendeur)', () => {
     // premiere page (ROWS_OPTIONS[0] = 5).
     expect(screen.getAllByRole('listitem')).toHaveLength(ventes.length)
     expect(screen.getByText(`1–${ventes.length} sur ${ventes.length}`)).toBeInTheDocument()
+
+    // Lien "Nouvelle vente" sans fleche (retour utilisateur) : le nom
+    // accessible doit etre exactement ce texte, pas "Nouvelle vente →".
+    expect(screen.getByRole('link', { name: 'Nouvelle vente' })).toBeInTheDocument()
   })
 
   it('filters by ticket number, offering a reset when nothing matches', () => {
@@ -64,9 +68,14 @@ describe('Historique des ventes (Vendeur)', () => {
     expect(await screen.findByText(/vente exportée dans/)).toBeInTheDocument()
   })
 
-  it('opens the receipt modal for a ticket', () => {
+  it('opens the receipt modal for a ticket, with a way to reprint it', () => {
     renderPage()
     fireEvent.click(screen.getByText('Ticket n° 101'))
-    expect(screen.getByRole('dialog', { name: /Reçu du ticket n° 101/ })).toBeInTheDocument()
+    const dialog = screen.getByRole('dialog', { name: /Reçu du ticket n° 101/ })
+    expect(dialog).toBeInTheDocument()
+    // Reimprimer un ticket deja encaisse depuis l'historique (retour
+    // utilisateur) : le bouton Imprimer n'est plus reserve a la vente
+    // fraichement encaissee.
+    expect(within(dialog).getByRole('button', { name: 'Imprimer' })).toBeInTheDocument()
   })
 })

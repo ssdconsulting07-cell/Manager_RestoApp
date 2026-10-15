@@ -81,8 +81,8 @@ export default function HistoriqueVentes() {
           <h1>Historique de mes ventes</h1>
           <p>Vos tickets encaissés aujourd’hui.</p>
         </div>
-        <Link className="manager-button manager-button-primary" to="/vente">
-          Nouvelle vente →
+        <Link className="manager-button manager-button-primary vendeur-historique-nouvelle-vente" to="/vente">
+          Nouvelle vente
         </Link>
       </div>
 

@@ -7,18 +7,11 @@ import GerantDashboard from '../gerant/GerantDashboard.jsx'
 import ManagerDashboard from '../manager/ManagerDashboard.jsx'
 import VendeurDashboard from '../vendeur/VendeurDashboard.jsx'
 
+// CUISINE a son propre tableau de bord dedie (CuisineDashboard, avec de
+// vraies statistiques) — ce role sort avant d'atteindre DASHBOARD_DATA,
+// donc aucune entree CUISINE ici (l'ancienne, avec des valeurs figees a
+// '0', ne servait plus a rien).
 const DASHBOARD_DATA = {
-  CUISINE: {
-    eyebrow: 'Service en cours',
-    title: 'Bonjour, équipe Cuisine.',
-    description: 'Gardez le rythme sur les commandes qui attendent votre attention.',
-    cards: [
-      ['Commandes à préparer', '0', 'En attente de traitement', '/commandes'],
-      ['En préparation', '0', 'Commandes en cours', '/commandes'],
-      ['Prêtes à servir', '0', 'À remettre au client ou au livreur', '/commandes'],
-    ],
-    action: ['Voir les commandes', '/commandes'],
-  },
   GERANT: {
     eyebrow: 'Gérance',
     title: 'Tableau de bord',
@@ -52,7 +45,7 @@ export default function Dashboard() {
 
   if (role === 'CUISINE') return <CuisineDashboard />
 
-  const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.CUISINE
+  const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.LIVREUR
 
   return (
     <Layout>

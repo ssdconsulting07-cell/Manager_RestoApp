@@ -30,37 +30,22 @@
   align-items: center;
 }
 
-.cuisine-board-tool,
-.cuisine-board-chip {
+.cuisine-board-tool {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  border: 1px solid #e5e5e3;
-  border-radius: 8px;
-  padding: 7px 11px;
-  background: #fff;
-  color: #141414;
-  cursor: pointer;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.cuisine-board-tool {
+  justify-content: center;
   width: 36px;
   height: 36px;
-  justify-content: center;
+  border: 1px solid #e5e5e3;
+  border-radius: 8px;
   padding: 0;
+  background: #fff;
   color: #6b6b6b;
+  cursor: pointer;
+  font: inherit;
 }
 
 .cuisine-board-tool:hover {
-  color: #a6192e;
-  border-color: #e6c2c9;
-}
-
-.cuisine-board-chip {
   color: #a6192e;
   border-color: #e6c2c9;
 }
@@ -71,14 +56,73 @@
   font-size: 13px;
 }
 
-.cuisine-board-grid {
+/* Les 3 etapes d'une commande (recue / en preparation / prete) cote a cote
+   sur un seul ecran — plus besoin de changer de page pour suivre un ticket
+   (retour utilisateur sur l'ancien decoupage Commandes / Preparation). */
+.cuisine-board-columns {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+  align-items: start;
 }
 
-.cuisine-board-grid:has(> :only-child) {
-  grid-template-columns: minmax(280px, 420px);
+.cuisine-board-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cuisine-board-column-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 2px solid #ead9dd;
+  padding-bottom: 8px;
+}
+
+.cuisine-board-column-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #141414;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.cuisine-board-column-title i {
+  color: #a6192e;
+}
+
+.cuisine-board-column-count {
+  display: inline-grid;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  place-items: center;
+  border-radius: 999px;
+  background: #f3f1ef;
+  color: #5a5a5a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cuisine-board-column-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cuisine-board-column-empty {
+  margin: 0;
+  border: 1px dashed #ddd8d4;
+  border-radius: 12px;
+  padding: 16px;
+  background: #faf9f8;
+  color: #6b6b6b;
+  font-size: 13px;
+  text-align: center;
 }
 
 .cuisine-card {
@@ -96,6 +140,13 @@
 
 .cuisine-card.is-prep {
   --card-accent: #141414;
+}
+
+/* Colonne "Prêtes" : accent vert calme (confirmation), distinct du rouge
+   d'alerte — remplace par is-urgent si le plat attend depuis trop longtemps
+   (declare apres dans la feuille de style pour l'emporter sur is-ready). */
+.cuisine-card.is-ready {
+  --card-accent: #2f8055;
 }
 
 .cuisine-card.is-urgent {
@@ -278,10 +329,16 @@
   margin-top: auto;
 }
 
+/* Boutons d'action agrandis (retour utilisateur : trop petits pour une
+   tablette de cuisine manipulee avec des mains pressees ou mouillees —
+   12px / 10px de marge interieure favorisait les ratés et les re-taps).
+   46px de hauteur mini vise une cible tactile confortable. */
 .cuisine-card-actions .manager-button {
   width: 100%;
-  padding: 10px 12px;
-  font-size: 12px;
+  min-height: 46px;
+  padding: 13px 16px;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .cuisine-card-actions .manager-button:disabled {
@@ -289,22 +346,24 @@
   opacity: 0.7;
 }
 
-.cuisine-board-empty {
-  border: 1px dashed #ddd8d4;
-  border-radius: 14px;
-  padding: 22px;
-  background: #faf9f8;
-}
-
-.cuisine-board-empty h2 {
-  margin: 0 0 6px;
-  font-size: 18px;
-}
-
-.cuisine-board-empty p {
-  margin: 0 0 14px;
-  color: #6b6b6b;
+/* Colonne "Prêtes" : aucune transition possible pour CUISINE (voir
+   transitions.js) — confirmation visuelle a la place d'un bouton, pour que
+   le plat prepare reste visible et confirme tant que personne ne vient le
+   chercher. */
+.cuisine-card-ready-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 46px;
+  padding: 13px 16px;
+  border-radius: 10px;
+  background: #e9f3ee;
+  color: #2f8055;
   font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 
 .manager-shell.is-dark .cuisine-board-head {
@@ -316,18 +375,26 @@
 
 .manager-shell.is-dark .cuisine-board-head p,
 .manager-shell.is-dark .cuisine-card-line-copy span,
-.manager-shell.is-dark .cuisine-board-empty p {
+.manager-shell.is-dark .cuisine-board-column-empty {
   color: #9a9a9e;
 }
 
 .manager-shell.is-dark .cuisine-board-tool,
-.manager-shell.is-dark .cuisine-board-chip,
 .manager-shell.is-dark .cuisine-card,
-.manager-shell.is-dark .cuisine-board-empty {
+.manager-shell.is-dark .cuisine-board-column-empty {
   border-color: #2a2a2e;
   background: #1c1c20;
   color: #f2f2f2;
   box-shadow: 0 12px 28px rgb(0 0 0 / 35%);
+}
+
+.manager-shell.is-dark .cuisine-board-column-head {
+  border-color: #3a2a2e;
+}
+
+.manager-shell.is-dark .cuisine-board-column-count {
+  background: #2a2a2e;
+  color: #cfcfd2;
 }
 
 .manager-shell.is-dark .cuisine-card.is-urgent {
@@ -336,6 +403,15 @@
 
 .manager-shell.is-dark .cuisine-card.is-prep {
   --card-accent: #e8e8ea;
+}
+
+.manager-shell.is-dark .cuisine-card.is-ready {
+  --card-accent: #3fae84;
+}
+
+.manager-shell.is-dark .cuisine-card-ready-note {
+  background: rgba(63, 174, 132, 0.14);
+  color: #3fae84;
 }
 
 .manager-shell.is-dark .cuisine-card-pill {
@@ -364,14 +440,19 @@
   background: #2a2a2e;
 }
 
-.manager-shell.is-dark .cuisine-board-tool:hover,
-.manager-shell.is-dark .cuisine-board-chip {
+.manager-shell.is-dark .cuisine-board-tool:hover {
   color: #e14b64;
   border-color: rgba(225, 75, 100, 0.35);
 }
 
+@media (max-width: 1080px) {
+  .cuisine-board-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 640px) {
-  .cuisine-board-grid {
+  .cuisine-board-columns {
     grid-template-columns: 1fr;
   }
 }

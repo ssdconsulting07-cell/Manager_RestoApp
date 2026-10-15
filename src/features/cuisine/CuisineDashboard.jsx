@@ -6,12 +6,16 @@ import { avecDemoSiVide, mergeProduitsDemo } from './cuisineDemo.js'
 import { filtrerParStatuts, formatHeure, mapProduitsParId, nomProduit, photoProduit } from './cuisineUtils.js'
 import './cuisine-dashboard.css'
 
+// Les 3 cartes renvoient desormais vers /commandes : depuis la fusion des
+// ecrans Commandes + Preparation en un seul tableau a 3 colonnes (retour
+// utilisateur sur l'ancien decoupage en 2 pages), il n'y a plus qu'une
+// seule destination possible pour voir le detail d'une file.
 const CARDS = [
   {
     key: 'recues',
     label: 'À démarrer',
     detail: 'Payées — file d’attente',
-    cta: 'Ouvrir la file',
+    cta: 'Ouvrir le tableau',
     path: '/commandes',
     icon: 'fa-receipt',
     tone: 'urgent',
@@ -20,17 +24,17 @@ const CARDS = [
     key: 'enCours',
     label: 'En préparation',
     detail: 'Tickets au poste',
-    cta: 'Voir le poste',
-    path: '/preparation',
+    cta: 'Ouvrir le tableau',
+    path: '/commandes',
     icon: 'fa-fire-burner',
     tone: 'active',
   },
   {
     key: 'pretes',
     label: 'Prêtes',
-    detail: 'Client ou livreur',
-    cta: 'Voir le flux',
-    path: '/preparation',
+    detail: 'En attente de retrait',
+    cta: 'Ouvrir le tableau',
+    path: '/commandes',
     icon: 'fa-circle-check',
     tone: 'done',
   },
@@ -72,7 +76,7 @@ export default function CuisineDashboard() {
   }, [])
 
   const totalActif = counts.recues + counts.enCours
-  const nextPath = counts.recues > 0 ? '/commandes' : '/preparation'
+  const nextPath = '/commandes'
 
   return (
     <Layout>
@@ -146,7 +150,7 @@ export default function CuisineDashboard() {
                 return (
                   <Link
                     key={c.id}
-                    to={c.statut === 'EN_PREPARATION' ? '/preparation' : '/commandes'}
+                    to="/commandes"
                     className={`cuisine-dash-ticket${c.statut === 'EN_PREPARATION' ? ' is-prep' : ''}`}
                   >
                     <div className="cuisine-dash-ticket-media" aria-hidden="true">

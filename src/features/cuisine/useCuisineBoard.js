@@ -1,38 +1,51 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { apiGet, apiPatch } from '../../api/client.js'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { STATUT_LABELS } from '../../auth/transitions.js'
 import { avecDemoSiVide, getDemoCommandes, isDemoId, mergeProduitsDemo, patchDemoStatut } from './cuisineDemo.js'
 import { REFRESH_MS, filtrerParStatuts, mapProduitsParId } from './cuisineUtils.js'
 
+// Les 3 statuts geres par le poste cuisine, dans l'ordre du flux.
+const STATUTS_CUISINE = ['PAYEE', 'EN_PREPARATION', 'PRETE']
+
 /**
- * Charge / rafraichit les commandes cuisine.
+ * Charge / rafraichit les commandes cuisine pour le tableau unique a 3
+ * colonnes (Recues / En preparation / Pretes) — retour utilisateur sur
+ * l'ancien decoupage en 2 pages (Commandes.jsx / Preparation.jsx) qui
+ * obligeait a changer d'ecran pour suivre un seul ticket, et qui ne
+ * montrait nulle part les commandes PRETE (elles disparaissaient purement
+ * et simplement de la vue une fois marquees pretes).
+ *
  * Branche deja : GET /commandes, GET /produits, PATCH /commandes/:id/statut.
- * La demo ne s'active que si aucune commande PAYEE / EN_PREPARATION n'arrive.
+ * La demo ne s'active que si aucune commande PAYEE / EN_PREPARATION n'arrive
+ * (voir avecDemoSiVide dans cuisineDemo.js).
  */
-export function useCuisineBoard({ primaryStatuts, secondaryStatut }) {
+export function useCuisineBoard() {
   const { role } = useAuth()
-  const [items, setItems] = useState([])
-  const [sideCount, setSideCount] = useState(0)
+  const [commandes, setCommandes] = useState([])
   const [produits, setProduits] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [demo, setDemo] = useState(false)
   const [pendingId, setPendingId] = useState(null)
+  const [nouvelleAlerte, setNouvelleAlerte] = useState(null)
   const mutationVersion = useRef(0)
+  // null = pas encore charge une 1ere fois — sert a ignorer l'alerte au
+  // tout premier chargement (sinon tout le service en cours declencherait
+  // l'alerte sonore a l'ouverture de la page).
+  const idsPayeesConnus = useRef(null)
 
-  const primaryKey = primaryStatuts.join('|')
+  const apply = useCallback((liste, isDemo) => {
+    setDemo(isDemo)
+    setCommandes(filtrerParStatuts(liste, STATUTS_CUISINE))
 
-  const apply = useCallback(
-    (liste, isDemo) => {
-      setDemo(isDemo)
-      setItems(filtrerParStatuts(liste, primaryStatuts))
-      setSideCount(liste.filter((c) => c.statut === secondaryStatut).length)
-    },
-    // primaryStatuts est un tableau constant cote appelant ; on depend de sa cle.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [primaryKey, secondaryStatut],
-  )
+    const payees = liste.filter((c) => c.statut === 'PAYEE')
+    if (idsPayeesConnus.current) {
+      const arrivees = payees.filter((c) => !idsPayeesConnus.current.has(c.id))
+      if (arrivees.length > 0) setNouvelleAlerte({ commandes: arrivees, at: Date.now() })
+    }
+    idsPayeesConnus.current = new Set(payees.map((c) => c.id))
+  }, [])
 
   const charger = useCallback(async () => {
     const version = mutationVersion.current
@@ -76,8 +89,9 @@ export function useCuisineBoard({ primaryStatuts, secondaryStatut }) {
       }
       const maj = await apiPatch(`/commandes/${commande.id}/statut`, { statut })
       mutationVersion.current += 1
-      setItems((prev) => filtrerParStatuts(prev.map((c) => (c.id === commande.id ? maj : c)), primaryStatuts))
-      if (maj.statut === secondaryStatut) setSideCount((n) => n + 1)
+      setCommandes((prev) =>
+        filtrerParStatuts(prev.map((c) => (c.id === commande.id ? maj : c)), STATUTS_CUISINE),
+      )
     } catch (err) {
       setError(
         err.status === 403
@@ -89,5 +103,23 @@ export function useCuisineBoard({ primaryStatuts, secondaryStatut }) {
     }
   }
 
-  return { role, items, sideCount, produits, loading, error, demo, pendingId, charger, changerStatut }
+  const recues = useMemo(() => filtrerParStatuts(commandes, ['PAYEE']), [commandes])
+  const enPreparation = useMemo(() => filtrerParStatuts(commandes, ['EN_PREPARATION']), [commandes])
+  const pretes = useMemo(() => filtrerParStatuts(commandes, ['PRETE']), [commandes])
+
+  return {
+    role,
+    recues,
+    enPreparation,
+    pretes,
+    produits,
+    loading,
+    error,
+    demo,
+    pendingId,
+    nouvelleAlerte,
+    charger,
+    changerStatut,
+    clearAlerte: () => setNouvelleAlerte(null),
+  }
 }

@@ -354,6 +354,7 @@ body,
 
 .toast-success { border-left-color: #2f8055; }
 .toast-error { border-left-color: #a6192e; }
+.toast-info { border-left-color: #1f5fa8; }
 
 .toast-icon {
   flex: 0 0 auto;
@@ -369,6 +370,7 @@ body,
 
 .toast-success .toast-icon { background: #2f8055; }
 .toast-error .toast-icon { background: #a6192e; }
+.toast-info .toast-icon { background: #1f5fa8; font-size: 12px; }
 
 .toast p {
   flex: 1;
@@ -405,6 +407,7 @@ body,
 
 .toast-success .toast-timeline { background: #2f8055; }
 .toast-error .toast-timeline { background: #a6192e; }
+.toast-info .toast-timeline { background: #1f5fa8; }
 
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(-8px) scale(0.98); }

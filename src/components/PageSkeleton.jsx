@@ -1,9 +1,4 @@
 const PAGE_DETAILS = {
-  preparation: {
-    eyebrow: 'Cuisine',
-    title: 'Préparation',
-    description: 'Commandes en cours de préparation.',
-  },
   produits: {
     eyebrow: 'Gérance',
     title: 'Produits',
@@ -150,7 +145,7 @@ export default function PageSkeleton({ page, contentOnly = false }) {
         <DashboardSkeleton />
       ) : page === 'vente' ? (
         <PosSkeleton />
-      ) : page === 'commandes' || page === 'preparation' ? (
+      ) : page === 'commandes' ? (
         <>
           {!contentOnly && (
             <div className="page-skeleton-page-heading" aria-hidden="true">

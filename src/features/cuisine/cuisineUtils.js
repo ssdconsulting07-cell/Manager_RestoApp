@@ -14,6 +14,47 @@ const PHOTO_FALLBACK =
     </svg>`,
   )
 
+// Alerte sonore courte (2 bips) pour signaler une nouvelle commande payee
+// sans fixer l'ecran en permanence (retour utilisateur : le personnel ne
+// doit pas avoir a surveiller la file en continu pour ne rien manquer).
+// Generee a la volee via l'API Web Audio plutot qu'un fichier audio externe
+// a charger — un seul AudioContext est reutilise entre les appels. Si
+// l'audio est indisponible ou bloque par le navigateur (pas encore
+// d'interaction utilisateur sur la page), on se contente de ne rien jouer :
+// ce n'est pas critique au fonctionnement du poste.
+let contexteAudio = null
+
+function obtenirContexteAudio() {
+  const Ctx = window.AudioContext || window.webkitAudioContext
+  if (!Ctx) return null
+  if (!contexteAudio) contexteAudio = new Ctx()
+  return contexteAudio
+}
+
+export function jouerAlerteSonore() {
+  try {
+    const ctx = obtenirContexteAudio()
+    if (!ctx) return
+    const jouerBip = (delai) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.value = 880
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime + delai)
+      gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + delai + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delai + 0.18)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start(ctx.currentTime + delai)
+      osc.stop(ctx.currentTime + delai + 0.2)
+    }
+    jouerBip(0)
+    jouerBip(0.22)
+  } catch {
+    // Non critique — voir commentaire ci-dessus.
+  }
+}
+
 export function filtrerParStatuts(commandes, statuts) {
   return commandes
     .filter((c) => statuts.includes(c.statut))

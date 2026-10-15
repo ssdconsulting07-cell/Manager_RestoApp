@@ -14,15 +14,36 @@ const LABEL_COURT = {
   PRETE: 'Marquer prête',
 }
 
-/** Carte ticket cuisine — photos des plats, note client, action de statut. */
-export default function CommandeRow({ commande, produits, transitions, pending, onTransition, showDuree = false }) {
+/** Carte ticket cuisine — photos des plats, note client, action de statut.
+ *
+ * showDuree est passe par tous les appelants desormais (tableau unique a 3
+ * colonnes) : le badge de retard (20 min) s'applique donc a n'importe quelle
+ * etape, pas seulement en preparation comme avant — une commande prete
+ * oubliee 20 min en attente de retrait est tout aussi digne d'etre signalee.
+ * emptyActionLabel s'affiche a la place des actions quand transitions est
+ * vide (colonne "Prêtes" : CUISINE n'a aucune transition sortante depuis
+ * PRETE, voir transitions.js) pour confirmer l'etat plutot que de laisser
+ * un espace vide. */
+export default function CommandeRow({
+  commande,
+  produits,
+  transitions,
+  pending,
+  onTransition,
+  showDuree = false,
+  emptyActionLabel = null,
+}) {
   const note = noteCommande(commande)
   const urgente = showDuree && Date.now() - new Date(commande.creeLe).getTime() > 20 * 60_000
+  const enPreparation = commande.statut === 'EN_PREPARATION'
+  const prete = commande.statut === 'PRETE'
   const lignes = commande.lignes || []
   const coverPhotos = lignes.slice(0, 3).map((l) => photoProduit(produits, l.produitId))
 
   return (
-    <article className={`cuisine-card${showDuree ? ' is-prep' : ''}${urgente ? ' is-urgent' : ''}`}>
+    <article
+      className={`cuisine-card${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}${urgente ? ' is-urgent' : ''}`}
+    >
       <div className={`cuisine-card-cover cuisine-card-cover--${Math.min(coverPhotos.length, 3)}`} aria-hidden="true">
         {coverPhotos.map((src, i) => (
           <CoverPhoto key={i} src={src} />
@@ -71,17 +92,24 @@ export default function CommandeRow({ commande, produits, transitions, pending, 
         )}
 
         <div className="cuisine-card-actions">
-          {transitions.map((t) => (
-            <button
-              key={t.to}
-              type="button"
-              disabled={pending}
-              onClick={() => onTransition(t.to)}
-              className="manager-button manager-button-primary"
-            >
-              {pending ? '…' : LABEL_COURT[t.to] || t.label}
-            </button>
-          ))}
+          {transitions.length > 0 ? (
+            transitions.map((t) => (
+              <button
+                key={t.to}
+                type="button"
+                disabled={pending}
+                onClick={() => onTransition(t.to)}
+                className="manager-button manager-button-primary"
+              >
+                {pending ? '…' : LABEL_COURT[t.to] || t.label}
+              </button>
+            ))
+          ) : emptyActionLabel ? (
+            <span className="cuisine-card-ready-note">
+              <i className="fa-solid fa-circle-check" aria-hidden="true" />
+              {emptyActionLabel}
+            </span>
+          ) : null}
         </div>
       </div>
     </article>

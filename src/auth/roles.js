@@ -26,7 +26,6 @@ export const ROLE_HOME = {
 export const ROUTE_ROLES = {
   '/dashboard': ROLES,
   '/commandes': ['CUISINE'],
-  '/preparation': ['CUISINE'],
   '/produits': ['GERANT'],
   '/categories': ['GERANT'],
   '/annonces': ['GERANT'],

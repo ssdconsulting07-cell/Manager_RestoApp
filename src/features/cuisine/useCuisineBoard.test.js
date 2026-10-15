@@ -25,9 +25,11 @@ describe('useCuisineBoard', () => {
       'démo faisait rater ce cas précis, pourtant le plus utile pour l’alerte',
     async () => {
       // 1er chargement : l'API ne renvoie aucune commande active -> la cuisine
-      // est vide, la démo prend le relais. Pas d'alerte attendue : on n'a
-      // encore aucune réponse réelle à laquelle comparer.
-      apiGet.mockImplementation((chemin) => Promise.resolve(chemin === '/commandes' ? [] : []))
+      // est vide, la démo prend le relais. Cette réponse vide est bien réelle
+      // et devient la base de comparaison (idsPayeesConnus) — l'absence
+      // d'alerte ici tient seulement au fait que c'est le 1er chargement
+      // (idsPayeesConnus démarre à null), pas à un manque de donnée réelle.
+      apiGet.mockImplementation(() => Promise.resolve([]))
 
       const { result, unmount } = renderHook(() => useCuisineBoard())
 

@@ -16,6 +16,13 @@ import {
 const LABEL_COURT = {
   EN_PREPARATION: 'Commencer',
   PRETE: 'Marquer prête',
+  // Commande App + Livraison en statut Prete (voir transitions.js) : bouton
+  // manuel, la cuisine ne l'actionne qu'une fois le livreur reellement
+  // pret a partir — remplace la note statique "En attente de retrait" qui
+  // n'a pas de sens pour une livraison (cf. emptyActionLabel plus bas, qui
+  // ne s'affiche de toute facon plus ici puisque transitions n'est plus
+  // vide dans ce cas).
+  EN_LIVRAISON: 'Envoyer au livreur',
 }
 
 /** Ligne de commande cuisine, repliable — retour utilisateur : le ticket et

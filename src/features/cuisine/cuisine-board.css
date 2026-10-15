@@ -53,11 +53,21 @@
   border-bottom: 1px solid #f0ece9;
 }
 
+/* Toute la zone deplie/replie au clic (retour utilisateur : une tablette
+   de cuisine a besoin d'une zone cliquable large, pas d'un seul petit
+   bouton) — sauf le bouton d'action, qui coupe la propagation (voir
+   CommandeRow.jsx) pour agir sans deplier/replier par accident. */
 .cuisine-row-top {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.cuisine-row-top:hover {
+  background: #faf9f8;
 }
 
 .cuisine-row-info {
@@ -172,11 +182,14 @@
   white-space: nowrap;
 }
 
+/* 44px : cible tactile confortable (meme logique que les 46px des boutons
+   d'action, voir plus haut) — 34px etait trop petit pour une tablette de
+   cuisine manipulee avec des mains pressees. */
 .cuisine-row-toggle {
   display: inline-grid;
   flex-shrink: 0;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border: 1px solid #e5e5e3;
   border-radius: 8px;
@@ -192,11 +205,45 @@
   border-color: #e6c2c9;
 }
 
+.cuisine-row-toggle i {
+  transition: transform 160ms ease;
+}
+
+.cuisine-row-toggle.is-expanded i {
+  transform: rotate(180deg);
+}
+
+/* Petite animation d'entree (retour utilisateur : le detail apparaissait
+   d'un coup, sans transition) — juste une opacite/translation, pas une
+   animation de hauteur (fragile avec un contenu de longueur variable). */
+@keyframes cuisine-row-details-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .cuisine-row-details {
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 12px 14px 14px;
+  animation: cuisine-row-details-in 160ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cuisine-row-details {
+    animation: none;
+  }
+
+  .cuisine-row-toggle i {
+    transition: none;
+  }
 }
 
 .cuisine-row-lines {
@@ -369,6 +416,10 @@
 .manager-shell.is-dark .cuisine-row-ready-note {
   background: rgba(63, 174, 132, 0.14);
   color: #3fae84;
+}
+
+.manager-shell.is-dark .cuisine-row-top:hover {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .manager-shell.is-dark .cuisine-row-toggle {

@@ -57,7 +57,10 @@ export default function CommandeRow({
       className={`cuisine-row${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}${urgente ? ' is-urgent' : ''}${deplie ? ' is-expanded' : ''}`}
     >
       <div className="cuisine-row-head">
-        <div className="cuisine-row-top">
+        <div
+          className="cuisine-row-top"
+          onClick={() => setDeplie((v) => !v)}
+        >
           <div className="cuisine-row-info">
             <span className="cuisine-row-id">#{ticketId}</span>
             {statutMeta && (
@@ -91,7 +94,14 @@ export default function CommandeRow({
                   key={t.to}
                   type="button"
                   disabled={pending}
-                  onClick={() => onTransition(t.to)}
+                  onClick={(event) => {
+                    // Le bouton d'action vit dans cuisine-row-top, qui deplie/
+                    // replie au clic (plus grande zone cliquable, retour
+                    // utilisateur) — sans stopPropagation, agir sur la
+                    // commande la deplierait/replierait aussi par accident.
+                    event.stopPropagation()
+                    onTransition(t.to)
+                  }}
                   className="manager-button manager-button-primary"
                 >
                   {pending ? '…' : LABEL_COURT[t.to] || t.label}
@@ -105,15 +115,19 @@ export default function CommandeRow({
             ) : null}
           </div>
 
+          {/* Pas de onClick ici : le clic (ou l'activation clavier) remonte
+              a cuisine-row-top ci-dessus, seul point qui deplie/replie —
+              ce bouton reste neanmoins la cible accessible au clavier
+              (focus + Entree/Espace), avec son propre libelle et son etat
+              aria-expanded. */}
           <button
             type="button"
-            className="cuisine-row-toggle"
-            onClick={() => setDeplie((v) => !v)}
+            className={`cuisine-row-toggle${deplie ? ' is-expanded' : ''}`}
             aria-expanded={deplie}
             aria-controls={detailsId}
             aria-label={deplie ? `Masquer le détail de la commande ${ticketId}` : `Voir le détail de la commande ${ticketId}`}
           >
-            <i className={`fa-solid ${deplie ? 'fa-chevron-up' : 'fa-chevron-down'}`} aria-hidden="true" />
+            <i className="fa-solid fa-chevron-down" aria-hidden="true" />
           </button>
         </div>
 

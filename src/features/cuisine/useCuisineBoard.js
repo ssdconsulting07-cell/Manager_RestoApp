@@ -17,8 +17,8 @@ const STATUTS_CUISINE = ['PAYEE', 'EN_PREPARATION', 'PRETE']
  * et simplement de la vue une fois marquees pretes).
  *
  * Branche deja : GET /commandes, GET /produits, PATCH /commandes/:id/statut.
- * La demo ne s'active que si aucune commande PAYEE / EN_PREPARATION n'arrive
- * (voir avecDemoSiVide dans cuisineDemo.js).
+ * La demo ne s'active que si aucune commande active n'arrive (voir
+ * avecDemoSiVide dans cuisineDemo.js).
  */
 export function useCuisineBoard() {
   const { role } = useAuth()
@@ -30,15 +30,28 @@ export function useCuisineBoard() {
   const [pendingId, setPendingId] = useState(null)
   const [nouvelleAlerte, setNouvelleAlerte] = useState(null)
   const mutationVersion = useRef(0)
-  // null = pas encore charge une 1ere fois — sert a ignorer l'alerte au
-  // tout premier chargement (sinon tout le service en cours declencherait
-  // l'alerte sonore a l'ouverture de la page).
+  // null = aucune reponse reelle de l'API encore recue (1er chargement, ou
+  // chaque tentative depuis a echoue) — sert a ignorer l'alerte tant qu'on
+  // n'a pas une base reelle a laquelle comparer.
   const idsPayeesConnus = useRef(null)
 
   const apply = useCallback((liste, isDemo) => {
     setDemo(isDemo)
     setCommandes(filtrerParStatuts(liste, STATUTS_CUISINE))
+  }, [])
 
+  // Detecte les commandes PAYEE nouvellement arrivees, toujours sur la
+  // reponse BRUTE de l'API (jamais sur la liste apres substitution par la
+  // demo, et jamais appelee du tout cote demo — voir changerStatut) : bug
+  // corrige, une 1ere comparaison basee sur la liste substituee faisait
+  // passer a tort pour "non comparable" le chargement reel qui suit une
+  // cuisine vide (donc affichant la demo juste avant), et la toute premiere
+  // vraie commande d'une cuisine qui se reveille passait alors inaperçue —
+  // exactement le moment ou l'alerte sert le plus. En comparant toujours la
+  // reponse API brute (vide ou non) a la precedente reponse API brute
+  // connue, ce cas redevient une "nouvelle commande" normale.
+  const detecterNouvelles = useCallback((data) => {
+    const liste = Array.isArray(data) ? data : []
     const payees = liste.filter((c) => c.statut === 'PAYEE')
     if (idsPayeesConnus.current) {
       const arrivees = payees.filter((c) => !idsPayeesConnus.current.has(c.id))
@@ -52,18 +65,23 @@ export function useCuisineBoard() {
     try {
       const data = await apiGet('/commandes')
       if (version !== mutationVersion.current) return
+      detecterNouvelles(data)
       const { commandes: liste, demo: isDemo } = avecDemoSiVide(data)
       apply(liste, isDemo)
       setError(null)
     } catch (err) {
       if (version !== mutationVersion.current) return
+      // Erreur reseau : on ne sait rien de l'etat reel, donc idsPayeesConnus
+      // n'est pas touche ici — au retour du reseau, la comparaison se fera
+      // contre la derniere reponse reelle connue avant la coupure, et toute
+      // commande arrivee pendant la coupure sera bien signalee (voulu).
       const { commandes: liste, demo: isDemo } = avecDemoSiVide([])
       apply(liste, isDemo)
       setError(err.message)
     } finally {
       setLoading(false)
     }
-  }, [apply])
+  }, [apply, detecterNouvelles])
 
   useEffect(() => {
     charger()

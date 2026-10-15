@@ -1,7 +1,12 @@
 // Donnees fictives Cuisine — utilisees tant que le backend n'a pas (encore)
-// de commandes PAYEE / EN_PREPARATION. Desactive automatiquement des que
-// l'API renvoie de vraies commandes actives.
-// Store partage en memoire pour que Commandes et Preparation voient les memes mutations.
+// de commande active (PAYEE / EN_PREPARATION / PRETE). Desactive automatiquement
+// des que l'API renvoie au moins une vraie commande active, quelle que soit
+// sa colonne — y compris PRETE (bug corrige : une commande reelle marquee
+// prete declenchait a tort la demo dès qu'il n'y avait plus ni PAYEE ni
+// EN_PREPARATION, et la remplaçait purement et simplement par le jeu de
+// demo, ce qui est exactement ce que la colonne "Prêtes" devait eviter).
+// Store partage en memoire pour que le tableau cuisine (Commandes.jsx) voie
+// des mutations coherentes entre deux rafraichissements.
 
 // Photos fictives (Unsplash) — en attendant les images produit du backend.
 const img = (id, w = 480) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&h=${360}&q=80`
@@ -209,7 +214,9 @@ export function patchDemoStatut(id, statut) {
 /** Si l'API n'a aucune commande active cuisine, on bascule sur la démo. */
 export function avecDemoSiVide(commandesApi) {
   const liste = Array.isArray(commandesApi) ? commandesApi : []
-  const aActives = liste.some((c) => c.statut === 'PAYEE' || c.statut === 'EN_PREPARATION')
+  const aActives = liste.some(
+    (c) => c.statut === 'PAYEE' || c.statut === 'EN_PREPARATION' || c.statut === 'PRETE',
+  )
   if (aActives) {
     demoState = { version: DEMO_VERSION, active: false, commandes: [] }
     return { commandes: liste, demo: false }

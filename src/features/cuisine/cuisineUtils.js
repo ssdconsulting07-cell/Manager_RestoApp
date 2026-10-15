@@ -1,4 +1,4 @@
-// Helpers partages Cuisine (Commandes + Preparation).
+// Helpers partages du tableau cuisine (Commandes.jsx).
 // Les champs optionnels (note, personnalisations, photo) sont affiches s'ils
 // arrivent du backend — le contrat MVP ne les expose pas encore tous.
 

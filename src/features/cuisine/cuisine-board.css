@@ -89,32 +89,34 @@
   box-shadow: 0 12px 26px rgb(166 25 46 / 10%);
 }
 
+/* Toute la barre deplie/replie au clic (retour utilisateur : d'abord
+   seulement cuisine-row-top, puis elargi a cuisine-row-head en entier —
+   une tablette de cuisine a besoin d'une zone cliquable large, et le
+   resume des plats juste en dessous doit lui aussi reagir au clic) — sauf
+   le bouton d'action, qui coupe la propagation (voir CommandeRow.jsx) pour
+   agir sans deplier/replier par accident. */
 .cuisine-row-head {
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 12px 14px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.cuisine-row-head:hover {
+  background: #faf9f8;
 }
 
 .cuisine-row.is-expanded .cuisine-row-head {
   border-bottom: 1px solid #f0ece9;
 }
 
-/* Toute la zone deplie/replie au clic (retour utilisateur : une tablette
-   de cuisine a besoin d'une zone cliquable large, pas d'un seul petit
-   bouton) — sauf le bouton d'action, qui coupe la propagation (voir
-   CommandeRow.jsx) pour agir sans deplier/replier par accident. */
 .cuisine-row-top {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  cursor: pointer;
-  border-radius: 10px;
-}
-
-.cuisine-row-top:hover {
-  background: #faf9f8;
 }
 
 .cuisine-row-info {
@@ -503,7 +505,7 @@
   color: #3fae84;
 }
 
-.manager-shell.is-dark .cuisine-row-top:hover {
+.manager-shell.is-dark .cuisine-row-head:hover {
   background: rgba(255, 255, 255, 0.04);
 }
 

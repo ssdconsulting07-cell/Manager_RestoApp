@@ -91,11 +91,8 @@ export default function CommandeRow({
     <article
       className={`cuisine-row${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}${urgente ? ' is-urgent' : ''}${deplie ? ' is-expanded' : ''}`}
     >
-      <div className="cuisine-row-head">
-        <div
-          className="cuisine-row-top"
-          onClick={() => setDeplie((v) => !v)}
-        >
+      <div className="cuisine-row-head" onClick={() => setDeplie((v) => !v)}>
+        <div className="cuisine-row-top">
           <div className="cuisine-row-info">
             <span className="cuisine-row-id">#{ticketId}</span>
             <span className={`cuisine-row-pill is-canal${comptoir ? ' is-comptoir' : ''}`}>
@@ -125,10 +122,11 @@ export default function CommandeRow({
                   type="button"
                   disabled={pending}
                   onClick={(event) => {
-                    // Le bouton d'action vit dans cuisine-row-top, qui deplie/
-                    // replie au clic (plus grande zone cliquable, retour
-                    // utilisateur) — sans stopPropagation, agir sur la
-                    // commande la deplierait/replierait aussi par accident.
+                    // Le bouton d'action vit dans cuisine-row-head, qui
+                    // deplie/replie au clic (toute la barre cliquable,
+                    // retour utilisateur) — sans stopPropagation, agir sur
+                    // la commande la deplierait/replierait aussi par
+                    // accident.
                     event.stopPropagation()
                     if (t.to === 'EN_LIVRAISON') {
                       setConfirmation(t)
@@ -150,9 +148,9 @@ export default function CommandeRow({
           </div>
 
           {/* Pas de onClick ici : le clic (ou l'activation clavier) remonte
-              a cuisine-row-top ci-dessus, seul point qui deplie/replie —
-              ce bouton reste neanmoins la cible accessible au clavier
-              (focus + Entree/Espace), avec son propre libelle et son etat
+              a cuisine-row-head, seul point qui deplie/replie — ce bouton
+              reste neanmoins la cible accessible au clavier (focus +
+              Entree/Espace), avec son propre libelle et son etat
               aria-expanded. */}
           <button
             type="button"

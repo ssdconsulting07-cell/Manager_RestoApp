@@ -19,11 +19,15 @@ import './cuisine-board.css'
 // Pas de carte "Toutes" (retour utilisateur) : les 3 cartes de statut
 // fonctionnent comme des filtres a bascule — cliquer la carte deja active
 // la deselectionne et revient a tout afficher (voir changerFiltre), plutot
-// que d'occuper une 4e carte juste pour ça. Rien n'est cache par defaut
-// pour autant : le filtre interne demarre a "TOUS", donc une commande
-// marquee prete reste visible sans aucune action du personnel tant qu'aucun
-// des 3 filtres n'est choisi (voir cuisineDemo.js pour l'historique du bug
-// que ça corrigeait).
+// que d'occuper une 4e carte juste pour ça. Par defaut (retour utilisateur),
+// le filtre demarre sur "Reçue" (PAYEE) plutot que sur "TOUS" : l'ecran
+// ouvre direct sur les commandes a traiter en priorite. Le sentinel "TOUS"
+// reste atteignable a tout moment (re-cliquer la carte active, ou voir le
+// rappel sous les cartes quand un filtre est actif), donc rien n'est
+// durablement cache — mais une commande qui passe en preparation ou prete
+// sort de la vue tant que le personnel ne change pas de filtre ou ne
+// desactive pas celui en cours (voir cuisineDemo.js pour l'historique du
+// bug que corrigeait l'ancien defaut "TOUS").
 // FILTER_DEFS derive de STATUT_META (cuisineUtils.js), partage avec le
 // badge de statut de chaque ligne (CommandeRow.jsx) : memes couleurs des
 // deux cotes.
@@ -60,7 +64,7 @@ export default function Commandes() {
     clearAlerte,
   } = useCuisineBoard()
 
-  const [filter, setFilter] = useState('TOUS')
+  const [filter, setFilter] = useState('PAYEE')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [rows, setRows] = useState(ROWS_OPTIONS[1])

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import {
-  STATUT_META,
   formatDuree,
   formatHeure,
   modeLabel,
@@ -17,13 +16,15 @@ const LABEL_COURT = {
   PRETE: 'Marquer prête',
 }
 
-/** Ligne de commande cuisine, repliable — retour utilisateur : le ticket,
- * le badge de statut, l'heure et le bouton d'action principal doivent se
- * voir d'un coup d'œil, sans avoir a ouvrir quoi que ce soit (l'heure est
- * donc repetee dans le resume, en plus de la pastille duree/retard). Les
- * plats (avec leur photo, leur quantite et leur accompagnement eventuel),
- * les personnalisations et la note client ne sont affiches que si on
- * deplie la ligne pour en voir le detail complet.
+/** Ligne de commande cuisine, repliable — retour utilisateur : le ticket et
+ * le bouton d'action principal doivent se voir d'un coup d'œil, sans avoir a
+ * ouvrir quoi que ce soit. Pas de badge de statut sur la ligne (retour
+ * utilisateur) : les cartes-filtres au-dessus montrent deja l'etat, le
+ * repeter sur chaque ligne n'apportait rien. La pastille temps n'affiche
+ * plus l'heure absolue (deja dans le resume juste en dessous) mais
+ * seulement le delai ecoule ("il y a X min") ; le badge "Priorité" separe
+ * est retire aussi — l'accent rouge de la ligne (is-urgent) et le
+ * "en retard" de la pastille temps (is-late) suffisent a signaler l'alerte.
  *
  * showDuree est passe par tous les appelants desormais (tableau unique) : le
  * badge de retard (20 min) s'applique donc a n'importe quelle etape, pas
@@ -48,7 +49,8 @@ export default function CommandeRow({
   const enPreparation = commande.statut === 'EN_PREPARATION'
   const prete = commande.statut === 'PRETE'
   const lignes = commande.lignes || []
-  const statutMeta = STATUT_META[commande.statut]
+  const duree = formatDuree(commande.creeLe)
+  const texteDuree = duree === 'À l’instant' ? duree : `il y a ${duree}`
   const ticketId = String(commande.id).replace(/^demo-/, '')
   const detailsId = `commande-detail-${ticketId}`
 
@@ -63,15 +65,6 @@ export default function CommandeRow({
         >
           <div className="cuisine-row-info">
             <span className="cuisine-row-id">#{ticketId}</span>
-            {statutMeta && (
-              <span
-                className={`cuisine-row-status${enPreparation ? ' is-prep' : ''}${prete ? ' is-ready' : ''}`}
-                style={{ '--status-accent': statutMeta.accent, '--status-bg': statutMeta.accentBg }}
-              >
-                <i className={`fa-solid ${statutMeta.icon}`} aria-hidden="true" />
-                {statutMeta.label}
-              </span>
-            )}
             <span className="cuisine-row-pill">
               <i
                 className={`fa-solid ${commande.mode === 'LIVRAISON' ? 'fa-motorcycle' : 'fa-bag-shopping'}`}
@@ -81,10 +74,8 @@ export default function CommandeRow({
             </span>
             <span className={`cuisine-row-pill is-time${urgente ? ' is-late' : ''}`}>
               <i className="fa-solid fa-clock" aria-hidden="true" />
-              {formatHeure(commande.creeLe)}
-              {showDuree ? ` · ${formatDuree(commande.creeLe)}` : ''}
+              {showDuree ? texteDuree : formatHeure(commande.creeLe)}
             </span>
-            {urgente && <span className="cuisine-row-pill is-alert">Priorité</span>}
           </div>
 
           <div className="cuisine-row-primary">

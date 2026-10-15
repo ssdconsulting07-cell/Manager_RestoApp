@@ -98,22 +98,6 @@
   letter-spacing: -0.02em;
 }
 
-.cuisine-row-status {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 5px;
-  border-radius: 999px;
-  padding: 4px 10px;
-  background: var(--status-bg);
-  color: var(--status-accent);
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-
 .cuisine-row-pill {
   display: inline-flex;
   align-items: center;
@@ -134,8 +118,7 @@
   background: #f8e9ec;
 }
 
-.cuisine-row-pill.is-late,
-.cuisine-row-pill.is-alert {
+.cuisine-row-pill.is-late {
   color: #fff;
   background: #a6192e;
 }
@@ -383,24 +366,6 @@
 
 .manager-shell.is-dark .cuisine-row-id {
   color: #f2f2f2;
-}
-
-/* Memes couleurs plus vives que .cuisine-row-pill.is-time juste en dessous,
-   plutot que les teintes pastel claires fournies par STATUT_META, pensees
-   pour un fond clair. */
-.manager-shell.is-dark .cuisine-row-status {
-  background: rgba(214, 154, 45, 0.16);
-  color: #d69a2d;
-}
-
-.manager-shell.is-dark .cuisine-row-status.is-prep {
-  background: rgba(255, 255, 255, 0.08);
-  color: #e8e8ea;
-}
-
-.manager-shell.is-dark .cuisine-row-status.is-ready {
-  background: rgba(53, 183, 142, 0.18);
-  color: #35b78e;
 }
 
 .manager-shell.is-dark .cuisine-row-pill {

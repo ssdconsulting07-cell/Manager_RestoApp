@@ -34,7 +34,7 @@ function minutesAgo(n) {
   return new Date(Date.now() - n * 60_000).toISOString()
 }
 
-const DEMO_VERSION = 4
+const DEMO_VERSION = 5
 
 const DEMO_SEED = [
   // --- File d'attente (PAYEE) ---
@@ -45,7 +45,7 @@ const DEMO_SEED = [
     creeLe: minutesAgo(2),
     note: 'Sans oignon s’il vous plaît',
     lignes: [
-      { produitId: 'p-burger', quantite: 2, personnalisation: 'Sans oignon' },
+      { produitId: 'p-burger', quantite: 2, personnalisation: 'Sans oignon', accompagnementNom: 'Frites' },
       { produitId: 'p-fries', quantite: 1 },
       { produitId: 'p-cola', quantite: 2 },
     ],
@@ -126,7 +126,7 @@ const DEMO_SEED = [
     mode: 'LIVRAISON',
     creeLe: minutesAgo(17),
     lignes: [
-      { produitId: 'p-burger', quantite: 3 },
+      { produitId: 'p-burger', quantite: 3, accompagnementNom: 'Onion rings' },
       { produitId: 'p-fries', quantite: 2 },
       { produitId: 'p-cola', quantite: 3 },
     ],

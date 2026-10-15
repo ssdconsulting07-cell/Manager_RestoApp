@@ -6,7 +6,7 @@ import Toast from '../../components/Toast.jsx'
 import Pagination from '../../components/crud/Pagination.jsx'
 import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
 import CommandeRow from './CommandeRow.jsx'
-import { STATUT_META, nomProduit, noteCommande } from './cuisineUtils.js'
+import { STATUT_META, comparerPriorite, nomProduit, noteCommande } from './cuisineUtils.js'
 import { useAlerteNouvelleCommande } from './useAlerteNouvelleCommande.js'
 import { useCuisineBoard } from './useCuisineBoard.js'
 import './cuisine-board.css'
@@ -138,11 +138,13 @@ export default function Commandes() {
   // (voir le commentaire sur FILTER_DEFS).
   const filtrees = useMemo(() => {
     const query = search.trim().toLowerCase()
-    return commandes.filter(
-      (c) =>
-        (c.statut === filter || (filter === 'PRETE' && c.statut === 'EN_LIVRAISON')) &&
-        correspondRecherche(c, produits, query),
-    )
+    return commandes
+      .filter(
+        (c) =>
+          (c.statut === filter || (filter === 'PRETE' && c.statut === 'EN_LIVRAISON')) &&
+          correspondRecherche(c, produits, query),
+      )
+      .sort(comparerPriorite)
   }, [commandes, filter, search, produits])
 
   // filtrees retrecit toute seule (rafraichissement 15 s, retrait, changement

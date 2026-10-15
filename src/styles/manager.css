@@ -15,6 +15,8 @@
   --chart-red-bg: #fbe4e2;
   --chart-brand: #b35d13;
   --chart-brand-bg: #fcf0e6;
+  --chart-blue: #2f6fed;
+  --chart-blue-bg: #e8eefc;
   --chart-grid: #e7e4e1;
   --chart-axis: #6b6b6b;
   --chart-cursor: rgba(20, 20, 20, 0.04);
@@ -42,6 +44,8 @@
   --chart-red-bg: rgba(179, 38, 30, 0.22);
   --chart-brand: #e8822b;
   --chart-brand-bg: rgba(232, 130, 43, 0.20);
+  --chart-blue: #7c9dfb;
+  --chart-blue-bg: rgba(79, 125, 243, 0.18);
   --chart-grid: #2a2a2e;
   --chart-axis: #a8a8ad;
   --chart-cursor: rgba(255, 255, 255, 0.05);
@@ -179,6 +183,8 @@
 .dashboard-kpi-card.is-red .dashboard-kpi-icon { background: var(--chart-red-bg); }
 .dashboard-kpi-card.is-brand .dashboard-kpi-icon, .dashboard-kpi-card.is-brand strong, .dashboard-kpi-card.is-brand .dashboard-kpi-arrow { color: var(--chart-brand); }
 .dashboard-kpi-card.is-brand .dashboard-kpi-icon { background: var(--chart-brand-bg); }
+.dashboard-kpi-card.is-blue .dashboard-kpi-icon, .dashboard-kpi-card.is-blue strong, .dashboard-kpi-card.is-blue .dashboard-kpi-arrow { color: var(--chart-blue); }
+.dashboard-kpi-card.is-blue .dashboard-kpi-icon { background: var(--chart-blue-bg); }
 
 .dashboard-charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr)); gap: 16px; margin-bottom: 16px; }
 .dashboard-chart-panel-wide { grid-column: 1 / -1; }

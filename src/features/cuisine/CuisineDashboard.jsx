@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import Toast from '../../components/Toast.jsx'
 import { KpiCard, formatRelativeTime } from '../../components/dashboard/DashboardWidgets.jsx'
-import { resumePlats } from './cuisineUtils.js'
+import { comparerPriorite, estComptoir, resumePlats } from './cuisineUtils.js'
 import { useAlerteNouvelleCommande } from './useAlerteNouvelleCommande.js'
 import { useCuisineBoard } from './useCuisineBoard.js'
 
@@ -32,8 +32,25 @@ export default function CuisineDashboard() {
     return c
   }, [commandes])
 
+  // Repartition App / Sur place sur le meme perimetre que "Commandes
+  // actives" (les 4 statuts suivis par useCuisineBoard) : app + comptoir
+  // egale toujours ce total.
+  const canalCounts = useMemo(() => {
+    const c = { app: 0, comptoir: 0 }
+    for (const commande of commandes) {
+      if (estComptoir(commande)) c.comptoir += 1
+      else c.app += 1
+    }
+    return c
+  }, [commandes])
+
+  // Meme ordre de priorite que l'ecran Commandes (voir comparerPriorite).
   const apercu = useMemo(
-    () => commandes.filter((c) => c.statut === 'PAYEE' || c.statut === 'EN_PREPARATION').slice(0, APERCU_TICKETS),
+    () =>
+      commandes
+        .filter((c) => c.statut === 'PAYEE' || c.statut === 'EN_PREPARATION')
+        .sort(comparerPriorite)
+        .slice(0, APERCU_TICKETS),
     [commandes],
   )
 
@@ -62,6 +79,14 @@ export default function CuisineDashboard() {
         <KpiCard
           icon="fa-circle-check" accent="green" label="Prêtes"
           value={loading ? '—' : counts.PRETE} detail="en attente de retrait" to="/commandes"
+        />
+        <KpiCard
+          icon="fa-mobile-screen-button" accent="blue" label="App"
+          value={loading ? '—' : canalCounts.app} detail="commandes à distance" to="/commandes"
+        />
+        <KpiCard
+          icon="fa-store" accent="gray" label="Sur place"
+          value={loading ? '—' : canalCounts.comptoir} detail="au comptoir" to="/commandes"
         />
       </section>
 

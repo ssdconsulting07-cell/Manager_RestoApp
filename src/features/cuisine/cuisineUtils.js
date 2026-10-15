@@ -112,6 +112,36 @@ export function canalLabel(commande) {
   return estComptoir(commande) ? 'Sur place' : 'App'
 }
 
+// Seuil de retard (20 min) partage entre le badge rouge is-urgent de la
+// ligne (CommandeRow.jsx) et le tri par priorite (comparerPriorite) : un
+// seul endroit, pour que les deux ne divergent jamais.
+export function estUrgente(commande) {
+  return Date.now() - new Date(commande.creeLe).getTime() > 20 * 60_000
+}
+
+// Ordre d'affichage des commandes (retour utilisateur direct) : priorite
+// aux commandes en retard (meme seuil que le badge rouge is-urgent), puis
+// FIFO (la plus ancienne d'abord) parmi les commandes de meme urgence, et
+// a egalite exacte d'heure d'arrivee, une commande "Sur place" passe
+// devant une commande "App" (le client est physiquement present).
+// Exportee ici plutot que dupliquee dans Commandes.jsx et
+// CuisineDashboard.jsx, pour que les deux ecrans appliquent la meme regle.
+export function comparerPriorite(a, b) {
+  const urgenteA = estUrgente(a)
+  const urgenteB = estUrgente(b)
+  if (urgenteA !== urgenteB) return urgenteA ? -1 : 1
+
+  const tempsA = new Date(a.creeLe).getTime()
+  const tempsB = new Date(b.creeLe).getTime()
+  if (tempsA !== tempsB) return tempsA - tempsB
+
+  const comptoirA = estComptoir(a)
+  const comptoirB = estComptoir(b)
+  if (comptoirA !== comptoirB) return comptoirA ? -1 : 1
+
+  return 0
+}
+
 function ficheProduit(produits, produitId) {
   const p = produits?.[produitId]
   if (!p) return null

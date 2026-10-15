@@ -3,6 +3,7 @@ import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import {
   canalLabel,
   estComptoir,
+  estUrgente,
   formatDuree,
   formatHeure,
   modeLabel,
@@ -74,7 +75,7 @@ export default function CommandeRow({
   const [deplie, setDeplie] = useState(false)
   const [confirmation, setConfirmation] = useState(null)
   const note = noteCommande(commande)
-  const urgente = showDuree && Date.now() - new Date(commande.creeLe).getTime() > 20 * 60_000
+  const urgente = showDuree && estUrgente(commande)
   const enPreparation = commande.statut === 'EN_PREPARATION'
   const prete = commande.statut === 'PRETE'
   const enLivraison = commande.statut === 'EN_LIVRAISON'

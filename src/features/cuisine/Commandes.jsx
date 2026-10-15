@@ -16,18 +16,15 @@ import './cuisine-board.css'
 // servent aussi de filtres, barre de recherche, grille de cartes, pagination
 // — retour utilisateur. Les 3 etapes (recue / en preparation / prete) ne
 // sont plus 3 colonnes paralleles mais un seul statut filtrable a la fois.
-// Pas de carte "Toutes" (retour utilisateur) : les 3 cartes de statut
-// fonctionnent comme des filtres a bascule — cliquer la carte deja active
-// la deselectionne et revient a tout afficher (voir changerFiltre), plutot
-// que d'occuper une 4e carte juste pour ça. Par defaut (retour utilisateur),
-// le filtre demarre sur "Reçue" (PAYEE) plutot que sur "TOUS" : l'ecran
-// ouvre direct sur les commandes a traiter en priorite. Le sentinel "TOUS"
-// reste atteignable a tout moment (re-cliquer la carte active, ou voir le
-// rappel sous les cartes quand un filtre est actif), donc rien n'est
-// durablement cache — mais une commande qui passe en preparation ou prete
-// sort de la vue tant que le personnel ne change pas de filtre ou ne
-// desactive pas celui en cours (voir cuisineDemo.js pour l'historique du
-// bug que corrigeait l'ancien defaut "TOUS").
+// Pas de carte "Toutes" (retour utilisateur) : seulement les 3 cartes de
+// statut, toujours une seule active a la fois — exactement comme Produits/
+// Categories/Annonces (voir changerFiltre). Il y a eu une version
+// intermediaire ou re-cliquer la carte active desactivait le filtre pour
+// tout reafficher (double-clic retour utilisateur : c'etait confondu avec
+// un rafraichissement et pretait a confusion) ; ce comportement est retire,
+// changerFiltre selectionne simplement la carte cliquee. Par defaut, le
+// filtre demarre sur "Reçue" (PAYEE) : l'ecran ouvre direct sur les
+// commandes a traiter en priorite.
 // FILTER_DEFS derive de STATUT_META (cuisineUtils.js), partage avec le
 // badge de statut de chaque ligne (CommandeRow.jsx) : memes couleurs des
 // deux cotes.
@@ -68,25 +65,35 @@ export default function Commandes() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [rows, setRows] = useState(ROWS_OPTIONS[1])
+  const [rafraichissement, setRafraichissement] = useState(false)
 
   function changerFiltre(key) {
-    // Carte deja active -> on la desactive et on revient a "tout afficher"
-    // (TOUS), puisqu'il n'y a plus de carte dediee pour ça (voir plus haut).
-    setFilter((actuel) => (actuel === key ? 'TOUS' : key))
+    setFilter(key)
     setPage(1)
+  }
+
+  // Etat local au bouton, distinct de `loading` du hook (qui ne reflete que
+  // le tout premier chargement) — permet de faire tourner l'icone et
+  // desactiver le bouton pendant un clic manuel, sans toucher au polling
+  // automatique de useCuisineBoard.
+  async function handleRafraichir() {
+    setRafraichissement(true)
+    try {
+      await charger()
+    } finally {
+      setRafraichissement(false)
+    }
   }
 
   const counts = useMemo(() => {
     const parStatut = { PAYEE: 0, EN_PREPARATION: 0, PRETE: 0 }
     for (const commande of commandes) parStatut[commande.statut] += 1
-    return { TOUS: commandes.length, ...parStatut }
+    return parStatut
   }, [commandes])
 
   const filtrees = useMemo(() => {
     const query = search.trim().toLowerCase()
-    return commandes.filter(
-      (c) => (filter === 'TOUS' || c.statut === filter) && correspondRecherche(c, produits, query),
-    )
+    return commandes.filter((c) => c.statut === filter && correspondRecherche(c, produits, query))
   }, [commandes, filter, search, produits])
 
   // filtrees retrecit toute seule (rafraichissement 15 s, retrait, changement
@@ -115,25 +122,14 @@ export default function Commandes() {
       </section>
 
       <section>
-        {/* 3 cartes desormais (plus de "Toutes"), donc la grille par defaut
-            (3 colonnes) suffit — plus besoin de la variante is-4col.
-            toggleable : aucune carte n'est forcement active (on peut tout
-            desactiver), donc on sort du patron "onglets" (role=tab suppose
-            toujours un onglet selectionne) pour un groupe de boutons a
-            bascule (aria-pressed) — voir StatFilterCards.jsx. */}
+        {/* 3 cartes de statut, toujours une seule active (voir changerFiltre
+            plus haut) — grille par defaut (3 colonnes), comme Produits. */}
         <StatFilterCards
           items={FILTER_DEFS.map((f) => ({ ...f, value: counts[f.key] }))}
           selected={filter}
           onSelect={changerFiltre}
           ariaLabel="Filtrer les commandes par statut"
-          toggleable
         />
-
-        {filter !== 'TOUS' && (
-          <p className="crud-filter-hint">
-            {counts.TOUS} commande{counts.TOUS > 1 ? 's' : ''} au total · appuyez à nouveau sur « {FILTER_LABELS[filter]} » pour tout réafficher
-          </p>
-        )}
 
         <div className="crud-toolbar">
           <div className="crud-search">
@@ -147,8 +143,21 @@ export default function Commandes() {
             />
           </div>
           <span className="crud-toolbar-spacer" />
-          <button type="button" className="manager-icon-button" onClick={charger} aria-label="Actualiser">
-            <i className="fa-solid fa-arrows-rotate" aria-hidden="true" />
+          {/* Bouton dedie (pas le manager-icon-button generique partage avec
+              les fermetures de modale) : retour utilisateur — trop discret
+              pour une action utile en plein service. Libelle visible, cible
+              tactile >= 44px, et icone qui tourne pendant le rechargement
+              (rafraichissement local, independant du polling 15s du hook)
+              pour confirmer que le clic a bien ete pris en compte. */}
+          <button
+            type="button"
+            className="cuisine-refresh-button"
+            onClick={handleRafraichir}
+            disabled={rafraichissement}
+            aria-label="Actualiser les commandes"
+          >
+            <i className={`fa-solid fa-arrows-rotate${rafraichissement ? ' is-spinning' : ''}`} aria-hidden="true" />
+            Actualiser
           </button>
         </div>
 
@@ -169,9 +178,7 @@ export default function Commandes() {
           <PageSkeleton page="commandes" contentOnly />
         ) : visibles.length === 0 ? (
           <p className="crud-empty">
-            {filter === 'TOUS'
-              ? 'Aucune commande pour le moment.'
-              : `Aucune commande « ${FILTER_LABELS[filter].toLowerCase()} » pour le moment.`}
+            Aucune commande « {FILTER_LABELS[filter].toLowerCase()} » pour le moment.
           </p>
         ) : (
           <div className="crud-list">

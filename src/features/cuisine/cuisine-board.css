@@ -4,6 +4,53 @@
   font-size: 13px;
 }
 
+/* Bouton d'actualisation dedie (retour utilisateur : le manager-icon-button
+   generique, partage avec toutes les fermetures de modale de l'appli,
+   etait trop discret pour une action utile en plein service). Libelle
+   visible + cible tactile >= 44px, cf. le reste de la cuisine. L'icone
+   tourne pendant le clic (etat local rafraichissement, Commandes.jsx) pour
+   confirmer que l'action a bien ete prise en compte. */
+.cuisine-refresh-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid #e7e4e1;
+  border-radius: 10px;
+  background: #fff;
+  color: #141414;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.cuisine-refresh-button:hover:not(:disabled) {
+  background: #faf9f8;
+  border-color: #d8d4d0;
+}
+
+.cuisine-refresh-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.cuisine-refresh-button i.is-spinning {
+  animation: cuisine-refresh-spin 700ms linear infinite;
+}
+
+@keyframes cuisine-refresh-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Ligne de commande repliable (remplace l'ancienne carte verticale) : le
    ticket, le badge de statut et le bouton d'action principal sont toujours
    visibles sur une seule ligne — retour utilisateur : le personnel doit
@@ -237,6 +284,10 @@
   .cuisine-row-toggle i {
     transition: none;
   }
+
+  .cuisine-refresh-button i.is-spinning {
+    animation: none;
+  }
 }
 
 /* Libelle de section (retour utilisateur : la partie depliee doit se lire
@@ -388,6 +439,16 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.manager-shell.is-dark .cuisine-refresh-button {
+  border-color: #2a2a2e;
+  background: #1c1c20;
+  color: #f2f2f2;
+}
+
+.manager-shell.is-dark .cuisine-refresh-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .manager-shell.is-dark .cuisine-row {

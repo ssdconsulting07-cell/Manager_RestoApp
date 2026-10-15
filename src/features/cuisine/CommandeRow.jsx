@@ -62,6 +62,11 @@ export default function CommandeRow({
   const duree = formatDuree(commande.creeLe)
   const texteDuree = duree === 'À l’instant' ? duree : `il y a ${duree}`
   const comptoir = estComptoir(commande)
+  // Nombre de plats a preparer (somme des quantites), pas le nombre de
+  // lignes — relecture agent local : "2x Burger, 1x Frites" est 1 ligne
+  // de burger + 1 ligne de frites (2 lignes) mais 3 plats a sortir, et
+  // c'est ce deuxieme chiffre qui compte en cuisine.
+  const totalPlats = lignes.reduce((total, ligne) => total + (ligne.quantite || 0), 0)
   const ticketId = String(commande.id).replace(/^demo-/, '')
   const detailsId = `commande-detail-${ticketId}`
 
@@ -150,7 +155,7 @@ export default function CommandeRow({
       {deplie && (
         <div className="cuisine-row-details" id={detailsId}>
           <div className="cuisine-row-section">
-            <p className="cuisine-row-section-title">Plats commandés ({lignes.length})</p>
+            <p className="cuisine-row-section-title">Plats commandés ({totalPlats})</p>
             <ul className="cuisine-row-lines">
               {lignes.map((ligne, i) => {
                 const perso = textePersonnalisation(ligne)

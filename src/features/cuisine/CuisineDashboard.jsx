@@ -18,9 +18,17 @@ const APERCU_TICKETS = 6
 export default function CuisineDashboard() {
   const { commandes, produits, loading, demo, nouvelleAlerte, clearAlerte } = useCuisineBoard()
 
+  // EN_LIVRAISON compte avec PRETE ici aussi (meme regle que Commandes.jsx,
+  // voir son commentaire sur counts/filtrees) : sans ça, la carte KPI
+  // "Prêtes" du tableau de bord afficherait un nombre different de la
+  // carte-filtre "Prêtes" de l'ecran Commandes pour les memes commandes
+  // (releve agent local).
   const counts = useMemo(() => {
     const c = { PAYEE: 0, EN_PREPARATION: 0, PRETE: 0 }
-    for (const commande of commandes) c[commande.statut] += 1
+    for (const commande of commandes) {
+      const cle = commande.statut === 'EN_LIVRAISON' ? 'PRETE' : commande.statut
+      if (c[cle] !== undefined) c[cle] += 1
+    }
     return c
   }, [commandes])
 

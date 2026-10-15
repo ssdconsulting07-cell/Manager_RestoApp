@@ -4,6 +4,17 @@
 
 export const REFRESH_MS = 15000
 
+// Habillage partage entre les cartes-filtres (Commandes.jsx) et le badge de
+// statut sur chaque carte commande (CommandeRow.jsx) — meme libelle, meme
+// icone, meme couleur des deux cotes, pour qu'on associe les deux d'un seul
+// coup d'oeil (retour utilisateur : les cartes ne disaient plus leur statut
+// une fois les 3 colonnes fusionnees en une seule grille filtrable).
+export const STATUT_META = {
+  PAYEE: { label: 'Reçue', icon: 'fa-receipt', accent: '#9c6b0c', accentBg: '#f6ecd9' },
+  EN_PREPARATION: { label: 'En préparation', icon: 'fa-fire-burner', accent: '#141414', accentBg: '#ececea' },
+  PRETE: { label: 'Prête', icon: 'fa-circle-check', accent: '#1f6f57', accentBg: '#e2f2ec' },
+}
+
 const PHOTO_FALLBACK =
   'data:image/svg+xml,' +
   encodeURIComponent(

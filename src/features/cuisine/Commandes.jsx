@@ -6,7 +6,7 @@ import Toast from '../../components/Toast.jsx'
 import Pagination from '../../components/crud/Pagination.jsx'
 import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
 import CommandeRow from './CommandeRow.jsx'
-import { nomProduit, noteCommande } from './cuisineUtils.js'
+import { STATUT_META, nomProduit, noteCommande } from './cuisineUtils.js'
 import { useAlerteNouvelleCommande } from './useAlerteNouvelleCommande.js'
 import { useCuisineBoard } from './useCuisineBoard.js'
 import './cuisine-board.css'
@@ -21,11 +21,14 @@ import './cuisine-board.css'
 // personnel — c'est le filtre "Toutes" par defaut qui le garantit, pas la
 // mise en page (l'ancien decoupage en 3 colonnes n'est plus necessaire pour
 // ca, voir cuisineDemo.js pour l'historique du bug que ca corrigeait).
+// Derive de STATUT_META (cuisineUtils.js), partage avec le badge de statut
+// de chaque carte (CommandeRow.jsx) : memes couleurs des deux cotes. Seul
+// "Toutes" n'est pas un vrai statut et reste donc defini ici.
 const FILTER_DEFS = [
   { key: 'TOUS', label: 'Toutes', icon: 'fa-layer-group', accent: '#a6192e', accentBg: '#f8e9ec' },
-  { key: 'PAYEE', label: 'Reçues', icon: 'fa-receipt', accent: '#9c6b0c', accentBg: '#f6ecd9' },
-  { key: 'EN_PREPARATION', label: 'En préparation', icon: 'fa-fire-burner', accent: '#141414', accentBg: '#ececea' },
-  { key: 'PRETE', label: 'Prêtes', icon: 'fa-circle-check', accent: '#1f6f57', accentBg: '#e2f2ec' },
+  { key: 'PAYEE', ...STATUT_META.PAYEE, label: 'Reçues' },
+  { key: 'EN_PREPARATION', ...STATUT_META.EN_PREPARATION },
+  { key: 'PRETE', ...STATUT_META.PRETE, label: 'Prêtes' },
 ]
 
 const FILTER_LABELS = Object.fromEntries(FILTER_DEFS.map((f) => [f.key, f.label]))

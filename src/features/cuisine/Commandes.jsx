@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { allowedTransitions } from '../../auth/transitions.js'
 import Layout from '../../components/Layout.jsx'
-import PageSkeleton from '../../components/PageSkeleton.jsx'
+import PageSkeleton, { CommandeRowsSkeleton } from '../../components/PageSkeleton.jsx'
 import Toast from '../../components/Toast.jsx'
 import Pagination from '../../components/crud/Pagination.jsx'
 import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
@@ -81,10 +81,31 @@ export default function Commandes() {
   const [page, setPage] = useState(1)
   const [rows, setRows] = useState(ROWS_OPTIONS[1])
   const [rafraichissement, setRafraichissement] = useState(false)
+  // Petit squelette de transition au changement de carte-filtre (retour
+  // utilisateur : "je veux des squelettes" sur ce cas aussi, pas seulement
+  // le chargement initial) — le filtrage lui-meme est instantane (deja en
+  // memoire, voir filtrees plus bas), ce delai n'est que visuel, pour
+  // eviter un remplacement brutal de la liste au clic. Declenche directement
+  // dans changerFiltre (pas via un useEffect sur filter) : un useEffect
+  // aurait semble plus "React", mais React.StrictMode rejoue les effets une
+  // fois de plus au montage en developpement, ce qui declenchait un
+  // squelette parasite de 300 ms a l'ouverture meme de la page (releve
+  // agent local) — un gestionnaire de clic n'a pas ce probleme, il ne
+  // s'execute que sur une vraie interaction.
+  const [switching, setSwitching] = useState(false)
+  const switchTimeoutRef = useRef(null)
+
+  // Nettoyage si le composant est demonte pendant le squelette de
+  // transition (ex. navigation rapide vers un autre ecran) : evite un
+  // setSwitching sur un composant qui n'existe plus.
+  useEffect(() => () => clearTimeout(switchTimeoutRef.current), [])
 
   function changerFiltre(key) {
     setFilter(key)
     setPage(1)
+    setSwitching(true)
+    clearTimeout(switchTimeoutRef.current)
+    switchTimeoutRef.current = setTimeout(() => setSwitching(false), 300)
   }
 
   // Etat local au bouton, distinct de `loading` du hook (qui ne reflete que
@@ -205,6 +226,19 @@ export default function Commandes() {
 
         {loading ? (
           <PageSkeleton page="commandes" contentOnly />
+        ) : switching || rafraichissement ? (
+          // Meme squelette que le chargement initial (CommandeRowsSkeleton,
+          // voir PageSkeleton.jsx), mais juste sur la zone de liste — les
+          // cartes-filtres et la barre d'outils restent actives pendant ce
+          // temps. count colle a visibles.length pour qu'aucun saut de
+          // hauteur ne se produise au retour aux vraies lignes (voir
+          // commentaire sur switching plus haut).
+          <div role="status" aria-busy="true">
+            <span className="page-skeleton-announcement">
+              {rafraichissement ? 'Actualisation des commandes…' : 'Changement de filtre…'}
+            </span>
+            <CommandeRowsSkeleton count={Math.max(visibles.length, 3)} />
+          </div>
         ) : visibles.length === 0 ? (
           <p className="crud-empty">
             Aucune commande « {FILTER_LABELS[filter].toLowerCase()} » pour le moment.

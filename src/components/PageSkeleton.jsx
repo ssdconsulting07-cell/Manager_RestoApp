@@ -1,3 +1,14 @@
+// Importe ici (pas seulement dans Commandes.jsx) parce que PageSkeleton est
+// charge dans le bundle principal (voir App.jsx, qui l'affiche comme
+// fallback de Suspense), alors que Commandes.jsx est charge a la demande
+// (lazy). Sans cet import, le squelette de lignes ci-dessous (qui reutilise
+// les classes cuisine-row-*) s'affichait sans aucune mise en forme au tout
+// premier chargement de la page Commandes, le temps que son propre bundle
+// (et donc ce CSS) arrive (releve agent local). Poids modeste (7,6 kB, 1,8
+// kB compresse) et classes toutes prefixees cuisine-, donc sans effet sur
+// les autres pages qui utilisent aussi PageSkeleton.
+import '../features/cuisine/cuisine-board.css'
+
 const PAGE_DETAILS = {
   produits: {
     eyebrow: 'Gérance',
@@ -35,25 +46,36 @@ function SkeletonBlock({ className = '' }) {
   return <span className={`page-skeleton-block ${className}`} />
 }
 
-function OrderCardsSkeleton() {
+// Lignes de commande squelette (tableau cuisine) : calquees sur la vraie
+// structure d'une ligne (cuisine-row / cuisine-row-head / ..., voir
+// CommandeRow.jsx) plutot que sur une grille de cartes — l'ancienne version
+// (page-skeleton-order-*, retiree) datait du design en cartes d'avant le
+// passage au tableau a lignes, et ne correspondait plus du tout a ce qui
+// s'affiche une fois charge. Exportee a part (pas seulement via
+// PageSkeleton) : Commandes.jsx la reutilise aussi pour le changement de
+// carte-filtre et le rafraichissement manuel (retour utilisateur : "je veux
+// des squelettes" sur ces trois cas), pas seulement le tout premier
+// chargement.
+export function CommandeRowsSkeleton({ count = 4 }) {
   return (
-    <div className="page-skeleton-order-grid" aria-hidden="true">
-      {Array.from({ length: 3 }, (_, index) => (
-        <article className="page-skeleton-order-card" key={index}>
-          <div className="page-skeleton-order-heading">
-            <SkeletonBlock className="is-order-number" />
-            <SkeletonBlock className="is-order-time" />
+    <div className="crud-list" aria-hidden="true">
+      {Array.from({ length: count }, (_, index) => (
+        <article className="cuisine-row page-skeleton-row" key={index}>
+          <div className="cuisine-row-head">
+            <div className="cuisine-row-top">
+              <div className="cuisine-row-info">
+                <SkeletonBlock className="is-row-id" />
+                <SkeletonBlock className="is-row-pill" />
+                <SkeletonBlock className="is-row-pill is-row-pill-wide" />
+                <SkeletonBlock className="is-row-pill" />
+              </div>
+              <div className="cuisine-row-primary">
+                <SkeletonBlock className="is-row-action" />
+              </div>
+              <SkeletonBlock className="is-row-toggle" />
+            </div>
+            <SkeletonBlock className="is-row-summary" />
           </div>
-          <div className="page-skeleton-order-badges">
-            <SkeletonBlock className="is-order-badge" />
-            <SkeletonBlock className="is-order-badge is-secondary" />
-          </div>
-          <div className="page-skeleton-order-lines">
-            <SkeletonBlock className="is-order-line" />
-            <SkeletonBlock className="is-order-line is-short" />
-            <SkeletonBlock className="is-order-line is-medium" />
-          </div>
-          <SkeletonBlock className="is-order-action" />
         </article>
       ))}
     </div>
@@ -153,7 +175,7 @@ export default function PageSkeleton({ page, contentOnly = false }) {
               <SkeletonBlock className="is-refresh-button" />
             </div>
           )}
-          <OrderCardsSkeleton />
+          <CommandeRowsSkeleton />
         </>
       ) : (
         <div className="dashboard-panel page-skeleton-placeholder" aria-hidden="true">

@@ -34,7 +34,7 @@ function minutesAgo(n) {
   return new Date(Date.now() - n * 60_000).toISOString()
 }
 
-const DEMO_VERSION = 7
+const DEMO_VERSION = 8
 
 const DEMO_SEED = [
   // --- File d'attente (PAYEE) ---
@@ -204,6 +204,57 @@ const DEMO_SEED = [
       { produitId: 'p-jus', quantite: 1 },
     ],
   },
+  // --- Livrees (historique Livreur, voir HistoriqueLivraisons.jsx) ---
+  // livreeLe : horodatage de la remise au client, distinct de creeLe
+  // (heure de commande) — absent du contrat API actuel (commandes/ est
+  // un paquet vide cote backend), ajoute ici cote mock en attendant ;
+  // stampe de la meme facon a l'execution par patchStatutDemo ci-dessous
+  // des qu'une vraie commande EN_LIVRAISON passe a LIVREE.
+  {
+    id: 'demo-1040',
+    statut: 'LIVREE',
+    canal: 'APP',
+    mode: 'LIVRAISON',
+    creeLe: minutesAgo(130),
+    livreeLe: minutesAgo(95),
+    lignes: [
+      { produitId: 'p-burger', quantite: 1 },
+      { produitId: 'p-cola', quantite: 1 },
+    ],
+  },
+  {
+    id: 'demo-1038',
+    statut: 'LIVREE',
+    canal: 'APP',
+    mode: 'LIVRAISON',
+    creeLe: minutesAgo(190),
+    livreeLe: minutesAgo(160),
+    lignes: [
+      { produitId: 'p-double', quantite: 2 },
+      { produitId: 'p-fries-l', quantite: 1 },
+    ],
+  },
+  {
+    id: 'demo-1021',
+    statut: 'LIVREE',
+    canal: 'APP',
+    mode: 'LIVRAISON',
+    creeLe: minutesAgo(1485),
+    livreeLe: minutesAgo(1450),
+    lignes: [
+      { produitId: 'p-wrap', quantite: 1 },
+      { produitId: 'p-jus', quantite: 1 },
+    ],
+  },
+  {
+    id: 'demo-1005',
+    statut: 'LIVREE',
+    canal: 'APP',
+    mode: 'LIVRAISON',
+    creeLe: minutesAgo(4340),
+    livreeLe: minutesAgo(4320),
+    lignes: [{ produitId: 'p-cheese', quantite: 3 }],
+  },
 ]
 
 /** @type {{ version: number, active: boolean, commandes: typeof DEMO_SEED } | null} */
@@ -229,7 +280,14 @@ export function patchDemoStatut(id, statut) {
   demoState = {
     version: DEMO_VERSION,
     active: true,
-    commandes: liste.map((c) => (c.id === id ? { ...c, statut } : c)),
+    // livreeLe : stampe uniquement au passage reel a LIVREE (scan QR, voir
+    // ScanLivraisonModal.jsx), jamais recalcule sur un simple rechargement —
+    // sert a dater l'Historique des livraisons (HistoriqueLivraisons.jsx).
+    commandes: liste.map((c) =>
+      c.id === id
+        ? { ...c, statut, ...(statut === 'LIVREE' ? { livreeLe: new Date().toISOString() } : {}) }
+        : c,
+    ),
   }
   return demoState.commandes.find((c) => c.id === id)
 }

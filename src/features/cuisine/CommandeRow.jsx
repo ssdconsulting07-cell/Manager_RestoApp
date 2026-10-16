@@ -13,6 +13,7 @@ import {
   resumePlats,
   texteAccompagnement,
   textePersonnalisation,
+  ticketId,
 } from './cuisineUtils.js'
 
 const LABEL_COURT = {
@@ -25,6 +26,9 @@ const LABEL_COURT = {
   // ne s'affiche de toute facon plus ici puisque transitions n'est plus
   // vide dans ce cas).
   EN_LIVRAISON: 'Envoyer au livreur',
+  // Espace Livreur (voir ScanLivraisonModal.jsx) : pas de bouton direct,
+  // ouvre le scanner QR — onScanLivraison plus bas.
+  LIVREE: 'Scanner QR',
 }
 
 /** Ligne de commande cuisine, repliable — retour utilisateur : le ticket et
@@ -71,6 +75,14 @@ export default function CommandeRow({
   showDuree = false,
   emptyActionLabel = null,
   emptyActionIcon = 'fa-circle-check',
+  // Espace Livreur uniquement (Livraisons.jsx) : appele au lieu de
+  // onTransition quand la transition cliquee est EN_LIVRAISON -> LIVREE,
+  // pour ouvrir le scanner QR plutot que d'appliquer le changement de
+  // statut directement — voir ScanLivraisonModal.jsx. CommandeRow reste
+  // sinon agnostique du role qui l'utilise (Cuisine ne recoit jamais cette
+  // transition, voir allowedTransitions/transitions.js, donc cette prop
+  // reste simplement inutilisee cote Cuisine).
+  onScanLivraison = null,
 }) {
   const [deplie, setDeplie] = useState(false)
   const [confirmation, setConfirmation] = useState(null)
@@ -88,8 +100,8 @@ export default function CommandeRow({
   // de burger + 1 ligne de frites (2 lignes) mais 3 plats a sortir, et
   // c'est ce deuxieme chiffre qui compte en cuisine.
   const totalPlats = lignes.reduce((total, ligne) => total + (ligne.quantite || 0), 0)
-  const ticketId = String(commande.id).replace(/^demo-/, '')
-  const detailsId = `commande-detail-${ticketId}`
+  const idTicket = ticketId(commande)
+  const detailsId = `commande-detail-${idTicket}`
 
   return (
     <article
@@ -98,7 +110,7 @@ export default function CommandeRow({
       <div className="cuisine-row-head" onClick={() => setDeplie((v) => !v)}>
         <div className="cuisine-row-top">
           <div className="cuisine-row-info">
-            <span className="cuisine-row-id">#{ticketId}</span>
+            <span className="cuisine-row-id">#{idTicket}</span>
             <span className={`cuisine-row-pill is-canal${comptoir ? ' is-comptoir' : ''}`}>
               <i className={`fa-solid ${comptoir ? 'fa-store' : 'fa-mobile-screen-button'}`} aria-hidden="true" />
               {canalLabel(commande)}
@@ -134,6 +146,8 @@ export default function CommandeRow({
                     event.stopPropagation()
                     if (t.to === 'EN_LIVRAISON') {
                       setConfirmation(t)
+                    } else if (t.to === 'LIVREE' && onScanLivraison) {
+                      onScanLivraison(commande, t)
                     } else {
                       onTransition(t.to)
                     }
@@ -161,7 +175,7 @@ export default function CommandeRow({
             className={`cuisine-row-toggle${deplie ? ' is-expanded' : ''}`}
             aria-expanded={deplie}
             aria-controls={detailsId}
-            aria-label={deplie ? `Masquer le détail de la commande ${ticketId}` : `Voir le détail de la commande ${ticketId}`}
+            aria-label={deplie ? `Masquer le détail de la commande ${idTicket}` : `Voir le détail de la commande ${idTicket}`}
           >
             <i className="fa-solid fa-chevron-down" aria-hidden="true" />
           </button>
@@ -222,7 +236,7 @@ export default function CommandeRow({
       {confirmation && (
         <ConfirmModal
           title="Envoyer cette commande au livreur ?"
-          message={`La commande #${ticketId} sera marquée « En livraison » et restera visible sous « Prêtes » jusqu'à sa livraison. Cette action ne peut pas être annulée.`}
+          message={`La commande #${idTicket} sera marquée « En livraison » et restera visible sous « Prêtes » jusqu'à sa livraison. Cette action ne peut pas être annulée.`}
           confirmLabel="Envoyer"
           tone="warning"
           icon="fa-motorcycle"

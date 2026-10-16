@@ -19,6 +19,9 @@ export const STATUT_META = {
   // ne doit plus disparaitre du tableau cuisine une fois envoyee, comme
   // PRETE auparavant (meme bug, meme correction, voir useCuisineBoard.js).
   EN_LIVRAISON: { label: 'En livraison', icon: 'fa-motorcycle', accent: '#2f6fed', accentBg: '#e8eefc' },
+  // Livree (espace Livreur, voir transitions.js) : meme vert que PRETE —
+  // les deux signalent une etape "terminee" positivement.
+  LIVREE: { label: 'Livrée', icon: 'fa-flag-checkered', accent: '#1f6f57', accentBg: '#e2f2ec' },
 }
 
 const PHOTO_FALLBACK =
@@ -212,6 +215,13 @@ export function noteCommande(commande) {
 }
 
 /** Normalise la liste API vers { [id]: { nom, photo } }. */
+// Numero de ticket affiche (sans le prefixe demo-) — centralise ici (plutot
+// que duplique dans CommandeRow.jsx, Livraisons.jsx, etc.) car utilise par
+// plusieurs ecrans des espaces Cuisine et Livreur.
+export function ticketId(commande) {
+  return String(commande.id).replace(/^demo-/, '')
+}
+
 export function mapProduitsParId(liste) {
   return Object.fromEntries(
     (liste || []).map((p) => [

@@ -20,11 +20,6 @@ const PAGE_DETAILS = {
     title: 'Catégories',
     description: 'La gestion des catégories sera disponible dans la prochaine étape.',
   },
-  livraisons: {
-    eyebrow: 'Livraison',
-    title: 'Livraisons',
-    description: 'Le suivi des tournées et des commandes à livrer sera disponible dans la prochaine étape.',
-  },
   personnel: {
     eyebrow: 'Manager',
     title: 'Personnel',
@@ -34,6 +29,11 @@ const PAGE_DETAILS = {
     eyebrow: 'Traçabilité',
     title: 'Journal d’audit',
     description: 'Toutes les actions du personnel, en consultation seule.',
+  },
+  'historique-livraisons': {
+    eyebrow: 'Livraison',
+    title: 'Historique des livraisons',
+    description: 'Toutes les livraisons effectuées, en consultation seule.',
   },
   'historique-ventes': {
     eyebrow: 'Vendeur',
@@ -167,7 +167,7 @@ export default function PageSkeleton({ page, contentOnly = false }) {
         <DashboardSkeleton />
       ) : page === 'vente' ? (
         <PosSkeleton />
-      ) : page === 'commandes' ? (
+      ) : page === 'commandes' || page === 'livraisons' ? (
         <>
           {!contentOnly && (
             <div className="page-skeleton-page-heading" aria-hidden="true">

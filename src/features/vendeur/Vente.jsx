@@ -8,6 +8,8 @@ import { useAuth } from '../../auth/AuthContext.jsx'
 import { useMenuData } from '../gerant/MenuDataContext.jsx'
 import { CATEGORIE_PLATS_DU_JOUR_ID } from '../gerant/menuData.js'
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
+import { creerCommandeComptoir } from './commandeComptoir.js'
+import RetraitsComptoir from './RetraitsComptoir.jsx'
 import { enregistrerVente } from './ventesData.js'
 import Recu from './Recu.jsx'
 import './vendeur-pos.css'
@@ -227,12 +229,22 @@ export default function Vente() {
     })
   }
 
-  function confirmerPaiement(modePaiement, montantRecuNombre) {
-    const vente = enregistrerVente({ lignes: panier, montantRecu: montantRecuNombre, modePaiement, vendeur: username })
+  async function confirmerPaiement(modePaiement, montantRecuNombre) {
+    const lignesVendues = panier
+    const vente = enregistrerVente({ lignes: lignesVendues, montantRecu: montantRecuNombre, modePaiement, vendeur: username })
     setDerniereVente(vente)
     setPanier([])
     setVue('catalogue')
     setToast({ id: Date.now(), type: 'success', message: `Vente encaissée — Ticket n° ${vente.numero}.` })
+    // Cree la commande cote cuisine en arriere-plan (voir commandeComptoir.js,
+    // decision du 16/10/2026) : le recu de caisse ci-dessus est deja affiche,
+    // cet appel ne doit jamais le retarder ni le faire echouer.
+    try {
+      await creerCommandeComptoir(lignesVendues)
+    } catch {
+      // creerCommandeComptoir() ne rejette normalement jamais (repli demo en
+      // cas d'erreur reseau/backend) — filet de securite uniquement.
+    }
   }
 
   function nouvelleVente() {
@@ -275,6 +287,8 @@ export default function Vente() {
             <p>Sélectionnez les articles du comptoir, puis encaissez.</p>
           </div>
         </div>
+
+        <RetraitsComptoir />
 
         <StatFilterCards
           items={CATEGORIE_FILTRES.map((f) => ({ ...f, value: comptesParFiltre[f.key] }))}

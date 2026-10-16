@@ -60,7 +60,12 @@ describe('Manager mock data', () => {
     const times = journalAudit.map((e) => new Date(e.createdAt).getTime())
     expect([...times].sort((a, b) => b - a)).toEqual(times)
     expect(journalAudit.some((e) => /connect/i.test(e.action))).toBe(false)
-    expect(new Set(journalAudit.map((e) => e.acteur.role))).toEqual(new Set(['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR']))
+    // MANAGER n'apparait plus ici depuis le 16/10/2026 (audit de coherence
+    // des flux) : les annulations de commandes sont desormais reservees a
+    // la Cuisine (voir transitions.js/auditData.js), et c'etait la seule
+    // action que ce mock attribuait au Manager — qui ne fait par ailleurs
+    // que consulter (dashboard/journal), jamais agir.
+    expect(new Set(journalAudit.map((e) => e.acteur.role))).toEqual(new Set(['CUISINE', 'GERANT', 'LIVREUR']))
   })
 
   it('reserves Personnel actions to Gerant staff and keeps the Manager on orders', () => {

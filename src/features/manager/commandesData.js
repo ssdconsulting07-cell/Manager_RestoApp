@@ -1,8 +1,11 @@
 // Commandes du jour — MOCK en memoire en attendant le module Commandes du backend
 // (dossier vide, seul le contrat OpenAPI existe). A remplacer par GET /commandes.
 //
-// ANNULEE n'existe pas encore dans l'enum StatutCommande du contrat : statut
-// purement mock, a aligner quand le backend tranchera la gestion des annulations.
+// ANNULEE est desormais une vraie transition du cote Cuisine (16/10/2026,
+// voir transitions.js : PAYEE/EN_PREPARATION/PRETE -> ANNULEE, role CUISINE),
+// mais n'existe toujours pas dans l'enum StatutCommande du contrat OpenAPI —
+// ce chiffre-ci reste donc un mock independant de la vraie commande annulee
+// en cuisine, a aligner quand le backend tranchera la gestion des annulations.
 export const STATUTS_COMMANDE = {
   PAYEE: 'PAYEE',
   EN_PREPARATION: 'EN_PREPARATION',

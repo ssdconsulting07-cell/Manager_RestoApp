@@ -153,7 +153,7 @@ export default function CommandeRow({
                     // la commande la deplierait/replierait aussi par
                     // accident.
                     event.stopPropagation()
-                    if (t.to === 'EN_LIVRAISON') {
+                    if (t.to === 'EN_LIVRAISON' || t.to === 'ANNULEE') {
                       setConfirmation(t)
                     } else if (t.to === 'LIVREE' && onScanLivraison) {
                       onScanLivraison(commande, t)
@@ -161,7 +161,7 @@ export default function CommandeRow({
                       onTransition(t.to)
                     }
                   }}
-                  className="manager-button manager-button-primary"
+                  className={`manager-button ${t.to === 'ANNULEE' ? 'manager-button-danger' : 'manager-button-primary'}`}
                 >
                   {pending ? '…' : LABEL_COURT[t.to] || t.label}
                 </button>
@@ -244,15 +244,21 @@ export default function CommandeRow({
       )}
       {confirmation && (
         <ConfirmModal
-          title={confirmationLivreur ? 'Confirmer la récupération de cette commande ?' : 'Envoyer cette commande au livreur ?'}
-          message={
-            confirmationLivreur
-              ? `La commande #${idTicket} sera marquée « En livraison ». Cette action ne peut pas être annulée.`
-              : `La commande #${idTicket} sera marquée « En livraison » et restera visible sous « Prêtes » jusqu'à sa livraison. Cette action ne peut pas être annulée.`
+          title={
+            confirmation.to === 'ANNULEE'
+              ? 'Annuler cette commande ?'
+              : confirmationLivreur ? 'Confirmer la récupération de cette commande ?' : 'Envoyer cette commande au livreur ?'
           }
-          confirmLabel={confirmationLivreur ? 'Récupéré' : 'Envoyer'}
-          tone="warning"
-          icon="fa-motorcycle"
+          message={
+            confirmation.to === 'ANNULEE'
+              ? `La commande #${idTicket} sera marquée « Annulée » et disparaîtra du tableau. Cette action est définitive.`
+              : confirmationLivreur
+                ? `La commande #${idTicket} sera marquée « En livraison ». Cette action ne peut pas être annulée.`
+                : `La commande #${idTicket} sera marquée « En livraison » et restera visible sous « Prêtes » jusqu'à sa livraison. Cette action ne peut pas être annulée.`
+          }
+          confirmLabel={confirmation.to === 'ANNULEE' ? 'Annuler la commande' : confirmationLivreur ? 'Récupéré' : 'Envoyer'}
+          tone={confirmation.to === 'ANNULEE' ? 'danger' : 'warning'}
+          icon={confirmation.to === 'ANNULEE' ? 'fa-ban' : 'fa-motorcycle'}
           onConfirm={() => {
             onTransition(confirmation.to)
             setConfirmation(null)

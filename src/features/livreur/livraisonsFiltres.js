@@ -41,6 +41,45 @@ export function erreurPeriode({ debut, fin }) {
   return null
 }
 
+// Filtre rapide affiche au-dessus de la liste (par defaut "aujourdhui",
+// repli "semaine"/"tous") : distinct de la periode personnalisee de la
+// modale d'export, qui reste volontairement non bornee par ce filtre pour
+// pouvoir exporter plus large que ce qui est affiche a l'ecran.
+export const PERIODE_RAPIDE_DEFAUT = 'aujourdhui'
+
+function dateIso(date) {
+  return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-')
+}
+
+// Debut de semaine calendaire (depuis lundi) — meme convention que
+// caDeLaSemaine()/debutDeSemaine() cote dashboard Manager (financeData.js).
+function debutDeSemaine(maintenant) {
+  const decalage = (maintenant.getDay() + 6) % 7
+  const debut = new Date(maintenant)
+  debut.setDate(debut.getDate() - decalage)
+  return debut
+}
+
+// Traduit le filtre rapide en bornes {debut, fin} au format des champs
+// <input type="date"> pour reutiliser filtrerParPeriode() ci-dessous sans
+// dupliquer la logique d'inclusion des bornes.
+export function bornesPeriodeRapide(periodeRapide, maintenant = new Date()) {
+  if (periodeRapide === 'aujourdhui') {
+    const jour = dateIso(maintenant)
+    return { debut: jour, fin: jour }
+  }
+  if (periodeRapide === 'semaine') {
+    return { debut: dateIso(debutDeSemaine(maintenant)), fin: dateIso(maintenant) }
+  }
+  return { debut: '', fin: '' }
+}
+
+export function libellePeriodeRapide(periodeRapide) {
+  if (periodeRapide === 'aujourdhui') return 'Aujourd’hui'
+  if (periodeRapide === 'semaine') return 'Cette semaine'
+  return 'Tout'
+}
+
 // Bornes incluses : la date de fin couvre toute la journee. Filtre sur la
 // date de livraison (livreeLe) plutot que la date de creation (creeLe) —
 // c'est bien l'historique des livraisons, pas des commandes.

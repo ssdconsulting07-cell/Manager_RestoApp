@@ -16,7 +16,7 @@ import { useCuisineBoard } from './useCuisineBoard.js'
 const APERCU_TICKETS = 6
 
 export default function CuisineDashboard() {
-  const { commandes, produits, loading, demo, nouvelleAlerte, clearAlerte } = useCuisineBoard()
+  const { commandes, produits, loading, nouvelleAlerte, clearAlerte } = useCuisineBoard()
 
   // EN_LIVRAISON compte avec PRETE ici aussi (meme regle que Commandes.jsx,
   // voir son commentaire sur counts/filtrees) : sans ça, la carte KPI
@@ -66,7 +66,7 @@ export default function CuisineDashboard() {
         <KpiCard
           icon="fa-layer-group" accent="brand" label="Commandes actives"
           value={loading ? '—' : counts.PAYEE + counts.EN_PREPARATION + counts.PRETE}
-          detail={demo ? 'démo' : 'reçue → prête'} to="/commandes"
+          detail="reçue → prête" to="/commandes"
         />
         <KpiCard
           icon="fa-receipt" accent="red" label="Reçues"

@@ -234,9 +234,23 @@ export function patchDemoStatut(id, statut) {
   return demoState.commandes.find((c) => c.id === id)
 }
 
-/** Si l'API n'a aucune commande active cuisine, on bascule sur la démo. */
+/** Si l'API n'a aucune commande active cuisine, on bascule sur la démo —
+ * seulement en developpement (import.meta.env.DEV). En production, basculer
+ * sur de fausses commandes serait dangereux (releve agent local) : lors
+ * d'une panne reelle de l'API (voir le bloc catch de charger() dans
+ * useCuisineBoard.js, qui appelle cette fonction avec une liste vide), la
+ * cuisine se retrouverait a preparer des plats fictifs sans le moindre
+ * signal visible — le mot "demo" affiche a l'ecran etait le seul indice,
+ * et il a ete retire pour de bonnes raisons (voir Commandes.jsx). En
+ * production, une cuisine reellement vide affiche donc desormais "Aucune
+ * commande" comme n'importe quel autre ecran vide, et une panne reste
+ * signalee normalement. En dev, le comportement est inchange : la demo
+ * comble toujours une cuisine vide pour pouvoir travailler sans backend. */
 export function avecDemoSiVide(commandesApi) {
   const liste = Array.isArray(commandesApi) ? commandesApi : []
+  if (!import.meta.env.DEV) {
+    return { commandes: liste, demo: false }
+  }
   const aActives = liste.some(
     (c) => c.statut === 'PAYEE' || c.statut === 'EN_PREPARATION' || c.statut === 'PRETE' || c.statut === 'EN_LIVRAISON',
   )

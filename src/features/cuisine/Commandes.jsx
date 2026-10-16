@@ -166,7 +166,7 @@ export default function Commandes() {
     <Layout>
       <section className="dashboard-intro">
         <div>
-          <p className="manager-eyebrow">Cuisine{demo ? ' · démo' : ''}</p>
+          <p className="manager-eyebrow">Cuisine</p>
           <h1>Suivi des commandes</h1>
           <p>Du paiement au retrait, sur un seul écran.</p>
         </div>
@@ -214,12 +214,14 @@ export default function Commandes() {
         </div>
 
         {/* L'erreur brute de l'API (ex. "Une erreur inattendue est survenue")
-            ne s'affiche que si on n'est PAS deja replie sur la demo : en
-            demo, le badge "· démo" ci-dessus suffit a signaler la situation,
-            et montrer en plus ce texte technique n'apportait rien (retour
-            utilisateur). Une erreur d'action (ex. 403 sur changerStatut)
-            reste affichee normalement, elle, puisqu'elle ne coincide pas
-            forcement avec un passage en demo. */}
+            ne s'affiche que si on n'est PAS deja replie sur la demo : les
+            donnees de secours remplissent deja l'ecran dans ce cas, et
+            montrer en plus ce texte technique n'apportait rien. Plus de
+            badge "· démo" visible pour l'indiquer (retour utilisateur :
+            retire de l'eyebrow ci-dessus), mais demo reste utile ici en
+            interne pour cette regle. Une erreur d'action (ex. 403 sur
+            changerStatut) reste affichee normalement, elle, puisqu'elle ne
+            coincide pas forcement avec un passage en demo. */}
         {error && !demo && (
           <p role="alert" className="cuisine-board-error">
             {error}

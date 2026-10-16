@@ -333,6 +333,7 @@
 .scan-livraison-fallback-row { display: flex; gap: 10px; margin-top: 7px; }
 .scan-livraison-fallback-row input { flex: 1; min-width: 0; border: 1px solid #d8d8d8; border-radius: 6px; padding: 12px; font: inherit; font-size: 13px; outline: none; }
 .scan-livraison-fallback-row input:focus { border-color: #a6192e; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
+.scan-livraison-fallback-hint { margin: 14px 0 0; color: #6b6b6b; font-size: 12px; line-height: 1.5; }
 .password-field { position: relative; display: flex; }
 .password-field input { flex: 1; padding-right: 40px; }
 .password-toggle { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); border: 0; background: transparent; color: #6b6b6b; cursor: pointer; font-size: 15px; padding: 8px; line-height: 1; }
@@ -385,6 +386,7 @@
 .manager-shell.is-dark .scan-livraison-fallback { border-color: #2a2a2e; }
 .manager-shell.is-dark .scan-livraison-fallback label { color: #f2f2f2; }
 .manager-shell.is-dark .scan-livraison-fallback-row input { border-color: #2f2f33; color: #f2f2f2; background: #121214; }
+.manager-shell.is-dark .scan-livraison-fallback-hint { color: #9a9a9e; }
 .manager-shell.is-dark .password-toggle { color: #9a9a9e; }
 .manager-shell.is-dark .password-toggle:hover { color: #f2f2f2; }
 .manager-shell.is-dark .manager-modal-form label,

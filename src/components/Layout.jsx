@@ -79,6 +79,8 @@ const BOTTOM_TAB_LABELS = {
   '/dashboard': 'Accueil',
   '/livraisons': 'Livraisons',
   '/historique-livraisons': 'Historique',
+  '/historique-ventes': 'Historique',
+  '/journal-audit': 'Journal',
 }
 
 const SIDEBAR_COLLAPSED_KEY = 'senyummies_manager_sidebar_collapsed'
@@ -273,7 +275,7 @@ export default function Layout({ children }) {
   }, [notificationPage, totalNotificationPages])
 
   return (
-    <div className={`manager-shell ${darkMode ? 'is-dark' : ''} ${collapsed ? 'is-collapsed' : ''} ${mobileOpen ? 'is-mobile-open' : ''} ${role === 'LIVREUR' ? 'is-livreur' : ''}`}>
+    <div className={`manager-shell ${darkMode ? 'is-dark' : ''} ${collapsed ? 'is-collapsed' : ''} ${mobileOpen ? 'is-mobile-open' : ''}`}>
       <aside className="manager-sidebar" aria-label="Navigation principale">
         <div className="manager-sidebar-brand">
           <span className="manager-brand-full">SEN<span>YUMMIES</span></span>
@@ -311,14 +313,10 @@ export default function Layout({ children }) {
 
       <div className="manager-main">
         <header className="manager-header">
-          {role === 'LIVREUR' ? (
-            <span className="manager-header-mobile-brand" aria-hidden="true">
-              <span className="manager-header-mobile-brand-mark">SY</span>
-              <span className="manager-header-mobile-brand-role">Livreur</span>
-            </span>
-          ) : (
-            <button className="manager-mobile-menu" type="button" aria-label="Ouvrir la navigation" onClick={() => setMobileOpen(true)}><i className="fa-solid fa-bars" aria-hidden="true" /></button>
-          )}
+          <span className="manager-header-mobile-brand" aria-hidden="true">
+            <span className="manager-header-mobile-brand-mark">SY</span>
+            <span className="manager-header-mobile-brand-role">{ROLE_LABELS[role]}</span>
+          </span>
           <div className="manager-header-context">
             <div className="manager-header-datetime">
               <i className="fa-solid fa-calendar-days manager-header-datetime-icon" aria-hidden="true" />
@@ -409,16 +407,14 @@ export default function Layout({ children }) {
             </button>
             {profileOpen && (
               <div className="manager-profile-menu">
-                {role === 'LIVREUR' && (
-                  <>
-                    <button className="manager-profile-menu-mobile-only" type="button" onClick={() => { setDarkMode((current) => !current); setProfileOpen(false) }}>
-                      <i className={`fa-solid ${darkMode ? 'fa-sun' : 'fa-moon'}`} aria-hidden="true" /> {darkMode ? 'Mode clair' : 'Mode sombre'}
-                    </button>
-                    <button className="manager-profile-menu-mobile-only" type="button" onClick={() => { setNotificationsOpen(true); setProfileOpen(false) }}>
-                      <i className="fa-solid fa-bell" aria-hidden="true" /> Notifications{unreadNotifications.length > 0 ? ` (${unreadNotifications.length})` : ''}
-                    </button>
-                  </>
-                )}
+                <>
+                  <button className="manager-profile-menu-mobile-only" type="button" onClick={() => { setDarkMode((current) => !current); setProfileOpen(false) }}>
+                    <i className={`fa-solid ${darkMode ? 'fa-sun' : 'fa-moon'}`} aria-hidden="true" /> {darkMode ? 'Mode clair' : 'Mode sombre'}
+                  </button>
+                  <button className="manager-profile-menu-mobile-only" type="button" onClick={() => { setNotificationsOpen(true); setProfileOpen(false) }}>
+                    <i className="fa-solid fa-bell" aria-hidden="true" /> Notifications{unreadNotifications.length > 0 ? ` (${unreadNotifications.length})` : ''}
+                  </button>
+                </>
                 <button type="button" onClick={() => { setPasswordOpen(true); setProfileOpen(false) }}>Changer le mot de passe</button>
                 <button className="is-danger" type="button" onClick={logout}>Déconnexion</button>
               </div>
@@ -426,23 +422,21 @@ export default function Layout({ children }) {
           </div>
           </div>
         </header>
-        <main className={`manager-workarea${role === 'LIVREUR' ? ' has-bottom-tabbar' : ''}`}>{children}</main>
+        <main className="manager-workarea has-bottom-tabbar">{children}</main>
         <footer className="manager-workarea-footer">© SSD Consulting</footer>
       </div>
-      {role === 'LIVREUR' && (
-        <nav className="manager-bottom-tabbar" aria-label="Navigation Livreur">
-          {visibleItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) => `manager-bottom-tabbar-link ${isActive ? 'is-active' : ''}`}
-            >
-              <span className="manager-bottom-tabbar-icon" aria-hidden="true"><i className={`fa-solid ${item.icon}`} /></span>
-              <span className="manager-bottom-tabbar-label">{BOTTOM_TAB_LABELS[item.path] || item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-      )}
+      <nav className="manager-bottom-tabbar" aria-label={`Navigation ${ROLE_LABELS[role]}`}>
+        {visibleItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) => `manager-bottom-tabbar-link ${isActive ? 'is-active' : ''}`}
+          >
+            <span className="manager-bottom-tabbar-icon" aria-hidden="true"><i className={`fa-solid ${item.icon}`} /></span>
+            <span className="manager-bottom-tabbar-label">{BOTTOM_TAB_LABELS[item.path] || item.label}</span>
+          </NavLink>
+        ))}
+      </nav>
       {mobileOpen && <button className="manager-mobile-backdrop" aria-label="Fermer la navigation" type="button" onClick={() => setMobileOpen(false)} />}
       {passwordOpen && <ChangePasswordModal onClose={() => setPasswordOpen(false)} onNotice={showNotice} />}
       <Toast toast={toast} onClose={() => setToast(null)} />

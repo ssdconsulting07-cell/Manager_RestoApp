@@ -1060,3 +1060,39 @@
     display: none !important;
   }
 }
+
+/* Panneau "Pretes a remettre" (voir RetraitsComptoir.jsx, decision du
+   16/10/2026, audit de coherence des flux) : reutilise les tickets
+   cuisine-row (cuisine-board.css) tels quels, seul l'habillage du panneau
+   lui-meme est nouveau ici. */
+.vendeur-retraits-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border: 1px solid #f1c6cd;
+  border-radius: 14px;
+  background: #fdf3f4;
+}
+
+.vendeur-retraits-titre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #a6192e;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.manager-shell.is-dark .vendeur-retraits-panel {
+  border-color: #5a2630;
+  background: #241316;
+}
+
+.manager-shell.is-dark .vendeur-retraits-titre {
+  color: #e8778a;
+}

@@ -43,12 +43,13 @@ const FILTER_LABELS = Object.fromEntries(FILTER_DEFS.map((f) => [f.key, f.label]
 const ROWS_OPTIONS = [5, 10, 25]
 
 // Note statique affichee a la place du bouton d'action quand CUISINE n'a
-// aucune transition sortante (voir transitions.js) : PRETE en mode retrait/
-// comptoir (rien a faire, client vient chercher) et EN_LIVRAISON (rien a
-// faire non plus, c'est au tour de LIVREUR). PRETE en mode livraison a sa
-// propre transition ("Envoyer au livreur"), donc ne passe jamais par ici.
+// aucune transition sortante (voir transitions.js) : seulement EN_LIVRAISON
+// desormais (rien a faire, c'est au tour de LIVREUR). PRETE avait sa place
+// ici (retrait/comptoir, rien a faire avant le 16/10/2026), mais la
+// Cuisine dispose maintenant toujours d'au moins "Annuler" a ce stade
+// (voir transitions.js, audit de coherence des flux) — ce cas ne se
+// produit donc plus jamais pour PRETE.
 const EMPTY_ACTION = {
-  PRETE: { label: 'En attente de retrait', icon: 'fa-circle-check' },
   EN_LIVRAISON: { label: 'En livraison', icon: 'fa-motorcycle' },
 }
 

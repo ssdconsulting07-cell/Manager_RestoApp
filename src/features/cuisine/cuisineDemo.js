@@ -6,7 +6,10 @@
 // EN_PREPARATION, et la remplaçait purement et simplement par le jeu de
 // demo, ce qui est exactement ce que la colonne "Prêtes" devait eviter).
 // Store partage en memoire pour que le tableau cuisine (Commandes.jsx) voie
-// des mutations coherentes entre deux rafraichissements.
+// des mutations coherentes entre deux rafraichissements — et desormais
+// aussi les ventes comptoir cote Vendeur (voir creerCommandeDemo plus bas,
+// decision du 16/10/2026, audit de coherence des flux).
+import { PRODUITS_INITIAUX } from '../gerant/menuData.js'
 
 // Photos fictives (Unsplash) — en attendant les images produit du backend.
 const img = (id, w = 480) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&h=${360}&q=80`
@@ -292,6 +295,34 @@ export function patchDemoStatut(id, statut) {
   return demoState.commandes.find((c) => c.id === id)
 }
 
+// Prochain id de demo (au-dela du plus grand id du seed ci-dessus) pour les
+// commandes creees en cours de session, pas seulement mutees — jusqu'ici
+// cette demo ne faisait que PATCHer des commandes deja existantes.
+let prochainIdDemo = 1060
+
+/** Ajoute une nouvelle commande au store demo partage (voir
+ * creerCommandeComptoir dans features/vendeur/commandeComptoir.js) : une
+ * vente encaissee au comptoir entre ainsi dans le meme cycle de vie que les
+ * commandes client, visible par la Cuisine (useCuisineBoard.js) des le
+ * prochain rafraichissement, sans que ce fichier ait besoin de connaitre
+ * l'espace Vendeur (decision du 16/10/2026, point 1 de l'audit de
+ * coherence des flux). */
+export function creerCommandeDemo({ lignes, note, canal, mode }) {
+  const liste = getDemoCommandes()
+  const commande = {
+    id: `demo-${prochainIdDemo}`,
+    statut: 'PAYEE',
+    canal,
+    mode,
+    creeLe: new Date().toISOString(),
+    ...(note ? { note } : {}),
+    lignes,
+  }
+  prochainIdDemo += 1
+  demoState = { version: DEMO_VERSION, active: true, commandes: [...liste, commande] }
+  return commande
+}
+
 /** Si l'API n'a aucune commande active cuisine, on bascule sur la démo —
  * seulement en developpement (import.meta.env.DEV). En production, basculer
  * sur de fausses commandes serait dangereux (releve agent local) : lors
@@ -319,8 +350,18 @@ export function avecDemoSiVide(commandesApi) {
   return { commandes: getDemoCommandes(), demo: true }
 }
 
+// Catalogue Gerant/Vendeur (menuData.js) : une vente comptoir (voir
+// commandeComptoir.js) utilise les IDs de CE catalogue, pas ceux de
+// DEMO_PRODUITS ci-dessus — fusionne ici pour que la Cuisine affiche le bon
+// nom/la bonne photo sur ces tickets-la (decision du 16/10/2026, point 2
+// de l'audit de coherence des flux : un seul dictionnaire produits pour
+// l'affichage, partage par la Cuisine, le Livreur ET le Vendeur).
+const PRODUITS_GERANT = Object.fromEntries(
+  PRODUITS_INITIAUX.map((p) => [p.id, { nom: p.nom, photo: p.photoUrl }]),
+)
+
 export function mergeProduitsDemo(produitsApi) {
-  const out = { ...DEMO_PRODUITS }
+  const out = { ...DEMO_PRODUITS, ...PRODUITS_GERANT }
   for (const [id, p] of Object.entries(produitsApi || {})) {
     const base = typeof out[id] === 'object' ? out[id] : { nom: out[id], photo: null }
     out[id] = {

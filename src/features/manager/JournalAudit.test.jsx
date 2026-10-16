@@ -95,7 +95,12 @@ describe('Journal d’audit page', () => {
 
   it('exports exactly the filtered entries within the period, and blocks an inverted period', async () => {
     renderPage()
-    fireEvent.change(screen.getByLabelText('Filtrer par rôle'), { target: { value: 'MANAGER' } })
+    // Filtre sur GERANT plutot que MANAGER : depuis le 16/10/2026 (audit de
+    // coherence des flux), les annulations de commandes sont reservees a la
+    // Cuisine, pas au Manager (voir transitions.js/auditData.js) — un Manager
+    // n'a donc plus jamais d'entree dans ce journal (il ne fait que
+    // consulter), ce qui rendrait ce test non representatif avec ce role.
+    fireEvent.change(screen.getByLabelText('Filtrer par rôle'), { target: { value: 'GERANT' } })
     fireEvent.click(screen.getByRole('button', { name: /Exporter/ }))
     const dialog = screen.getByRole('dialog')
 
@@ -106,14 +111,14 @@ describe('Journal d’audit page', () => {
 
     fireEvent.change(within(dialog).getByLabelText('Début'), { target: { value: '' } })
     fireEvent.change(within(dialog).getByLabelText('Fin'), { target: { value: '' } })
-    const managers = journalAudit.filter((e) => e.acteur.role === 'MANAGER')
-    expect(within(dialog).getByText(`${managers.length} actions à exporter`)).toBeInTheDocument()
+    const gerants = journalAudit.filter((e) => e.acteur.role === 'GERANT')
+    expect(within(dialog).getByText(`${gerants.length} actions à exporter`)).toBeInTheDocument()
     fireEvent.click(within(dialog).getByRole('button', { name: /Exporter/ }))
 
     await waitFor(() => expect(exporterJournalAudit).toHaveBeenCalledTimes(1))
     const { entrees, parametres } = exporterJournalAudit.mock.calls[0][0]
-    expect(entrees.map((e) => e.id)).toEqual(managers.map((e) => e.id))
-    expect(parametres).toMatchObject({ role: 'Manager', domaine: 'Tous les types', periode: 'Toute la période' })
+    expect(entrees.map((e) => e.id)).toEqual(gerants.map((e) => e.id))
+    expect(parametres).toMatchObject({ role: 'Gérant', domaine: 'Tous les types', periode: 'Toute la période' })
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   })
 })

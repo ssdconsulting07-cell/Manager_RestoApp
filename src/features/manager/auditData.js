@@ -6,7 +6,10 @@
 // deconnexions). Regles de coherence du mock :
 // - les actions Personnel sont reservees aux Gerants (seul role ayant acces
 //   a /personnel), jamais au Manager ;
-// - le Manager n'agit que sur les commandes (annulations) ;
+// - les annulations de commandes sont reservees a la Cuisine, pas au Manager
+//   (16/10/2026, voir transitions.js : PAYEE/EN_PREPARATION/PRETE -> ANNULEE,
+//   role CUISINE uniquement — le Manager n'a de toute facon pas acces a
+//   /commandes, voir roles.js) ;
 // - le role enregistre est celui de l'employe AU MOMENT de l'action
 //   (Mariama Sy etait en Cuisine avant sa promotion en Gerant) ;
 // - un employe n'apparait qu'apres la creation de son compte.
@@ -40,7 +43,7 @@ const ENTREES_DU_JOUR = [
   [26, 'awa', 'PRODUIT', 'a mis le produit « Frites maison » en rupture'],
   [41, 'awa', 'PERSONNEL', 'a créé le compte livreur de Cheikh Ba'],
   [58, 'awa', 'PRODUIT', 'a modifié le prix de « Double Ketchup Burger » : 3 500 → 3 800 F CFA'],
-  [84, 'fatou', 'COMMANDE', 'a annulé la commande #471 à la demande du client'],
+  [84, 'moussa', 'COMMANDE', 'a annulé la commande #471 à la demande du client'],
   [125, 'awa', 'ANNONCE', 'a activé la chaîne d’annonces « Nouveautés du menu »'],
   [190, 'awa', 'CATEGORIE', 'a renommé la catégorie « Snacks » en « Accompagnements »'],
   [260, 'awa', 'PERSONNEL', 'a modifié le rôle de Mariama Sy : Cuisine → Gérant'],
@@ -51,7 +54,7 @@ const ENTREES_DU_JOUR = [
 const ENTREES_ANTERIEURES = [
   [1, '22:41', 'pape', 'COMMANDE', 'a marqué la commande #434 comme livrée'],
   [1, '21:58', 'aminata', 'COMMANDE', 'a marqué la commande #431 comme prête'],
-  [1, '19:20', 'fatou', 'COMMANDE', 'a annulé la commande #418 : client injoignable'],
+  [1, '19:20', 'aminata', 'COMMANDE', 'a annulé la commande #418 : client injoignable'],
   [1, '16:05', 'ousmane', 'ANNONCE', 'a créé la chaîne d’annonces « Nouveautés du menu » en brouillon'],
   [1, '12:47', 'mariamaCuisine', 'COMMANDE', 'a passé la commande #401 en préparation'],
   [1, '11:10', 'awa', 'PRODUIT', 'a remis le produit « Jus de bissap » en stock'],
@@ -61,7 +64,7 @@ const ENTREES_ANTERIEURES = [
   [2, '15:26', 'ousmane', 'PERSONNEL', 'a régénéré le mot de passe temporaire de Pape Gueye'],
   [2, '13:12', 'mariamaCuisine', 'COMMANDE', 'a passé la commande #358 en préparation'],
   [3, '21:47', 'pape', 'COMMANDE', 'a marqué la commande #343 comme livrée'],
-  [3, '19:33', 'fatou', 'COMMANDE', 'a annulé la commande #331 : produit en rupture'],
+  [3, '19:33', 'mariamaCuisine', 'COMMANDE', 'a annulé la commande #331 : produit en rupture'],
   [3, '17:02', 'awa', 'CATEGORIE', 'a publié la catégorie « Plats du jour »'],
   [3, '14:40', 'aminata', 'COMMANDE', 'a marqué la commande #318 comme prête'],
   [3, '11:25', 'ousmane', 'PRODUIT', 'a mis le produit « Jus de bissap » en rupture'],
@@ -71,7 +74,7 @@ const ENTREES_ANTERIEURES = [
   [4, '12:30', 'ousmane', 'PRODUIT', 'a modifié la photo du produit « Burger Poulet Croustillant »'],
   [5, '21:36', 'pape', 'COMMANDE', 'a marqué la commande #252 comme livrée'],
   [5, '19:05', 'mariamaCuisine', 'COMMANDE', 'a marqué la commande #244 comme prête'],
-  [5, '18:20', 'fatou', 'COMMANDE', 'a annulé la commande #239 à la demande du client'],
+  [5, '18:20', 'moussa', 'COMMANDE', 'a annulé la commande #239 à la demande du client'],
   [5, '15:42', 'awa', 'PERSONNEL', 'a créé le compte livreur de Pape Gueye'],
   [5, '11:58', 'ousmane', 'CATEGORIE', 'a créé la catégorie « Desserts » en brouillon'],
   [6, '22:27', 'ibrahima', 'COMMANDE', 'a marqué la commande #208 comme livrée'],
@@ -79,7 +82,7 @@ const ENTREES_ANTERIEURES = [
   [6, '17:14', 'awa', 'PRODUIT', 'a publié le produit « Burger Poulet Croustillant »'],
   [6, '13:50', 'ousmane', 'ANNONCE', 'a publié l’annonce « Horaires spéciaux Tabaski »'],
   [7, '21:55', 'ibrahima', 'COMMANDE', 'a marqué la commande #163 comme livrée'],
-  [7, '19:48', 'fatou', 'COMMANDE', 'a annulé la commande #151 : commande en double'],
+  [7, '19:48', 'aminata', 'COMMANDE', 'a annulé la commande #151 : commande en double'],
   [7, '16:30', 'moussa', 'COMMANDE', 'a marqué la commande #139 comme prête'],
   [7, '12:06', 'awa', 'PERSONNEL', 'a désactivé le compte de Babacar Ndiaye'],
   [8, '22:19', 'ibrahima', 'COMMANDE', 'a marqué la commande #118 comme livrée'],
@@ -87,7 +90,7 @@ const ENTREES_ANTERIEURES = [
   [8, '15:10', 'ousmane', 'PRODUIT', 'a modifié le prix de « Frites maison » : 1 200 → 1 500 F CFA'],
   [8, '11:44', 'awa', 'CATEGORIE', 'a modifié l’ordre d’affichage de la catégorie « Snacks »'],
   [9, '21:12', 'moussa', 'COMMANDE', 'a marqué la commande #71 comme prête'],
-  [9, '18:26', 'fatou', 'COMMANDE', 'a annulé la commande #64 à la demande du client'],
+  [9, '18:26', 'mariamaCuisine', 'COMMANDE', 'a annulé la commande #64 à la demande du client'],
   [9, '14:03', 'ousmane', 'PERSONNEL', 'a créé le compte cuisine d’Aminata Ba'],
   [9, '10:35', 'awa', 'ANNONCE', 'a archivé l’annonce « Promo Korité »'],
 ]

@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import Toast from '../../components/Toast.jsx'
 import { KpiCard, formatRelativeTime } from '../../components/dashboard/DashboardWidgets.jsx'
-import { resumePlats, ticketId } from '../cuisine/cuisineUtils.js'
+import { estAujourdhui, resumePlats, ticketId } from '../cuisine/cuisineUtils.js'
 import { useAlerteNouvelleLivraison } from './useAlerteNouvelleLivraison.js'
 import { useLivreurBoard } from './useLivreurBoard.js'
 
@@ -13,15 +13,6 @@ import { useLivreurBoard } from './useLivreurBoard.js'
 // useLivreurBoard (le meme hook que Livraisons.jsx) pour ne pas dupliquer
 // la logique demo / comptage par statut.
 const APERCU_LIVRAISONS = 6
-
-function estAujourdhui(iso) {
-  if (!iso) return false
-  const date = new Date(iso)
-  const maintenant = new Date()
-  return date.getFullYear() === maintenant.getFullYear()
-    && date.getMonth() === maintenant.getMonth()
-    && date.getDate() === maintenant.getDate()
-}
 
 export default function LivreurDashboard() {
   const { commandes, livrees, produits, loading, nouvelleAlerte, clearAlerte } = useLivreurBoard()

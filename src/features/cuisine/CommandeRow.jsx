@@ -19,13 +19,12 @@ import {
 const LABEL_COURT = {
   EN_PREPARATION: 'Commencer',
   PRETE: 'Marquer prête',
-  // Commande App + Livraison en statut Prete (voir transitions.js) : bouton
-  // manuel, la cuisine ne l'actionne qu'une fois le livreur reellement
-  // pret a partir — remplace la note statique "En attente de retrait" qui
-  // n'a pas de sens pour une livraison (cf. emptyActionLabel plus bas, qui
-  // ne s'affiche de toute facon plus ici puisque transitions n'est plus
-  // vide dans ce cas).
-  EN_LIVRAISON: 'Envoyer au livreur',
+  // Pas d'entree EN_LIVRAISON ici (retour utilisateur, 16/10/2026) : cette
+  // transition a desormais 2 intitules differents selon le role qui la
+  // declenche (« Envoyer au livreur » pour la Cuisine, « Récupéré » pour
+  // le Livreur, voir transitions.js) — on laisse donc le label tomber sur
+  // t.label plus bas (deja le bon texte pour chaque role), plutot qu'un
+  // raccourci unique ici qui en masquerait un des deux.
   // Espace Livreur (voir ScanLivraisonModal.jsx) : pas de bouton direct,
   // ouvre le scanner QR — onScanLivraison plus bas.
   LIVREE: 'Scanner QR',
@@ -59,13 +58,18 @@ const LABEL_COURT = {
  * separateur entre chaque plat et un libelle "Note du client" explicite
  * plutot qu'une simple icone.
  *
- * "Envoyer au livreur" (PRETE -> EN_LIVRAISON, voir transitions.js) passe
- * par une confirmation (ConfirmModal) avant d'appeler onTransition — relu
- * par l'agent local : aucune transition retour n'existe depuis EN_LIVRAISON,
- * un appui accidentel sur une tablette de cuisine enverrait la commande
- * sans recours. Les autres transitions (Commencer/Marquer prete) restent
- * directes, sans confirmation : erreur sans consequence reelle, on avance
- * juste le ticket d'une etape qu'on allait franchir de toute facon. */
+ * PRETE -> EN_LIVRAISON (voir transitions.js) passe par une confirmation
+ * (ConfirmModal) avant d'appeler onTransition, cote Cuisine comme cote
+ * Livreur — relu par l'agent local : aucune transition retour n'existe
+ * depuis EN_LIVRAISON, un appui accidentel (tablette de cuisine partagee,
+ * ou simplement un geste malheureux) enverrait/recuperait la commande sans
+ * recours. Le texte du modal differe selon qui declenche (« Envoyer cette
+ * commande au livreur ? » vs « Confirmer la récupération ? », voir
+ * confirmationLivreur plus bas) puisque les deux roles peuvent desormais
+ * declencher cette meme transition (16/10/2026). Les autres transitions
+ * (Commencer/Marquer prete) restent directes, sans confirmation : erreur
+ * sans consequence reelle, on avance juste le ticket d'une etape qu'on
+ * allait franchir de toute facon. */
 export default function CommandeRow({
   commande,
   produits,
@@ -102,6 +106,11 @@ export default function CommandeRow({
   const totalPlats = lignes.reduce((total, ligne) => total + (ligne.quantite || 0), 0)
   const idTicket = ticketId(commande)
   const detailsId = `commande-detail-${idTicket}`
+  // PRETE -> EN_LIVRAISON peut etre declenchee par la Cuisine (« Envoyer
+  // au livreur ») ou par le Livreur (« Récupéré », voir transitions.js) —
+  // memoriser laquelle des deux a ouvert la confirmation pour adapter son
+  // contenu, puisque confirmation.to vaut EN_LIVRAISON dans les deux cas.
+  const confirmationLivreur = confirmation?.roles.includes('LIVREUR')
 
   return (
     <article
@@ -235,9 +244,13 @@ export default function CommandeRow({
       )}
       {confirmation && (
         <ConfirmModal
-          title="Envoyer cette commande au livreur ?"
-          message={`La commande #${idTicket} sera marquée « En livraison » et restera visible sous « Prêtes » jusqu'à sa livraison. Cette action ne peut pas être annulée.`}
-          confirmLabel="Envoyer"
+          title={confirmationLivreur ? 'Confirmer la récupération de cette commande ?' : 'Envoyer cette commande au livreur ?'}
+          message={
+            confirmationLivreur
+              ? `La commande #${idTicket} sera marquée « En livraison ». Cette action ne peut pas être annulée.`
+              : `La commande #${idTicket} sera marquée « En livraison » et restera visible sous « Prêtes » jusqu'à sa livraison. Cette action ne peut pas être annulée.`
+          }
+          confirmLabel={confirmationLivreur ? 'Récupéré' : 'Envoyer'}
           tone="warning"
           icon="fa-motorcycle"
           onConfirm={() => {

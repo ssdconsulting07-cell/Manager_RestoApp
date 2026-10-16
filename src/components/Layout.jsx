@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { path: '/journal-audit', label: 'Journal d’audit', icon: 'fa-clipboard-list', roles: ['MANAGER'] },
   { path: '/personnel', label: 'Utilisateurs', icon: 'fa-users', roles: ['GERANT'] },
   { path: '/livraisons', label: 'Livraisons', icon: 'fa-truck-fast', roles: ['LIVREUR'] },
+  { path: '/historique-livraisons', label: 'Historique des livraisons', icon: 'fa-clipboard-list', roles: ['LIVREUR'] },
   { path: '/vente', label: 'Nouvelle vente', icon: 'fa-cash-register', roles: ['VENDEUR'] },
   { path: '/historique-ventes', label: 'Historique des ventes', icon: 'fa-receipt', roles: ['VENDEUR'] },
 ]

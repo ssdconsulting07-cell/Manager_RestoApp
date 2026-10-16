@@ -33,6 +33,7 @@ export const ROUTE_ROLES = {
   // A revoir quand le mode d'attribution des livraisons sera tranche
   // (le Manager pourrait avoir besoin de cet ecran s'il affecte les livreurs).
   '/livraisons': ['LIVREUR'],
+  '/historique-livraisons': ['LIVREUR'],
   // Non couvert par les specs MVP : a confirmer avec l'equipe Chez Ketchup.
   '/personnel': ['GERANT'],
   '/vente': ['VENDEUR'],

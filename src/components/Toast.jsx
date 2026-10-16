@@ -3,6 +3,10 @@ import { useEffect, useRef, useState } from 'react'
 const TOAST_DURATION = {
   success: 3800,
   error: 5200,
+  // 'info' : alerte neutre (ex. nouvelle commande en cuisine) — ni succes ni
+  // erreur, visible un peu plus longtemps qu'un succes pour laisser le temps
+  // de la remarquer sans avoir a interrompre une tâche en cours.
+  info: 4500,
 }
 
 export default function Toast({ toast, onClose }) {
@@ -26,6 +30,7 @@ export default function Toast({ toast, onClose }) {
   if (!toast) return null
 
   const isSuccess = toast.type === 'success'
+  const isInfo = toast.type === 'info'
   const duration = TOAST_DURATION[toast.type]
 
   function pauseToast() {
@@ -54,12 +59,12 @@ export default function Toast({ toast, onClose }) {
       <div
         className={`toast toast-${toast.type} ${paused ? 'is-paused' : ''}`}
         key={toast.id}
-        role={isSuccess ? 'status' : 'alert'}
+        role={isSuccess || isInfo ? 'status' : 'alert'}
         style={{ '--toast-duration': `${duration}ms` }}
         onMouseEnter={pauseToast}
         onMouseLeave={resumeToast}
       >
-        <span className="toast-icon" aria-hidden="true">{isSuccess ? '✓' : '!'}</span>
+        <span className="toast-icon" aria-hidden="true">{isSuccess ? '✓' : isInfo ? '🔔' : '!'}</span>
         <p>{toast.message}</p>
         <button type="button" aria-label="Fermer la notification" onClick={onClose}>
           ×

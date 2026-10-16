@@ -20,7 +20,6 @@ import PageSkeleton from './components/PageSkeleton.jsx'
 const PAGES = {
   '/dashboard': lazy(() => import('./features/dashboard/Dashboard.jsx')),
   '/commandes': lazy(() => import('./features/cuisine/Commandes.jsx')),
-  '/preparation': lazy(() => import('./features/cuisine/Preparation.jsx')),
   '/livraisons': lazy(() => import('./features/livreur/Livraisons.jsx')),
   '/produits': lazy(() => import('./features/gerant/Produits.jsx')),
   '/categories': lazy(() => import('./features/gerant/Categories.jsx')),

@@ -1,7 +1,12 @@
 // Donnees fictives Cuisine — utilisees tant que le backend n'a pas (encore)
-// de commandes PAYEE / EN_PREPARATION. Desactive automatiquement des que
-// l'API renvoie de vraies commandes actives.
-// Store partage en memoire pour que Commandes et Preparation voient les memes mutations.
+// de commande active (PAYEE / EN_PREPARATION / PRETE). Desactive automatiquement
+// des que l'API renvoie au moins une vraie commande active, quelle que soit
+// sa colonne — y compris PRETE (bug corrige : une commande reelle marquee
+// prete declenchait a tort la demo dès qu'il n'y avait plus ni PAYEE ni
+// EN_PREPARATION, et la remplaçait purement et simplement par le jeu de
+// demo, ce qui est exactement ce que la colonne "Prêtes" devait eviter).
+// Store partage en memoire pour que le tableau cuisine (Commandes.jsx) voie
+// des mutations coherentes entre deux rafraichissements.
 
 // Photos fictives (Unsplash) — en attendant les images produit du backend.
 const img = (id, w = 480) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&h=${360}&q=80`
@@ -29,18 +34,19 @@ function minutesAgo(n) {
   return new Date(Date.now() - n * 60_000).toISOString()
 }
 
-const DEMO_VERSION = 4
+const DEMO_VERSION = 7
 
 const DEMO_SEED = [
   // --- File d'attente (PAYEE) ---
   {
     id: 'demo-1051',
     statut: 'PAYEE',
+    canal: 'APP',
     mode: 'RETRAIT',
     creeLe: minutesAgo(2),
     note: 'Sans oignon s’il vous plaît',
     lignes: [
-      { produitId: 'p-burger', quantite: 2, personnalisation: 'Sans oignon' },
+      { produitId: 'p-burger', quantite: 2, personnalisation: 'Sans oignon', accompagnementNom: 'Frites' },
       { produitId: 'p-fries', quantite: 1 },
       { produitId: 'p-cola', quantite: 2 },
     ],
@@ -48,7 +54,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1055',
     statut: 'PAYEE',
-    mode: 'RETRAIT',
+    canal: 'COMPTOIR',
     creeLe: minutesAgo(4),
     note: 'Commande express — 1 seul article',
     lignes: [{ produitId: 'p-burger', quantite: 1, personnalisation: 'Bien cuit' }],
@@ -56,6 +62,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1052',
     statut: 'PAYEE',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(5),
     note: 'Sonner à l’interphone B12',
@@ -68,6 +75,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1056',
     statut: 'PAYEE',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(7),
     lignes: [{ produitId: 'p-nuggets12', quantite: 1 }],
@@ -75,6 +83,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1053',
     statut: 'PAYEE',
+    canal: 'APP',
     mode: 'RETRAIT',
     creeLe: minutesAgo(9),
     lignes: [
@@ -87,6 +96,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1054',
     statut: 'PAYEE',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(11),
     lignes: [
@@ -99,6 +109,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1046',
     statut: 'EN_PREPARATION',
+    canal: 'APP',
     mode: 'RETRAIT',
     creeLe: minutesAgo(14),
     note: 'Retour client — bien cuit',
@@ -110,7 +121,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1057',
     statut: 'EN_PREPARATION',
-    mode: 'RETRAIT',
+    canal: 'COMPTOIR',
     creeLe: minutesAgo(15),
     note: 'Ticket simple — un seul plat',
     lignes: [{ produitId: 'p-salade', quantite: 1, personnalisation: 'Sans croûtons' }],
@@ -118,10 +129,11 @@ const DEMO_SEED = [
   {
     id: 'demo-1047',
     statut: 'EN_PREPARATION',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(17),
     lignes: [
-      { produitId: 'p-burger', quantite: 3 },
+      { produitId: 'p-burger', quantite: 3, accompagnementNom: 'Onion rings' },
       { produitId: 'p-fries', quantite: 2 },
       { produitId: 'p-cola', quantite: 3 },
     ],
@@ -129,6 +141,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1058',
     statut: 'EN_PREPARATION',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(19),
     lignes: [{ produitId: 'p-dessert', quantite: 2 }],
@@ -136,6 +149,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1048',
     statut: 'EN_PREPARATION',
+    canal: 'APP',
     mode: 'RETRAIT',
     creeLe: minutesAgo(21),
     note: 'Allergie sésame',
@@ -148,6 +162,7 @@ const DEMO_SEED = [
   {
     id: 'demo-1049',
     statut: 'EN_PREPARATION',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(25),
     lignes: [
@@ -161,19 +176,32 @@ const DEMO_SEED = [
   {
     id: 'demo-1044',
     statut: 'PRETE',
-    mode: 'RETRAIT',
+    canal: 'COMPTOIR',
     creeLe: minutesAgo(32),
     lignes: [{ produitId: 'p-cheese', quantite: 1 }],
   },
   {
     id: 'demo-1045',
     statut: 'PRETE',
+    canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(38),
     lignes: [
       { produitId: 'p-burger', quantite: 2 },
       { produitId: 'p-fries', quantite: 2 },
       { produitId: 'p-dessert', quantite: 2 },
+    ],
+  },
+  // --- En livraison (reste visible, ne disparait plus — retour utilisateur) ---
+  {
+    id: 'demo-1042',
+    statut: 'EN_LIVRAISON',
+    canal: 'APP',
+    mode: 'LIVRAISON',
+    creeLe: minutesAgo(44),
+    lignes: [
+      { produitId: 'p-wrap', quantite: 1 },
+      { produitId: 'p-jus', quantite: 1 },
     ],
   },
 ]
@@ -206,10 +234,26 @@ export function patchDemoStatut(id, statut) {
   return demoState.commandes.find((c) => c.id === id)
 }
 
-/** Si l'API n'a aucune commande active cuisine, on bascule sur la démo. */
+/** Si l'API n'a aucune commande active cuisine, on bascule sur la démo —
+ * seulement en developpement (import.meta.env.DEV). En production, basculer
+ * sur de fausses commandes serait dangereux (releve agent local) : lors
+ * d'une panne reelle de l'API (voir le bloc catch de charger() dans
+ * useCuisineBoard.js, qui appelle cette fonction avec une liste vide), la
+ * cuisine se retrouverait a preparer des plats fictifs sans le moindre
+ * signal visible — le mot "demo" affiche a l'ecran etait le seul indice,
+ * et il a ete retire pour de bonnes raisons (voir Commandes.jsx). En
+ * production, une cuisine reellement vide affiche donc desormais "Aucune
+ * commande" comme n'importe quel autre ecran vide, et une panne reste
+ * signalee normalement. En dev, le comportement est inchange : la demo
+ * comble toujours une cuisine vide pour pouvoir travailler sans backend. */
 export function avecDemoSiVide(commandesApi) {
   const liste = Array.isArray(commandesApi) ? commandesApi : []
-  const aActives = liste.some((c) => c.statut === 'PAYEE' || c.statut === 'EN_PREPARATION')
+  if (!import.meta.env.DEV) {
+    return { commandes: liste, demo: false }
+  }
+  const aActives = liste.some(
+    (c) => c.statut === 'PAYEE' || c.statut === 'EN_PREPARATION' || c.statut === 'PRETE' || c.statut === 'EN_LIVRAISON',
+  )
   if (aActives) {
     demoState = { version: DEMO_VERSION, active: false, commandes: [] }
     return { commandes: liste, demo: false }

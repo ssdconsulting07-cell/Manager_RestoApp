@@ -1,176 +1,132 @@
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { apiGet } from '../../api/client.js'
-import Layout from '../../components/Layout.jsx'
-import { avecDemoSiVide, mergeProduitsDemo } from './cuisineDemo.js'
-import { filtrerParStatuts, formatHeure, mapProduitsParId, nomProduit, photoProduit } from './cuisineUtils.js'
-import './cuisine-dashboard.css'
+import Toast from '../../components/Toast.jsx'
+import { KpiCard, formatRelativeTime } from '../../components/dashboard/DashboardWidgets.jsx'
+import { comparerPriorite, estComptoir, resumePlats } from './cuisineUtils.js'
+import { useAlerteNouvelleCommande } from './useAlerteNouvelleCommande.js'
+import { useCuisineBoard } from './useCuisineBoard.js'
 
-const CARDS = [
-  {
-    key: 'recues',
-    label: 'À démarrer',
-    detail: 'Payées — file d’attente',
-    cta: 'Ouvrir la file',
-    path: '/commandes',
-    icon: 'fa-receipt',
-    tone: 'urgent',
-  },
-  {
-    key: 'enCours',
-    label: 'En préparation',
-    detail: 'Tickets au poste',
-    cta: 'Voir le poste',
-    path: '/preparation',
-    icon: 'fa-fire-burner',
-    tone: 'active',
-  },
-  {
-    key: 'pretes',
-    label: 'Prêtes',
-    detail: 'Client ou livreur',
-    cta: 'Voir le flux',
-    path: '/preparation',
-    icon: 'fa-circle-check',
-    tone: 'done',
-  },
-]
-
-function compter(commandes) {
-  const counts = { recues: 0, enCours: 0, pretes: 0 }
-  for (const c of commandes || []) {
-    if (c.statut === 'PAYEE') counts.recues += 1
-    else if (c.statut === 'EN_PREPARATION') counts.enCours += 1
-    else if (c.statut === 'PRETE') counts.pretes += 1
-  }
-  return counts
-}
+// Tableau de bord Cuisine — meme structure et memes briques que les
+// tableaux de bord Gerant/Manager/Vendeur (cartes KPI, flux d'activite
+// recent), rendu par le tableau de bord generique (voir
+// dashboard/Dashboard.jsx) plutot que dans son propre Layout. Reutilise
+// useCuisineBoard (le meme hook que Commandes.jsx) pour ne pas dupliquer la
+// logique demo / comptage par statut — un seul endroit a corriger si un
+// bug comme celui de cuisineDemo.js (voir son historique) survient.
+const APERCU_TICKETS = 6
 
 export default function CuisineDashboard() {
-  const [counts, setCounts] = useState({ recues: 0, enCours: 0, pretes: 0 })
-  const [apercu, setApercu] = useState([])
-  const [produits, setProduits] = useState({})
-  const [demo, setDemo] = useState(false)
-  const [loaded, setLoaded] = useState(false)
+  const { commandes, produits, loading, nouvelleAlerte, clearAlerte } = useCuisineBoard()
 
-  useEffect(() => {
-    let cancelled = false
-    Promise.all([apiGet('/commandes').catch(() => []), apiGet('/produits').catch(() => [])]).then(
-      ([listeApi, produitsApi]) => {
-        if (cancelled) return
-        const { commandes, demo: isDemo } = avecDemoSiVide(listeApi)
-        setProduits(mergeProduitsDemo(mapProduitsParId(produitsApi)))
-        setCounts(compter(commandes))
-        setApercu(filtrerParStatuts(commandes, ['PAYEE', 'EN_PREPARATION']).slice(0, 4))
-        setDemo(isDemo)
-        setLoaded(true)
-      },
-    )
-    return () => {
-      cancelled = true
+  // EN_LIVRAISON compte avec PRETE ici aussi (meme regle que Commandes.jsx,
+  // voir son commentaire sur counts/filtrees) : sans ça, la carte KPI
+  // "Prêtes" du tableau de bord afficherait un nombre different de la
+  // carte-filtre "Prêtes" de l'ecran Commandes pour les memes commandes
+  // (releve agent local).
+  const counts = useMemo(() => {
+    const c = { PAYEE: 0, EN_PREPARATION: 0, PRETE: 0 }
+    for (const commande of commandes) {
+      const cle = commande.statut === 'EN_LIVRAISON' ? 'PRETE' : commande.statut
+      if (c[cle] !== undefined) c[cle] += 1
     }
-  }, [])
+    return c
+  }, [commandes])
 
-  const totalActif = counts.recues + counts.enCours
-  const nextPath = counts.recues > 0 ? '/commandes' : '/preparation'
+  // Repartition App / Sur place sur le meme perimetre que "Commandes
+  // actives" (les 4 statuts suivis par useCuisineBoard) : app + comptoir
+  // egale toujours ce total.
+  const canalCounts = useMemo(() => {
+    const c = { app: 0, comptoir: 0 }
+    for (const commande of commandes) {
+      if (estComptoir(commande)) c.comptoir += 1
+      else c.app += 1
+    }
+    return c
+  }, [commandes])
+
+  // Meme ordre de priorite que l'ecran Commandes (voir comparerPriorite).
+  const apercu = useMemo(
+    () =>
+      commandes
+        .filter((c) => c.statut === 'PAYEE' || c.statut === 'EN_PREPARATION')
+        .sort(comparerPriorite)
+        .slice(0, APERCU_TICKETS),
+    [commandes],
+  )
+
+  // Meme bip + toast que Commandes.jsx, via le hook partage (retour
+  // relecture : la cuisine arrive sur ce tableau de bord apres connexion —
+  // voir ROLE_HOME dans roles.js — donc un poste qui y reste doit lui aussi
+  // entendre les nouvelles commandes, pas seulement le tableau filtrable).
+  const toast = useAlerteNouvelleCommande(nouvelleAlerte)
 
   return (
-    <Layout>
-      <section className="cuisine-dash">
-        <header className="cuisine-dash-hero">
-          <div className="cuisine-dash-hero-copy">
-            <p className="manager-eyebrow">Service en cours{demo ? ' · démo' : ''}</p>
-            <h1>Bonjour, équipe Cuisine.</h1>
-            <p>
-              {!loaded
-                ? 'Chargement du poste…'
-                : totalActif > 0
-                  ? `${totalActif} commande${totalActif > 1 ? 's' : ''} à suivre — reçue → préparation → prête.`
-                  : 'Poste libre — les commandes payées apparaîtront ici.'}
-            </p>
-            <div className="cuisine-dash-hero-actions">
-              <Link className="manager-button manager-button-primary" to={nextPath}>
-                {counts.recues > 0 ? 'Traiter la file' : 'Ouvrir le poste'} →
-              </Link>
-              <span className="dashboard-role-badge">Cuisine</span>
-            </div>
-          </div>
-          <div className="cuisine-dash-hero-visual" aria-hidden="true">
-            <i className="fa-solid fa-kitchen-set" />
-          </div>
-        </header>
+    <>
+      <section className="dashboard-kpi-grid" aria-label="Résumé cuisine">
+        <KpiCard
+          icon="fa-layer-group" accent="brand" label="Commandes actives"
+          value={loading ? '—' : counts.PAYEE + counts.EN_PREPARATION + counts.PRETE}
+          detail="reçue → prête" to="/commandes"
+        />
+        <KpiCard
+          icon="fa-receipt" accent="red" label="Reçues"
+          value={loading ? '—' : counts.PAYEE} detail="à démarrer" to="/commandes"
+        />
+        <KpiCard
+          icon="fa-fire-burner" accent="amber" label="En préparation"
+          value={loading ? '—' : counts.EN_PREPARATION} detail="au poste" to="/commandes"
+        />
+        <KpiCard
+          icon="fa-circle-check" accent="green" label="Prêtes"
+          value={loading ? '—' : counts.PRETE} detail="en attente de retrait" to="/commandes"
+        />
+        <KpiCard
+          icon="fa-mobile-screen-button" accent="blue" label="App"
+          value={loading ? '—' : canalCounts.app} detail="commandes à distance" to="/commandes"
+        />
+        <KpiCard
+          icon="fa-store" accent="gray" label="Sur place"
+          value={loading ? '—' : canalCounts.comptoir} detail="au comptoir" to="/commandes"
+        />
+      </section>
 
-        <section className="cuisine-dash-cards" aria-label="Résumé cuisine">
-          {CARDS.map((card) => {
-            const value = counts[card.key]
-            return (
-              <Link
-                key={card.key}
-                to={card.path}
-                className={`cuisine-dash-card cuisine-dash-card--${card.tone}${card.key === 'recues' && value > 0 ? ' is-hot' : ''}`}
-              >
-                <div className="cuisine-dash-card-top">
-                  <span className="cuisine-dash-card-icon" aria-hidden="true">
-                    <i className={`fa-solid ${card.icon}`} />
+      <section className="dashboard-panel dashboard-activity-panel" aria-labelledby="cuisine-tickets-titre">
+        <div className="dashboard-panel-heading">
+          <div>
+            <p className="manager-eyebrow">Ce que la cuisine reçoit</p>
+            <h2 id="cuisine-tickets-titre">Prochains tickets</h2>
+          </div>
+        </div>
+
+        {apercu.length === 0 ? (
+          <p className="dashboard-chart-empty">
+            {loading ? 'Chargement…' : 'Aucune commande à préparer pour le moment.'}
+          </p>
+        ) : (
+          <ul className="dashboard-activity-list">
+            {apercu.map((c) => (
+              <li key={c.id}>
+                <Link className="dashboard-activity-row" to="/commandes">
+                  <span className="dashboard-activity-icon" aria-hidden="true">
+                    <i className={`fa-solid ${c.statut === 'EN_PREPARATION' ? 'fa-fire-burner' : 'fa-receipt'}`} />
                   </span>
-                  <span className="cuisine-dash-card-label">{card.label}</span>
-                </div>
-                <div className="cuisine-dash-card-value">
-                  <strong>{loaded ? value : '—'}</strong>
-                  <span>{card.detail}</span>
-                </div>
-                <span className="cuisine-dash-card-cta">
-                  {card.cta}
-                  <i className="fa-solid fa-arrow-right" aria-hidden="true" />
-                </span>
-              </Link>
-            )
-          })}
-        </section>
-
-        {apercu.length > 0 && (
-          <section className="cuisine-dash-preview" aria-label="Prochains tickets">
-            <div className="cuisine-dash-preview-head">
-              <div>
-                <p className="manager-eyebrow">Tickets à venir</p>
-                <h2>Ce que la cuisine reçoit</h2>
-              </div>
-              <Link to="/commandes" className="cuisine-dash-preview-link">
-                Tout voir →
-              </Link>
-            </div>
-            <div className="cuisine-dash-preview-grid">
-              {apercu.map((c) => {
-                const first = c.lignes?.[0]
-                const thumb = first ? photoProduit(produits, first.produitId) : null
-                return (
-                  <Link
-                    key={c.id}
-                    to={c.statut === 'EN_PREPARATION' ? '/preparation' : '/commandes'}
-                    className={`cuisine-dash-ticket${c.statut === 'EN_PREPARATION' ? ' is-prep' : ''}`}
-                  >
-                    <div className="cuisine-dash-ticket-media" aria-hidden="true">
-                      {thumb ? <img src={thumb} alt="" loading="lazy" /> : <i className="fa-solid fa-utensils" />}
-                    </div>
-                    <div className="cuisine-dash-ticket-copy">
-                      <strong>#{String(c.id).replace(/^demo-/, '')}</strong>
-                      <span>
-                        {first
-                          ? `${first.quantite}× ${nomProduit(produits, first.produitId)}`
-                          : 'Sans lignes'}
-                        {(c.lignes?.length || 0) > 1 ? ` +${c.lignes.length - 1}` : ''}
-                      </span>
-                      <small>
-                        {c.statut === 'EN_PREPARATION' ? 'En préparation' : 'Reçue'} · {formatHeure(c.creeLe)}
-                      </small>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          </section>
+                  <span className="dashboard-activity-text">
+                    <strong>#{String(c.id).replace(/^demo-/, '')}</strong>
+                    <span>
+                      {resumePlats(c.lignes, produits)}
+                      {' · '}
+                      {c.statut === 'EN_PREPARATION' ? 'En préparation' : 'Reçue'}
+                    </span>
+                  </span>
+                  <span className="dashboard-activity-time">{formatRelativeTime(c.creeLe)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
-    </Layout>
+
+      <Toast toast={toast} onClose={clearAlerte} />
+    </>
   )
 }

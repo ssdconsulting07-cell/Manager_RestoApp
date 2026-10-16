@@ -9,7 +9,6 @@ import '../styles/manager.css'
 const NAV_ITEMS = [
   { path: '/dashboard', label: 'Tableau de bord', icon: 'fa-gauge-high', roles: ['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR', 'VENDEUR'] },
   { path: '/commandes', label: 'Commandes', icon: 'fa-receipt', roles: ['CUISINE'] },
-  { path: '/preparation', label: 'Préparation', icon: 'fa-kitchen-set', roles: ['CUISINE'] },
   { path: '/produits', label: 'Produits', icon: 'fa-utensils', roles: ['GERANT'] },
   { path: '/categories', label: 'Catégories', icon: 'fa-tags', roles: ['GERANT'] },
   { path: '/annonces', label: 'Annonces', icon: 'fa-bullhorn', roles: ['GERANT'] },
@@ -69,7 +68,7 @@ const INITIAL_NOTIFICATIONS = [
   { id: 2, kind: 'assignment', title: 'Activité de votre équipe', text: 'Une action récente nécessite votre attention, notamment la validation de livraisons en attente et les changements de statut.', time: 'Il y a 3 h', target: '/livraisons', unread: true },
   { id: 3, kind: 'status', title: 'Mise à jour du service', text: 'Le statut d’une opération vient d’être actualisé et les équipes ont été informées du changement.', time: 'Hier', target: '/journal-audit', unread: false },
   { id: 4, kind: 'crown', title: 'Priorité de la journée', text: 'Le planning de service a été revu. Consultez les tâches urgentes avant la prochaine tournée.', time: 'Il y a 1 j', target: '/dashboard', unread: true },
-  { id: 5, kind: 'status', title: 'Validation nécessaire', text: 'Une demande de validation est en attente dans votre espace pour éviter tout retard sur la préparation.', time: 'Il y a 2 j', target: '/preparation', unread: false },
+  { id: 5, kind: 'status', title: 'Validation nécessaire', text: 'Une demande de validation est en attente dans votre espace pour éviter tout retard sur la préparation.', time: 'Il y a 2 j', target: '/commandes', unread: false },
 ]
 
 const SIDEBAR_COLLAPSED_KEY = 'senyummies_manager_sidebar_collapsed'

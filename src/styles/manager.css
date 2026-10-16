@@ -15,6 +15,8 @@
   --chart-red-bg: #fbe4e2;
   --chart-brand: #b35d13;
   --chart-brand-bg: #fcf0e6;
+  --chart-blue: #2f6fed;
+  --chart-blue-bg: #e8eefc;
   --chart-grid: #e7e4e1;
   --chart-axis: #6b6b6b;
   --chart-cursor: rgba(20, 20, 20, 0.04);
@@ -42,6 +44,8 @@
   --chart-red-bg: rgba(179, 38, 30, 0.22);
   --chart-brand: #e8822b;
   --chart-brand-bg: rgba(232, 130, 43, 0.20);
+  --chart-blue: #7c9dfb;
+  --chart-blue-bg: rgba(79, 125, 243, 0.18);
   --chart-grid: #2a2a2e;
   --chart-axis: #a8a8ad;
   --chart-cursor: rgba(255, 255, 255, 0.05);
@@ -179,6 +183,8 @@
 .dashboard-kpi-card.is-red .dashboard-kpi-icon { background: var(--chart-red-bg); }
 .dashboard-kpi-card.is-brand .dashboard-kpi-icon, .dashboard-kpi-card.is-brand strong, .dashboard-kpi-card.is-brand .dashboard-kpi-arrow { color: var(--chart-brand); }
 .dashboard-kpi-card.is-brand .dashboard-kpi-icon { background: var(--chart-brand-bg); }
+.dashboard-kpi-card.is-blue .dashboard-kpi-icon, .dashboard-kpi-card.is-blue strong, .dashboard-kpi-card.is-blue .dashboard-kpi-arrow { color: var(--chart-blue); }
+.dashboard-kpi-card.is-blue .dashboard-kpi-icon { background: var(--chart-blue-bg); }
 
 .dashboard-charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr)); gap: 16px; margin-bottom: 16px; }
 .dashboard-chart-panel-wide { grid-column: 1 / -1; }
@@ -267,19 +273,19 @@
 .page-skeleton-page-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
 .page-skeleton-block.is-page-title { width: min(330px, 60%); height: 32px; }
 .page-skeleton-block.is-refresh-button { width: 92px; height: 32px; border-radius: 6px; }
-.page-skeleton-order-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.page-skeleton-order-card { display: flex; min-height: 228px; flex-direction: column; gap: 12px; border: 1px solid #e5e5e3; border-top: 4px solid #a6192e; border-radius: 10px; padding: 16px; background: #fff; }
-.page-skeleton-order-heading { display: flex; align-items: baseline; justify-content: space-between; }
-.page-skeleton-block.is-order-number { width: 76px; height: 17px; }
-.page-skeleton-block.is-order-time { width: 48px; height: 13px; }
-.page-skeleton-order-badges { display: flex; gap: 8px; }
-.page-skeleton-block.is-order-badge { width: 88px; height: 21px; border-radius: 4px; }
-.page-skeleton-block.is-order-badge.is-secondary { width: 70px; }
-.page-skeleton-order-lines { display: flex; flex: 1; flex-direction: column; gap: 9px; padding-top: 3px; }
-.page-skeleton-block.is-order-line { width: 88%; height: 13px; }
-.page-skeleton-block.is-order-line.is-short { width: 58%; }
-.page-skeleton-block.is-order-line.is-medium { width: 72%; }
-.page-skeleton-block.is-order-action { width: 100%; height: 39px; margin-top: 3px; border-radius: 6px; }
+/* Lignes de commande (voir CommandeRowsSkeleton dans PageSkeleton.jsx) :
+   reutilise les classes reelles de la ligne (cuisine-row, cuisine-row-head,
+   ...) pour qu'aucun saut de mise en page ne se produise au passage
+   squelette -> vraies lignes. page-skeleton-row neutralise juste le
+   curseur et le survol (la ligne squelette n'est pas cliquable). */
+.page-skeleton-row .cuisine-row-head { cursor: default; }
+.page-skeleton-row .cuisine-row-head:hover { background: transparent; }
+.page-skeleton-block.is-row-id { width: 54px; height: 15px; }
+.page-skeleton-block.is-row-pill { width: 74px; height: 19px; border-radius: 999px; }
+.page-skeleton-block.is-row-pill.is-row-pill-wide { width: 96px; }
+.page-skeleton-block.is-row-action { width: 128px; height: 42px; border-radius: 8px; }
+.page-skeleton-block.is-row-toggle { width: 44px; height: 44px; border-radius: 8px; }
+.page-skeleton-block.is-row-summary { width: 78%; height: 13px; margin-top: 2px; }
 .page-skeleton-pos { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
 .page-skeleton-pos-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .page-skeleton-block.is-pos-tab { width: 76px; height: 29px; border-radius: 999px; }
@@ -300,10 +306,10 @@
 .page-skeleton-placeholder-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .manager-shell.is-dark .page-skeleton-block { background: linear-gradient(100deg, #232327 20%, #313136 40%, #232327 60%); background-size: 200% 100%; }
 .manager-shell.is-dark .page-skeleton-stat-card,
-.manager-shell.is-dark .page-skeleton-order-card,
 .manager-shell.is-dark .page-skeleton-pos-card,
 .manager-shell.is-dark .page-skeleton-pos-panier,
 .manager-shell.is-dark .page-skeleton-panel { border-color: #2a2a2e; background-color: #1c1c20; }
+.manager-shell.is-dark .page-skeleton-row .cuisine-row-head:hover { background: transparent; }
 .manager-shell.is-dark .page-skeleton-panel.is-muted { background-color: #17171a; }
 .manager-modal-backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; border: 0; padding: 20px; background: rgb(20 20 20 / 45%); cursor: default; }
 .manager-modal { box-sizing: border-box; width: min(100%, 440px); min-width: 0; max-height: calc(100vh - 40px); overflow-y: auto; border-radius: 12px; padding: 26px; background: #fff; box-shadow: 0 22px 60px rgb(20 20 20 / 25%); }

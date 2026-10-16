@@ -1,190 +1,160 @@
-.cuisine-board-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-  border: 1px solid #ead9dd;
-  border-radius: 16px;
-  padding: 16px 18px;
-  background:
-    radial-gradient(100% 120% at 100% 0%, rgba(166, 25, 46, 0.08) 0%, transparent 50%),
-    #fff;
-}
-
-.cuisine-board-head h1 {
-  margin: 0 0 4px;
-  font-size: clamp(22px, 2.4vw, 28px);
-}
-
-.cuisine-board-head p {
-  margin: 0;
-  color: #6b6b6b;
-  font-size: 13px;
-}
-
-.cuisine-board-tools {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.cuisine-board-tool,
-.cuisine-board-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border: 1px solid #e5e5e3;
-  border-radius: 8px;
-  padding: 7px 11px;
-  background: #fff;
-  color: #141414;
-  cursor: pointer;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.cuisine-board-tool {
-  width: 36px;
-  height: 36px;
-  justify-content: center;
-  padding: 0;
-  color: #6b6b6b;
-}
-
-.cuisine-board-tool:hover {
-  color: #a6192e;
-  border-color: #e6c2c9;
-}
-
-.cuisine-board-chip {
-  color: #a6192e;
-  border-color: #e6c2c9;
-}
-
 .cuisine-board-error {
   margin: 0 0 12px;
   color: #a6192e;
   font-size: 13px;
 }
 
-.cuisine-board-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
-
-.cuisine-board-grid:has(> :only-child) {
-  grid-template-columns: minmax(280px, 420px);
-}
-
-.cuisine-card {
-  --card-accent: #a6192e;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-height: 100%;
-  border: 1px solid #e8e4e1;
-  border-radius: 16px;
+/* Bouton d'actualisation dedie (retour utilisateur : le manager-icon-button
+   generique, partage avec toutes les fermetures de modale de l'appli,
+   etait trop discret pour une action utile en plein service). Libelle
+   visible + cible tactile >= 44px, cf. le reste de la cuisine. L'icone
+   tourne pendant le clic (etat local rafraichissement, Commandes.jsx) pour
+   confirmer que l'action a bien ete prise en compte. */
+.cuisine-refresh-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid #e7e4e1;
+  border-radius: 10px;
   background: #fff;
-  box-shadow: 0 12px 28px rgb(20 20 20 / 5%);
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  color: #141414;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
 }
 
-.cuisine-card.is-prep {
+.cuisine-refresh-button:hover:not(:disabled) {
+  background: #faf9f8;
+  border-color: #d8d4d0;
+}
+
+.cuisine-refresh-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.cuisine-refresh-button i.is-spinning {
+  animation: cuisine-refresh-spin 700ms linear infinite;
+}
+
+@keyframes cuisine-refresh-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ligne de commande repliable (remplace l'ancienne carte verticale) : le
+   ticket, le badge de statut et le bouton d'action principal sont toujours
+   visibles sur une seule ligne — retour utilisateur : le personnel doit
+   pouvoir agir sans rien ouvrir. Les plats et la note client ne s'affichent
+   qu'au depli (cuisine-row-details), voir CommandeRow.jsx. */
+.cuisine-row {
+  /* Memes couleurs que le badge de statut et les cartes-filtres
+     (Commandes.jsx), via STATUT_META : --card-accent habille une bande de
+     couleur a gauche de la ligne, pour reperer son etape meme sans lire le
+     badge. */
+  --card-accent: #9c6b0c;
+  overflow: hidden;
+  border: 1px solid #e8e4e1;
+  border-left: 4px solid var(--card-accent);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgb(20 20 20 / 4%);
+  transition: box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.cuisine-row.is-prep {
   --card-accent: #141414;
 }
 
-.cuisine-card.is-urgent {
+/* Etape "Prêtes" : accent vert calme (confirmation), distinct du rouge
+   d'alerte — remplace par is-urgent si le plat attend depuis trop longtemps
+   (declare apres dans la feuille de style pour l'emporter sur is-ready). */
+.cuisine-row.is-ready {
+  --card-accent: #1f6f57;
+}
+
+/* Etape "En livraison" : commande envoyee au livreur, reste visible sur le
+   tableau (retour utilisateur) — accent bleu distinct, coherent avec le
+   badge App/canal (voir cuisine-row-pill.is-canal). */
+.cuisine-row.is-delivering {
+  --card-accent: #2f6fed;
+}
+
+.cuisine-row.is-urgent {
   --card-accent: #a6192e;
   border-color: #e6c2c9;
-  box-shadow: 0 14px 28px rgb(166 25 46 / 12%);
+  border-left-color: var(--card-accent);
+  box-shadow: 0 12px 26px rgb(166 25 46 / 10%);
 }
 
-.cuisine-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 18px 34px rgb(20 20 20 / 9%);
-}
-
-.cuisine-card-cover {
-  position: relative;
-  display: grid;
-  height: 132px;
-  overflow: hidden;
-  background: #efeae7;
-}
-
-.cuisine-card-cover--1 {
-  grid-template-columns: 1fr;
-}
-
-.cuisine-card-cover--2 {
-  grid-template-columns: 1.2fr 0.8fr;
-}
-
-.cuisine-card-cover--3 {
-  grid-template-columns: 1.3fr 0.7fr;
-  grid-template-rows: 1fr 1fr;
-}
-
-.cuisine-card-cover--3 > :first-child {
-  grid-row: 1 / span 2;
-}
-
-.cuisine-card-cover img,
-.cuisine-card-cover-fallback {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.cuisine-card-cover-fallback {
-  display: grid;
-  place-items: center;
-  color: #b5a79f;
-  background: #efeae7;
-  font-size: 22px;
-}
-
-.cuisine-card-cover-shade {
-  position: absolute;
-  inset: auto 0 0;
-  height: 55%;
-  background: linear-gradient(180deg, transparent, rgb(20 20 20 / 62%));
-  pointer-events: none;
-}
-
-.cuisine-card-cover-id {
-  position: absolute;
-  left: 12px;
-  bottom: 10px;
-  z-index: 1;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  text-shadow: 0 2px 10px rgb(0 0 0 / 35%);
-}
-
-.cuisine-card-body {
+/* Toute la barre deplie/replie au clic (retour utilisateur : d'abord
+   seulement cuisine-row-top, puis elargi a cuisine-row-head en entier —
+   une tablette de cuisine a besoin d'une zone cliquable large, et le
+   resume des plats juste en dessous doit lui aussi reagir au clic) — sauf
+   le bouton d'action, qui coupe la propagation (voir CommandeRow.jsx) pour
+   agir sans deplier/replier par accident. */
+.cuisine-row-head {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px 14px 14px;
+  gap: 6px;
+  padding: 12px 14px;
+  cursor: pointer;
+  border-radius: 10px;
 }
 
-.cuisine-card-meta {
+.cuisine-row-head:hover {
+  background: #faf9f8;
+}
+
+.cuisine-row.is-expanded .cuisine-row-head {
+  border-bottom: 1px solid #f0ece9;
+}
+
+.cuisine-row-top {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 10px;
 }
 
-.cuisine-card-pill {
+.cuisine-row-info {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Resume des plats (voir resumePlats dans cuisineUtils.js) : seule info
+   sur les plats encore visible une fois la ligne repliee. Tronque sur une
+   ligne — le detail complet reste a un clic via cuisine-row-toggle. */
+.cuisine-row-summary {
+  overflow: hidden;
+  margin: 0;
+  color: #6b6b6b;
+  font-size: 12.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cuisine-row-id {
+  color: #141414;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.cuisine-row-pill {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -196,182 +166,417 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
-.cuisine-card-pill.is-time {
+.cuisine-row-pill.is-canal {
+  color: #2f6fed;
+  background: #e8eefc;
+}
+
+.cuisine-row-pill.is-canal.is-comptoir {
+  color: #9c6b0c;
+  background: #f6ecd9;
+}
+
+.cuisine-row-pill.is-time {
   color: #a6192e;
   background: #f8e9ec;
 }
 
-.cuisine-card-pill.is-late,
-.cuisine-card-pill.is-alert {
+.cuisine-row-pill.is-late {
   color: #fff;
   background: #a6192e;
 }
 
-.cuisine-card-lines {
+/* Bouton(s) d'action toujours visibles a cote du resume (retour utilisateur
+   : trop important pour n'apparaitre qu'au depli). Largeur auto (et non
+   100% comme sur l'ancienne carte) puisqu'il partage desormais la ligne
+   avec le resume et le bouton de depli — il passe a la ligne en dessous sur
+   un ecran etroit grace au flex-wrap de cuisine-row-head. */
+.cuisine-row-primary {
   display: flex;
-  flex: 1;
-  flex-direction: column;
+  flex-shrink: 0;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+.cuisine-row-primary .manager-button {
+  min-height: 42px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.cuisine-row-primary .manager-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+/* Etape "Prêtes" : aucune transition possible pour CUISINE (voir
+   transitions.js) — confirmation visuelle a la place d'un bouton, pour que
+   le plat prepare reste visible et confirme tant que personne ne vient le
+   chercher. */
+.cuisine-row-ready-note {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 9px 16px;
+  background: #e9f3ee;
+  color: #2f8055;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* 44px : cible tactile confortable (meme logique que les 46px des boutons
+   d'action, voir plus haut) — 34px etait trop petit pour une tablette de
+   cuisine manipulee avec des mains pressees. */
+.cuisine-row-toggle {
+  display: inline-grid;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid #e5e5e3;
+  border-radius: 8px;
+  padding: 0;
+  background: #fff;
+  color: #6b6b6b;
+  cursor: pointer;
+  font: inherit;
+}
+
+.cuisine-row-toggle:hover {
+  color: #a6192e;
+  border-color: #e6c2c9;
+}
+
+.cuisine-row-toggle i {
+  transition: transform 160ms ease;
+}
+
+.cuisine-row-toggle.is-expanded i {
+  transform: rotate(180deg);
+}
+
+/* Petite animation d'entree (retour utilisateur : le detail apparaissait
+   d'un coup, sans transition) — juste une opacite/translation, pas une
+   animation de hauteur (fragile avec un contenu de longueur variable). */
+@keyframes cuisine-row-details-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cuisine-row-details {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px 20px 20px;
+  animation: cuisine-row-details-in 160ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cuisine-row-details {
+    animation: none;
+  }
+
+  .cuisine-row-toggle i {
+    transition: none;
+  }
+
+  .cuisine-refresh-button i.is-spinning {
+    animation: none;
+  }
+}
+
+/* Libelle de section (retour utilisateur : la partie depliee doit se lire
+   comme un vrai detail de commande, pas une continuation compacte de la
+   ligne — un titre explicite plutot que d'enchainer directement la liste. */
+.cuisine-row-section-title {
+  margin: 0 0 12px;
+  color: #9a9a9e;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cuisine-row-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.cuisine-card-line {
+.cuisine-row-line {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: 60px minmax(0, 1fr);
+  gap: 14px;
   align-items: start;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f0ece9;
 }
 
-.cuisine-card-qty-badge {
-  display: inline-grid;
-  min-width: 34px;
-  height: 28px;
-  place-items: center;
-  border-radius: 8px;
-  color: #a6192e;
-  background: #f8e9ec;
-  font-size: 12px;
-  font-weight: 800;
+.cuisine-row-line:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
-.cuisine-card-line-copy {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 2px;
+/* Une photo par plat : chaque ligne de la commande a sa propre miniature,
+   plutot qu'une collette de 1 a 3 photos sans lien visible avec chaque
+   plat quand la commande en compte plusieurs (retour utilisateur). Taille
+   remontee a 60px (etait 40px) : trop petite pour reconnaitre le plat d'un
+   coup d'œil une fois depliee (retour utilisateur — "prend l'espace
+   normal"). */
+.cuisine-row-line-photo {
+  position: relative;
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #efeae7;
 }
 
-.cuisine-card-line-copy strong {
-  font-size: 13px;
-  line-height: 1.3;
-}
-
-.cuisine-card-line-copy span {
-  color: #6b6b6b;
-  font-size: 12px;
-  line-height: 1.35;
-}
-
-.cuisine-card-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  border-radius: 10px;
-  padding: 9px 10px;
-  color: #6b5310;
-  background: #fff8e8;
-  border: 1px solid #f0d9a0;
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-.cuisine-card-note i {
-  margin-top: 2px;
-  color: #a6192e;
-}
-
-.cuisine-card-actions {
-  margin-top: auto;
-}
-
-.cuisine-card-actions .manager-button {
+.cuisine-row-line-photo img,
+.cuisine-row-line-photo-fallback {
   width: 100%;
-  padding: 10px 12px;
-  font-size: 12px;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.cuisine-card-actions .manager-button:disabled {
-  cursor: wait;
-  opacity: 0.7;
-}
-
-.cuisine-board-empty {
-  border: 1px dashed #ddd8d4;
-  border-radius: 14px;
-  padding: 22px;
-  background: #faf9f8;
-}
-
-.cuisine-board-empty h2 {
-  margin: 0 0 6px;
+.cuisine-row-line-photo-fallback {
+  display: grid;
+  place-items: center;
+  color: #b5a79f;
   font-size: 18px;
 }
 
-.cuisine-board-empty p {
-  margin: 0 0 14px;
+.cuisine-row-line-qty {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: inline-grid;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: #a6192e;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cuisine-row-line-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+
+.cuisine-row-line-copy strong {
+  color: #141414;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.cuisine-row-line-copy span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   color: #6b6b6b;
   font-size: 13px;
+  line-height: 1.4;
 }
 
-.manager-shell.is-dark .cuisine-board-head {
-  border-color: #3a2a2e;
-  background:
-    radial-gradient(100% 120% at 100% 0%, rgba(225, 75, 100, 0.14) 0%, transparent 50%),
-    #1c1c20;
+/* Accompagnement choisi (ex. "Frites" sur un burger) : distinct de la
+   personnalisation libre juste au-dessus (retour utilisateur : a ne pas
+   oublier au depli). Selecteur plus specifique que ".cuisine-row-line-copy
+   span" ci-dessus (meme avec une seule classe, il serait sinon moins
+   specifique que ce selecteur classe+element et perdrait la couleur). */
+.cuisine-row-line-copy span.cuisine-row-line-accomp {
+  color: #141414;
+  font-weight: 600;
 }
 
-.manager-shell.is-dark .cuisine-board-head p,
-.manager-shell.is-dark .cuisine-card-line-copy span,
-.manager-shell.is-dark .cuisine-board-empty p {
-  color: #9a9a9e;
+.cuisine-row-line-accomp i {
+  color: #9c6b0c;
 }
 
-.manager-shell.is-dark .cuisine-board-tool,
-.manager-shell.is-dark .cuisine-board-chip,
-.manager-shell.is-dark .cuisine-card,
-.manager-shell.is-dark .cuisine-board-empty {
+.cuisine-row-line-perso i {
+  color: #a6192e;
+}
+
+.cuisine-row-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: #6b5310;
+  background: #fff8e8;
+  border: 1px solid #f0d9a0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.cuisine-row-note i {
+  margin-top: 3px;
+  color: #a6192e;
+}
+
+.cuisine-row-note-title {
+  margin: 0 0 3px;
+  color: #9c6b0c;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.manager-shell.is-dark .cuisine-refresh-button {
   border-color: #2a2a2e;
   background: #1c1c20;
   color: #f2f2f2;
-  box-shadow: 0 12px 28px rgb(0 0 0 / 35%);
 }
 
-.manager-shell.is-dark .cuisine-card.is-urgent {
+.manager-shell.is-dark .cuisine-refresh-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.manager-shell.is-dark .cuisine-row {
+  border-color: #2a2a2e;
+  background: #1c1c20;
+  color: #f2f2f2;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 35%);
+}
+
+.manager-shell.is-dark .cuisine-row.is-urgent {
   border-color: rgba(225, 75, 100, 0.4);
 }
 
-.manager-shell.is-dark .cuisine-card.is-prep {
+.manager-shell.is-dark .cuisine-row.is-prep {
   --card-accent: #e8e8ea;
 }
 
-.manager-shell.is-dark .cuisine-card-pill {
+.manager-shell.is-dark .cuisine-row.is-ready {
+  --card-accent: #3fae84;
+}
+
+.manager-shell.is-dark .cuisine-row.is-delivering {
+  --card-accent: #7c9dfb;
+}
+
+.manager-shell.is-dark .cuisine-row.is-expanded .cuisine-row-head {
+  border-bottom-color: #2a2a2e;
+}
+
+.manager-shell.is-dark .cuisine-row-id {
+  color: #f2f2f2;
+}
+
+.manager-shell.is-dark .cuisine-row-pill {
   background: #2a2a2e;
   color: #cfcfd2;
 }
 
-.manager-shell.is-dark .cuisine-card-pill.is-time {
+.manager-shell.is-dark .cuisine-row-pill.is-canal {
+  background: rgba(79, 125, 243, 0.18);
+  color: #7c9dfb;
+}
+
+.manager-shell.is-dark .cuisine-row-pill.is-canal.is-comptoir {
+  background: rgba(214, 154, 45, 0.16);
+  color: #d69a2d;
+}
+
+.manager-shell.is-dark .cuisine-row-pill.is-time {
   background: rgba(225, 75, 100, 0.16);
   color: #e14b64;
 }
 
-.manager-shell.is-dark .cuisine-card-qty-badge {
-  color: #e14b64;
-  background: rgba(225, 75, 100, 0.16);
+.manager-shell.is-dark .cuisine-row-ready-note {
+  background: rgba(63, 174, 132, 0.14);
+  color: #3fae84;
 }
 
-.manager-shell.is-dark .cuisine-card-note {
+.manager-shell.is-dark .cuisine-row-head:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.manager-shell.is-dark .cuisine-row-toggle {
+  border-color: #2a2a2e;
+  background: #1c1c20;
+  color: #9a9a9e;
+}
+
+.manager-shell.is-dark .cuisine-row-toggle:hover {
+  color: #e14b64;
+  border-color: rgba(225, 75, 100, 0.35);
+}
+
+.manager-shell.is-dark .cuisine-row-section-title {
+  color: #7a7a7e;
+}
+
+.manager-shell.is-dark .cuisine-row-line {
+  border-bottom-color: #2a2a2e;
+}
+
+.manager-shell.is-dark .cuisine-row-line-photo {
+  background: #2a2a2e;
+}
+
+.manager-shell.is-dark .cuisine-row-line-qty {
+  border-color: #1c1c20;
+}
+
+.manager-shell.is-dark .cuisine-row-line-copy strong {
+  color: #f2f2f2;
+}
+
+.manager-shell.is-dark .cuisine-row-line-copy span {
+  color: #9a9a9e;
+}
+
+.manager-shell.is-dark .cuisine-row-line-copy span.cuisine-row-line-accomp {
+  color: #f2f2f2;
+}
+
+.manager-shell.is-dark .cuisine-row-line-accomp i {
+  color: #d69a2d;
+}
+
+.manager-shell.is-dark .cuisine-row-line-perso i {
+  color: #e14b64;
+}
+
+.manager-shell.is-dark .cuisine-row-summary {
+  color: #9a9a9e;
+}
+
+.manager-shell.is-dark .cuisine-row-note {
   color: #f3d9a4;
   background: rgba(214, 154, 45, 0.12);
   border-color: rgba(214, 154, 45, 0.28);
 }
 
-.manager-shell.is-dark .cuisine-card-cover,
-.manager-shell.is-dark .cuisine-card-cover-fallback {
-  background: #2a2a2e;
-}
-
-.manager-shell.is-dark .cuisine-board-tool:hover,
-.manager-shell.is-dark .cuisine-board-chip {
-  color: #e14b64;
-  border-color: rgba(225, 75, 100, 0.35);
-}
-
-@media (max-width: 640px) {
-  .cuisine-board-grid {
-    grid-template-columns: 1fr;
-  }
+.manager-shell.is-dark .cuisine-row-note-title {
+  color: #d69a2d;
 }

@@ -7,17 +7,13 @@ import GerantDashboard from '../gerant/GerantDashboard.jsx'
 import ManagerDashboard from '../manager/ManagerDashboard.jsx'
 import VendeurDashboard from '../vendeur/VendeurDashboard.jsx'
 
+// CUISINE suit desormais le meme patron generique que GERANT/MANAGER/
+// VENDEUR (voir CuisineDashboard.jsx) : plus de cas particulier ici.
 const DASHBOARD_DATA = {
   CUISINE: {
     eyebrow: 'Service en cours',
-    title: 'Bonjour, équipe Cuisine.',
-    description: 'Gardez le rythme sur les commandes qui attendent votre attention.',
-    cards: [
-      ['Commandes à préparer', '0', 'En attente de traitement', '/commandes'],
-      ['En préparation', '0', 'Commandes en cours', '/commandes'],
-      ['Prêtes à servir', '0', 'À remettre au client ou au livreur', '/commandes'],
-    ],
-    action: ['Voir les commandes', '/commandes'],
+    title: 'Tableau de bord',
+    description: 'Commandes reçues, en préparation et prêtes : tout en un coup d’œil.',
   },
   GERANT: {
     eyebrow: 'Gérance',
@@ -50,9 +46,7 @@ const DASHBOARD_DATA = {
 export default function Dashboard() {
   const { role } = useAuth()
 
-  if (role === 'CUISINE') return <CuisineDashboard />
-
-  const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.CUISINE
+  const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.LIVREUR
 
   return (
     <Layout>
@@ -71,6 +65,8 @@ export default function Dashboard() {
         <ManagerDashboard />
       ) : role === 'VENDEUR' ? (
         <VendeurDashboard />
+      ) : role === 'CUISINE' ? (
+        <CuisineDashboard />
       ) : (
         <>
           <section className="dashboard-stat-grid" aria-label="Résumé de l’activité">

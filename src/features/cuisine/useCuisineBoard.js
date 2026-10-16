@@ -5,52 +5,87 @@ import { STATUT_LABELS } from '../../auth/transitions.js'
 import { avecDemoSiVide, getDemoCommandes, isDemoId, mergeProduitsDemo, patchDemoStatut } from './cuisineDemo.js'
 import { REFRESH_MS, filtrerParStatuts, mapProduitsParId } from './cuisineUtils.js'
 
+// Les 4 statuts geres par le poste cuisine, dans l'ordre du flux.
+const STATUTS_CUISINE = ['PAYEE', 'EN_PREPARATION', 'PRETE', 'EN_LIVRAISON']
+
 /**
- * Charge / rafraichit les commandes cuisine.
+ * Charge / rafraichit les commandes cuisine pour le tableau unique a 4
+ * colonnes (Recues / En preparation / Pretes / En livraison) — retour
+ * utilisateur sur l'ancien decoupage en 2 pages (Commandes.jsx /
+ * Preparation.jsx) qui obligeait a changer d'ecran pour suivre un seul
+ * ticket, et qui ne montrait nulle part les commandes PRETE (elles
+ * disparaissaient purement et simplement de la vue une fois marquees
+ * pretes). EN_LIVRAISON a rejoint la liste pour la meme raison (retour
+ * utilisateur) : une commande envoyee au livreur ne doit pas non plus
+ * disparaitre du tableau — seule LIVREE (vraiment livree, role LIVREUR,
+ * hors de ce tableau) sort pour de bon.
+ *
  * Branche deja : GET /commandes, GET /produits, PATCH /commandes/:id/statut.
- * La demo ne s'active que si aucune commande PAYEE / EN_PREPARATION n'arrive.
+ * La demo ne s'active que si aucune commande active n'arrive (voir
+ * avecDemoSiVide dans cuisineDemo.js).
  */
-export function useCuisineBoard({ primaryStatuts, secondaryStatut }) {
+export function useCuisineBoard() {
   const { role } = useAuth()
-  const [items, setItems] = useState([])
-  const [sideCount, setSideCount] = useState(0)
+  const [commandes, setCommandes] = useState([])
   const [produits, setProduits] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [demo, setDemo] = useState(false)
   const [pendingId, setPendingId] = useState(null)
+  const [nouvelleAlerte, setNouvelleAlerte] = useState(null)
   const mutationVersion = useRef(0)
+  // null = aucune reponse reelle de l'API encore recue (1er chargement, ou
+  // chaque tentative depuis a echoue) — sert a ignorer l'alerte tant qu'on
+  // n'a pas une base reelle a laquelle comparer.
+  const idsPayeesConnus = useRef(null)
 
-  const primaryKey = primaryStatuts.join('|')
+  const apply = useCallback((liste, isDemo) => {
+    setDemo(isDemo)
+    setCommandes(filtrerParStatuts(liste, STATUTS_CUISINE))
+  }, [])
 
-  const apply = useCallback(
-    (liste, isDemo) => {
-      setDemo(isDemo)
-      setItems(filtrerParStatuts(liste, primaryStatuts))
-      setSideCount(liste.filter((c) => c.statut === secondaryStatut).length)
-    },
-    // primaryStatuts est un tableau constant cote appelant ; on depend de sa cle.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [primaryKey, secondaryStatut],
-  )
+  // Detecte les commandes PAYEE nouvellement arrivees, toujours sur la
+  // reponse BRUTE de l'API (jamais sur la liste apres substitution par la
+  // demo, et jamais appelee du tout cote demo — voir changerStatut) : bug
+  // corrige, une 1ere comparaison basee sur la liste substituee faisait
+  // passer a tort pour "non comparable" le chargement reel qui suit une
+  // cuisine vide (donc affichant la demo juste avant), et la toute premiere
+  // vraie commande d'une cuisine qui se reveille passait alors inaperçue —
+  // exactement le moment ou l'alerte sert le plus. En comparant toujours la
+  // reponse API brute (vide ou non) a la precedente reponse API brute
+  // connue, ce cas redevient une "nouvelle commande" normale.
+  const detecterNouvelles = useCallback((data) => {
+    const liste = Array.isArray(data) ? data : []
+    const payees = liste.filter((c) => c.statut === 'PAYEE')
+    if (idsPayeesConnus.current) {
+      const arrivees = payees.filter((c) => !idsPayeesConnus.current.has(c.id))
+      if (arrivees.length > 0) setNouvelleAlerte({ commandes: arrivees, at: Date.now() })
+    }
+    idsPayeesConnus.current = new Set(payees.map((c) => c.id))
+  }, [])
 
   const charger = useCallback(async () => {
     const version = mutationVersion.current
     try {
       const data = await apiGet('/commandes')
       if (version !== mutationVersion.current) return
+      detecterNouvelles(data)
       const { commandes: liste, demo: isDemo } = avecDemoSiVide(data)
       apply(liste, isDemo)
       setError(null)
     } catch (err) {
       if (version !== mutationVersion.current) return
+      // Erreur reseau : on ne sait rien de l'etat reel, donc idsPayeesConnus
+      // n'est pas touche ici — au retour du reseau, la comparaison se fera
+      // contre la derniere reponse reelle connue avant la coupure, et toute
+      // commande arrivee pendant la coupure sera bien signalee (voulu).
       const { commandes: liste, demo: isDemo } = avecDemoSiVide([])
       apply(liste, isDemo)
       setError(err.message)
     } finally {
       setLoading(false)
     }
-  }, [apply])
+  }, [apply, detecterNouvelles])
 
   useEffect(() => {
     charger()
@@ -76,8 +111,9 @@ export function useCuisineBoard({ primaryStatuts, secondaryStatut }) {
       }
       const maj = await apiPatch(`/commandes/${commande.id}/statut`, { statut })
       mutationVersion.current += 1
-      setItems((prev) => filtrerParStatuts(prev.map((c) => (c.id === commande.id ? maj : c)), primaryStatuts))
-      if (maj.statut === secondaryStatut) setSideCount((n) => n + 1)
+      setCommandes((prev) =>
+        filtrerParStatuts(prev.map((c) => (c.id === commande.id ? maj : c)), STATUTS_CUISINE),
+      )
     } catch (err) {
       setError(
         err.status === 403
@@ -89,5 +125,17 @@ export function useCuisineBoard({ primaryStatuts, secondaryStatut }) {
     }
   }
 
-  return { role, items, sideCount, produits, loading, error, demo, pendingId, charger, changerStatut }
+  return {
+    role,
+    commandes,
+    produits,
+    loading,
+    error,
+    demo,
+    pendingId,
+    nouvelleAlerte,
+    charger,
+    changerStatut,
+    clearAlerte: () => setNouvelleAlerte(null),
+  }
 }

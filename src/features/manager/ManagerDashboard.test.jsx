@@ -104,10 +104,16 @@ describe('Dashboard by role', () => {
     expect(within(audit).getAllByRole('listitem')[0]).toHaveTextContent(`${journalAudit[0].acteur.nom} ${journalAudit[0].action}`)
   })
 
-  it('keeps the generic dashboard for LIVREUR', () => {
+  it('renders the Livreur dashboard on the same generic pattern as Cuisine/Gerant/Manager/Vendeur', () => {
     renderFor('LIVREUR')
     expect(screen.queryByRole('heading', { name: 'Chiffre d’affaires' })).not.toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Votre prochaine action' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Votre prochaine action' })).not.toBeInTheDocument()
+    // Meme dispatch que Cuisine/Gerant/Manager/Vendeur (voir dashboard/Dashboard.jsx) :
+    // intro generique (titre + badge de role), pas son propre Layout/hero
+    // (voir livreur/LivreurDashboard.jsx).
+    expect(screen.getByRole('heading', { name: 'Bonjour, équipe Livraison.', level: 1 })).toBeInTheDocument()
+    expect(screen.getByText('Livreur')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Prochaines livraisons' })).toBeInTheDocument()
   })
 
   it('renders the Cuisine dashboard on the same generic pattern as Gerant/Manager/Vendeur', () => {

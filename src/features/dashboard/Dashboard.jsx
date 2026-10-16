@@ -1,14 +1,15 @@
-import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { ROLE_LABELS } from '../../auth/roles.js'
 import Layout from '../../components/Layout.jsx'
 import CuisineDashboard from '../cuisine/CuisineDashboard.jsx'
 import GerantDashboard from '../gerant/GerantDashboard.jsx'
+import LivreurDashboard from '../livreur/LivreurDashboard.jsx'
 import ManagerDashboard from '../manager/ManagerDashboard.jsx'
 import VendeurDashboard from '../vendeur/VendeurDashboard.jsx'
 
-// CUISINE suit desormais le meme patron generique que GERANT/MANAGER/
-// VENDEUR (voir CuisineDashboard.jsx) : plus de cas particulier ici.
+// CUISINE et LIVREUR suivent desormais le meme patron generique que
+// GERANT/MANAGER/VENDEUR (voir CuisineDashboard.jsx / LivreurDashboard.jsx) :
+// plus de cas particulier ici.
 const DASHBOARD_DATA = {
   CUISINE: {
     eyebrow: 'Service en cours',
@@ -29,12 +30,6 @@ const DASHBOARD_DATA = {
     eyebrow: 'Tournées du jour',
     title: 'Bonjour, équipe Livraison.',
     description: 'Retrouvez les commandes à prendre en charge et leur progression.',
-    cards: [
-      ['À récupérer', '0', 'Commandes prêtes', '/livraisons'],
-      ['En livraison', '0', 'Tournées en cours', '/livraisons'],
-      ['Livrées aujourd’hui', '0', 'Courses terminées', '/livraisons'],
-    ],
-    action: ['Voir les livraisons', '/livraisons'],
   },
   VENDEUR: {
     eyebrow: 'Poste de caisse',
@@ -46,7 +41,7 @@ const DASHBOARD_DATA = {
 export default function Dashboard() {
   const { role } = useAuth()
 
-  const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.LIVREUR
+  const data = DASHBOARD_DATA[role] || DASHBOARD_DATA.CUISINE
 
   return (
     <Layout>
@@ -67,42 +62,9 @@ export default function Dashboard() {
         <VendeurDashboard />
       ) : role === 'CUISINE' ? (
         <CuisineDashboard />
-      ) : (
-        <>
-          <section className="dashboard-stat-grid" aria-label="Résumé de l’activité">
-            {data.cards.map(([label, value, detail, path]) => (
-              <Link className="dashboard-stat-card" key={label} to={path}>
-                <div className="dashboard-stat-head">
-                  <span className="dashboard-stat-label">{label}</span>
-                </div>
-                <div className="dashboard-stat-body">
-                  <strong>{value}</strong>
-                  <span className="dashboard-stat-detail">{detail}</span>
-                </div>
-                <span className="dashboard-card-arrow" aria-hidden="true">→</span>
-              </Link>
-            ))}
-          </section>
-
-          <section className="dashboard-lower-grid">
-            <div className="dashboard-panel">
-              <div className="dashboard-panel-heading">
-                <div>
-                  <p className="manager-eyebrow">Raccourci</p>
-                  <h2>Votre prochaine action</h2>
-                </div>
-              </div>
-              <p className="dashboard-panel-copy">Accédez directement à l’espace principal de votre rôle.</p>
-              <Link className="manager-button manager-button-primary dashboard-action" to={data.action[1]}>{data.action[0]} <span>→</span></Link>
-            </div>
-            <div className="dashboard-panel dashboard-panel-muted">
-              <p className="manager-eyebrow">État du service</p>
-              <h2>Tout est prêt pour commencer.</h2>
-              <p className="dashboard-panel-copy">Les données opérationnelles apparaîtront ici dès les premières commandes.</p>
-            </div>
-          </section>
-        </>
-      )}
+      ) : role === 'LIVREUR' ? (
+        <LivreurDashboard />
+      ) : null}
     </Layout>
   )
 }

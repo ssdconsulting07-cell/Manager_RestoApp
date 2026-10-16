@@ -21,6 +21,7 @@ const PAGES = {
   '/dashboard': lazy(() => import('./features/dashboard/Dashboard.jsx')),
   '/commandes': lazy(() => import('./features/cuisine/Commandes.jsx')),
   '/livraisons': lazy(() => import('./features/livreur/Livraisons.jsx')),
+  '/historique-livraisons': lazy(() => import('./features/livreur/HistoriqueLivraisons.jsx')),
   '/produits': lazy(() => import('./features/gerant/Produits.jsx')),
   '/categories': lazy(() => import('./features/gerant/Categories.jsx')),
   '/annonces': lazy(() => import('./features/gerant/Annonces.jsx')),

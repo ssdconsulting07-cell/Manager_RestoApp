@@ -12,8 +12,16 @@ import { ticketId } from '../cuisine/cuisineUtils.js'
 // Client n'aura qu'a reprendre ce meme format quand elle construira son
 // ecran. Secours de saisie manuelle si la camera ne marche pas (refusee,
 // mauvaise lumiere, etc.) — meme verification des deux cotes.
+//
+// Secours de saisie manuelle masque par defaut (retour utilisateur,
+// 16/10/2026) : n'apparait qu'apres plus de 3 echecs de scan (ou tout de
+// suite si la camera est indisponible, cameraIndisponible plus bas), pour
+// pousser a vraiment scanner plutot que de taper le numero d'emblee —
+// compte les echecs de scan ET de saisie manuelle une fois visible, pas
+// seulement les echecs de scan.
 const PREFIXE = 'SENYUMMIES-'
 const ZONE_CAMERA_ID = 'scan-livraison-camera'
+const ERREURS_AVANT_SAISIE_MANUELLE = 3
 
 function correspond(valeurScannee, commande) {
   const texte = valeurScannee.trim().toUpperCase()
@@ -26,7 +34,9 @@ export default function ScanLivraisonModal({ commande, onConfirm, onCancel }) {
   const [saisie, setSaisie] = useState('')
   const [erreur, setErreur] = useState(null)
   const [cameraIndisponible, setCameraIndisponible] = useState(false)
+  const [erreursScan, setErreursScan] = useState(0)
   const idTicket = ticketId(commande)
+  const saisieManuelleVisible = cameraIndisponible || erreursScan > ERREURS_AVANT_SAISIE_MANUELLE
 
   // html5-qrcode charge a la demande (comme xlsx, voir exportJournalAudit.js) :
   // pas de poids supplementaire pour les ecrans qui n'ouvrent jamais ce
@@ -51,6 +61,7 @@ export default function ScanLivraisonModal({ commande, onConfirm, onCancel }) {
               instance.stop().catch(() => {}).finally(() => onConfirm())
             } else {
               setErreur('Ce QR code ne correspond pas à cette commande.')
+              setErreursScan((n) => n + 1)
             }
           },
           () => {
@@ -77,6 +88,7 @@ export default function ScanLivraisonModal({ commande, onConfirm, onCancel }) {
       onConfirm()
     } else {
       setErreur(`Numéro incorrect — ne correspond pas à la commande #${idTicket}.`)
+      setErreursScan((n) => n + 1)
     }
   }
 
@@ -104,22 +116,35 @@ export default function ScanLivraisonModal({ commande, onConfirm, onCancel }) {
 
         {erreur && <p role="alert" className="staff-users-error scan-livraison-error">{erreur}</p>}
 
-        <form className="scan-livraison-fallback" onSubmit={validerSaisie}>
-          <label htmlFor="scan-livraison-manuel">Ou saisissez le numéro manuellement</label>
-          <div className="scan-livraison-fallback-row">
-            <input
-              id="scan-livraison-manuel"
-              type="text"
-              inputMode="numeric"
-              placeholder={`Ex. ${idTicket}`}
-              value={saisie}
-              onChange={(event) => { setSaisie(event.target.value); setErreur(null) }}
-            />
-            <button className="manager-button manager-button-primary" type="submit" disabled={!saisie.trim()}>
-              Valider
-            </button>
-          </div>
-        </form>
+        {saisieManuelleVisible ? (
+          <form className="scan-livraison-fallback" onSubmit={validerSaisie}>
+            <label htmlFor="scan-livraison-manuel">Ou saisissez le numéro manuellement</label>
+            <div className="scan-livraison-fallback-row">
+              <input
+                id="scan-livraison-manuel"
+                type="text"
+                inputMode="numeric"
+                placeholder={`Ex. ${idTicket}`}
+                value={saisie}
+                onChange={(event) => { setSaisie(event.target.value); setErreur(null) }}
+              />
+              <button className="manager-button manager-button-primary" type="submit" disabled={!saisie.trim()}>
+                Valider
+              </button>
+            </div>
+          </form>
+        ) : (
+          // Encourage a continuer de scanner plutot que de reveler tout de
+          // suite qu'une saisie manuelle existe (voir le commentaire en
+          // tete de fichier) — ne s'affiche qu'apres un premier echec, pas
+          // avant (inutile de mentionner un secours tant que rien n'a
+          // encore rate).
+          erreursScan > 0 && (
+            <p className="scan-livraison-fallback-hint">
+              La saisie manuelle du numéro sera proposée après {ERREURS_AVANT_SAISIE_MANUELLE + 1 - erreursScan} échec{ERREURS_AVANT_SAISIE_MANUELLE + 1 - erreursScan > 1 ? 's' : ''} de scan supplémentaire{ERREURS_AVANT_SAISIE_MANUELLE + 1 - erreursScan > 1 ? 's' : ''}.
+            </p>
+          )
+        )}
       </section>
     </div>
   )

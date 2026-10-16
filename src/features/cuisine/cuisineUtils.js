@@ -222,6 +222,20 @@ export function ticketId(commande) {
   return String(commande.id).replace(/^demo-/, '')
 }
 
+// Meme jour calendaire (heure locale) que maintenant — centralise ici (au
+// lieu d'etre duplique entre LivreurDashboard.jsx et Livraisons.jsx) car
+// utilise par plusieurs ecrans de l'espace Livreur pour isoler les
+// livraisons du jour (KPI « Livrées aujourd'hui », carte-filtre
+// « Livrées »).
+export function estAujourdhui(iso) {
+  if (!iso) return false
+  const date = new Date(iso)
+  const maintenant = new Date()
+  return date.getFullYear() === maintenant.getFullYear()
+    && date.getMonth() === maintenant.getMonth()
+    && date.getDate() === maintenant.getDate()
+}
+
 export function mapProduitsParId(liste) {
   return Object.fromEntries(
     (liste || []).map((p) => [

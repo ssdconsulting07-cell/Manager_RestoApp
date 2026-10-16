@@ -361,6 +361,12 @@
 .manager-shell.is-dark .manager-modal,
 .manager-shell.is-dark .dashboard-panel { background: #1c1c20; }
 .manager-shell.is-dark .manager-mobile-menu { color: #f2f2f2; }
+.manager-shell.is-dark .manager-header-mobile-brand-mark { background: #e14b64; color: #1a1a1e; }
+.manager-shell.is-dark .manager-header-mobile-brand-role { color: #9a9a9e; }
+.manager-shell.is-dark .manager-profile-menu-mobile-only { color: #f2f2f2; }
+.manager-shell.is-dark .manager-bottom-tabbar { border-color: #2a2a2e; background: #1c1c20; box-shadow: 0 -8px 24px rgb(0 0 0 / 40%); }
+.manager-shell.is-dark .manager-bottom-tabbar-link { color: #8a8a90; }
+.manager-shell.is-dark .manager-bottom-tabbar-link.is-active { color: #e14b64; }
 .manager-shell.is-dark .manager-profile-copy strong,
 .manager-shell.is-dark .dashboard-intro h1,
 .manager-shell.is-dark .dashboard-panel h2,
@@ -418,6 +424,16 @@
 .manager-shell.is-dark .audit-export-hint { color: #9a9a9e; }
 .manager-shell.is-dark .audit-export-dates input { color-scheme: dark; }
 
+/* Navigation mobile type app (onglets en bas) + header minimal, pour tous les roles. */
+.manager-header-mobile-brand { display: none; align-items: center; gap: 8px; }
+.manager-header-mobile-brand-mark { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 50%; color: #fff; background: #141414; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; }
+.manager-header-mobile-brand-role { color: #6b6b6b; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+.manager-profile-menu-mobile-only { display: none; }
+.manager-bottom-tabbar { display: none; position: fixed; z-index: 8; right: 0; bottom: 0; left: 0; border-top: 1px solid #e5e5e3; background: #fff; box-shadow: 0 -8px 24px rgb(20 20 20 / 10%); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.manager-bottom-tabbar-link { display: flex; flex: 1 1 0; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 9px 4px 7px; color: #8a8a88; text-decoration: none; font-size: 11px; font-weight: 700; }
+.manager-bottom-tabbar-icon { font-size: 19px; line-height: 1; }
+.manager-bottom-tabbar-link.is-active { color: #a6192e; }
+
 @media (max-width: 900px) {
   .dashboard-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -450,7 +466,6 @@
   .manager-shell.is-mobile-open .manager-mobile-backdrop { position: fixed; z-index: 9; inset: 0; display: block; border: 0; background: rgb(20 20 20 / 30%); }
   .manager-main { width: 100%; margin-left: 0; }
   .manager-header { height: 68px; padding: 0 18px; }
-  .manager-mobile-menu { display: block; }
   .manager-header-context { display: none; }
   .manager-header-actions { gap: 4px; }
   .manager-profile-copy, .manager-profile-chevron { display: none; }
@@ -463,6 +478,15 @@
   .page-skeleton-block.is-dashboard-title { height: 31px; }
   .page-skeleton-block.is-role-badge { height: 30px; }
   .page-skeleton-stat-card { min-height: 150px; }
+  /* A partir d'ici : patron de navigation mobile commun a tous les roles
+     (onglets en bas + header minimal), plus le menu hamburger/tiroir. */
+  .manager-mobile-menu { display: none; }
+  .manager-notification-wrap > .manager-header-action { display: none; }
+  .manager-theme-toggle { display: none; }
+  .manager-header-mobile-brand { display: flex; }
+  .manager-profile-menu-mobile-only { display: block; }
+  .manager-bottom-tabbar { display: flex; }
+  .manager-workarea.has-bottom-tabbar { padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

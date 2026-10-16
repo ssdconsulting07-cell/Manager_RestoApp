@@ -6,19 +6,29 @@ import Pagination from '../../components/crud/Pagination.jsx'
 import { canalLabel, modeLabel, noteCommande, resumePlats, ticketId } from '../cuisine/cuisineUtils.js'
 import { exporterLivraisons } from './exportLivraisons.js'
 import {
-  erreurPeriode, filtrerLivraisons, filtrerParPeriode, libellePeriode, libellesFiltres, nomFichierExport,
+  bornesPeriodeRapide, erreurPeriode, filtrerLivraisons, filtrerParPeriode, libellePeriode, libellePeriodeRapide,
+  libellesFiltres, nomFichierExport, PERIODE_RAPIDE_DEFAUT,
 } from './livraisonsFiltres.js'
 import { useLivreurBoard } from './useLivreurBoard.js'
 
 // Historique des livraisons (Livreur) : toutes les commandes livrees, en
-// consultation seule, avec recherche et export Excel par periode — meme
-// patron que le Journal d'audit cote Manager (JournalAudit.jsx), dont ce
-// fichier reprend la structure (groupement par jour, modale d'export avec
-// bornes de dates), mais sans filtre role/domaine (un seul acteur ici).
-// Repondait a une demande explicite : « Historique complet + filtre
-// dates », choisi plutot que la version plus simple « aujourd'hui
-// seulement ». Les livraisons sortent de l'ecran Livraisons.jsx une fois
-// scannees (voir son commentaire) — c'est cet ecran qui en garde la trace.
+// consultation seule, avec recherche, filtre rapide de periode et export
+// Excel par periode — meme patron que le Journal d'audit cote Manager
+// (JournalAudit.jsx), dont ce fichier reprend la structure (groupement par
+// jour, modale d'export avec bornes de dates), mais sans filtre
+// role/domaine (un seul acteur ici). Repondait a une demande explicite :
+// « Historique complet + filtre dates », choisi plutot que la version plus
+// simple « aujourd'hui seulement ». Les livraisons sortent de l'ecran
+// Livraisons.jsx une fois scannees (voir son commentaire) — c'est cet
+// ecran qui en garde la trace.
+//
+// Le filtre rapide ci-dessous (Aujourd'hui / Cette semaine / Tout, par
+// defaut "Aujourd'hui") borne uniquement ce qui est AFFICHE a l'ecran —
+// il reutilise filtrerParPeriode() mais est applique separement de la
+// recherche, APRES elle, pour ne pas limiter l'export : la modale
+// d'export part de `resultats` (recherche seule), pas de `affichees`, afin
+// de pouvoir exporter plus large que la vue du moment (ex. exporter tout
+// l'historique alors que l'ecran n'affiche que "Aujourd'hui").
 const ROWS_OPTIONS = [10, 25, 50]
 
 function cleJour(date) {
@@ -139,6 +149,7 @@ function ExportLivraisonsModal({ livrees, produits, filtres, onExported, onClose
 export default function HistoriqueLivraisons() {
   const { livrees, produits, loading, error, demo, charger } = useLivreurBoard()
   const [recherche, setRecherche] = useState('')
+  const [periodeRapide, setPeriodeRapide] = useState(PERIODE_RAPIDE_DEFAUT)
   const [page, setPage] = useState(1)
   const [rows, setRows] = useState(ROWS_OPTIONS[0])
   const [rafraichissement, setRafraichissement] = useState(false)
@@ -146,11 +157,22 @@ export default function HistoriqueLivraisons() {
   const [toast, setToast] = useState(null)
 
   const filtres = { recherche }
-  const filtresActifs = recherche.trim() !== ''
+  const rechercheActive = recherche.trim() !== ''
+  const filtresActifs = rechercheActive || periodeRapide !== PERIODE_RAPIDE_DEFAUT
+  // Distinct de filtresActifs : vrai seulement s'il reste une vue plus large
+  // a proposer (le bouton de secours ci-dessous n'a aucun effet utile si la
+  // periode est deja "Tout" et la recherche vide).
+  const peutElargir = rechercheActive || periodeRapide !== 'tous'
+  // `resultats` (recherche seule) alimente l'export, qui doit pouvoir viser
+  // plus large que ce que le filtre rapide affiche a l'ecran.
   const resultats = useMemo(() => filtrerLivraisons(livrees, produits, { recherche }), [livrees, produits, recherche])
+  const affichees = useMemo(
+    () => filtrerParPeriode(resultats, bornesPeriodeRapide(periodeRapide)),
+    [resultats, periodeRapide],
+  )
   const triees = useMemo(
-    () => [...resultats].sort((a, b) => new Date(b.livreeLe || b.creeLe) - new Date(a.livreeLe || a.creeLe)),
-    [resultats],
+    () => [...affichees].sort((a, b) => new Date(b.livreeLe || b.creeLe) - new Date(a.livreeLe || a.creeLe)),
+    [affichees],
   )
   const pageCount = Math.max(1, Math.ceil(triees.length / rows))
   const groupes = grouperParJour(triees.slice((page - 1) * rows, page * rows))
@@ -159,8 +181,12 @@ export default function HistoriqueLivraisons() {
     return (valeur) => { setter(valeur); setPage(1) }
   }
 
+  // Repart de la vue la plus large (recherche videe, periode "Tout") plutot
+  // que du defaut "Aujourd'hui" : si la liste est vide parce que rien n'a
+  // ete livre aujourd'hui, revenir au defaut ne changerait rien.
   function reinitialiser() {
     setRecherche('')
+    setPeriodeRapide('tous')
     setPage(1)
   }
 
@@ -205,6 +231,16 @@ export default function HistoriqueLivraisons() {
                   onChange={(event) => changer(setRecherche)(event.target.value)}
                 />
               </div>
+              <select
+                className="audit-select"
+                aria-label="Filtrer par période"
+                value={periodeRapide}
+                onChange={(event) => changer(setPeriodeRapide)(event.target.value)}
+              >
+                <option value="aujourdhui">Aujourd’hui</option>
+                <option value="semaine">Cette semaine</option>
+                <option value="tous">Tout</option>
+              </select>
               <span className="crud-toolbar-spacer" />
               <button
                 type="button"
@@ -223,9 +259,13 @@ export default function HistoriqueLivraisons() {
 
             {triees.length === 0 ? (
               <div className="crud-empty audit-empty">
-                <p>Aucune livraison ne correspond à cette recherche.</p>
-                {filtresActifs && (
-                  <button className="manager-button manager-button-quiet" type="button" onClick={reinitialiser}>Réinitialiser la recherche</button>
+                <p>
+                  {filtresActifs
+                    ? `Aucune livraison ne correspond à ces filtres (${libellePeriodeRapide(periodeRapide).toLowerCase()}).`
+                    : 'Aucune livraison enregistrée pour le moment.'}
+                </p>
+                {peutElargir && (
+                  <button className="manager-button manager-button-quiet" type="button" onClick={reinitialiser}>Voir tout l’historique</button>
                 )}
               </div>
             ) : (

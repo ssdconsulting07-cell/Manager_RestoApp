@@ -11,7 +11,9 @@ export const REFRESH_MS = 15000
 // une fois les 3 colonnes fusionnees en une seule grille filtrable).
 export const STATUT_META = {
   PAYEE: { label: 'Reçue', icon: 'fa-receipt', accent: '#9c6b0c', accentBg: '#f6ecd9' },
-  EN_PREPARATION: { label: 'En préparation', icon: 'fa-fire-burner', accent: '#141414', accentBg: '#ececea' },
+  // Bleu plutot que noir (retour utilisateur : la carte-filtre selectionnee
+  // ne ressortait pas assez) ; pas rouge, deja reserve au retard is-urgent.
+  EN_PREPARATION: { label: 'En préparation', icon: 'fa-fire-burner', accent: '#2f6fed', accentBg: '#e8eefc' },
   PRETE: { label: 'Prête', icon: 'fa-circle-check', accent: '#1f6f57', accentBg: '#e2f2ec' },
   // Commande envoyee au livreur (voir transitions.js) : retour utilisateur —
   // ne doit plus disparaitre du tableau cuisine une fois envoyee, comme

@@ -498,7 +498,10 @@
   .manager-profile-menu-mobile-only { display: block; }
   .manager-bottom-tabbar { display: flex; }
   .manager-workarea.has-bottom-tabbar { padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
-  .audit-role-tabs { display: flex; }
+  /* Specificite (.manager-shell .audit-role-tabs) plutot que simple
+     (.audit-role-tabs), pour gagner sur la regle "display: none" par
+     defaut plus bas dans ce fichier, quel que soit l'ordre des regles. */
+  .manager-shell .audit-role-tabs { display: flex; }
 }
 
 @media (prefers-reduced-motion: reduce) {

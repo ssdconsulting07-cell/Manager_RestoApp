@@ -322,7 +322,7 @@ export default function JournalAudit() {
             <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
             <input
               type="search"
-              placeholder="Mot-clé ou nom d’employé…"
+              placeholder="Rechercher un employé ou une action…"
               aria-label="Rechercher un employé ou une action"
               value={recherche}
               onChange={(event) => changerRecherche(event.target.value)}

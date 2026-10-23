@@ -7,7 +7,7 @@ import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
 import { ROLE_LABELS } from '../../auth/roles.js'
 import { DOMAINES_AUDIT, journalAudit } from './auditData.js'
 import {
-  TOUS, erreurPeriode, filtrerJournal, filtrerParPeriode, libellePeriode, libellesFiltres, nomFichierExport,
+  erreurPeriode, filtrerJournal, filtrerParPeriode, libellePeriode, libellesFiltres, nomFichierExport,
 } from './journalAuditFiltres.js'
 import { exporterJournalAudit } from './exportJournalAudit.js'
 
@@ -31,17 +31,29 @@ export function roleDepuisSlug(slug) {
 // les cartes du tableau de bord Gerant/Manager (dashboard-stat-card) et le
 // badge de statut cuisine (STATUT_META, voir cuisineUtils.js) — pas de
 // nouvelle convention de couleur, sauf « Annonces » (violet), ce domaine
-// n’ayant pas d’equivalent ailleurs dans l’appli.
+// n’ayant pas d’equivalent ailleurs dans l’appli. Pas de carte Categorie ni
+// Toutes (retour utilisateur 23/10/2026 : seulement 4 cartes).
 const DOMAINE_ACCENTS = {
   COMMANDE: { accent: '#a6192e', accentBg: '#f8e9ec' },
   PRODUIT: { accent: '#2f6fed', accentBg: '#e8eefc' },
-  CATEGORIE: { accent: '#9c6b0c', accentBg: '#f6ecd9' },
   ANNONCE: { accent: '#6a3fa0', accentBg: '#efe7f7' },
   PERSONNEL: { accent: '#1f6f57', accentBg: '#e2f2ec' },
 }
-const TOUTES_ACCENT = { accent: '#5b5b5f', accentBg: '#ececea' }
+
+// Ordre d'affichage des 4 cartes (pas de carte « Toutes » ni « Categories »,
+// retour utilisateur 23/10/2026) - toujours une seule active, meme patron
+// que les cartes-statut de Commandes.jsx (voir changerDomaine).
+const DOMAINES_CARTES = ['COMMANDE', 'PRODUIT', 'ANNONCE', 'PERSONNEL']
 
 const ROWS_OPTIONS = [10, 25, 50]
+
+// Carte de domaine ouverte par defaut sur une sous-page : la premiere (dans
+// l'ordre de DOMAINES_CARTES) qui a au moins une entree pour ce role - sinon
+// on atterrirait parfois sur une page vide (ex. le Gerant n'a aucune entree
+// COMMANDE, voir auditData.js).
+function domainePrincipal(entreesDuRole) {
+  return DOMAINES_CARTES.find((d) => entreesDuRole.some((entree) => entree.domaine === d)) ?? DOMAINES_CARTES[0]
+}
 
 function cleJour(date) {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
@@ -73,6 +85,34 @@ function grouperParJour(entrees) {
 function aujourdhuiIso() {
   const d = new Date()
   return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
+}
+
+// Detail complet d'une entree (role, description, date complete) : retire de
+// la ligne (retour utilisateur 23/10/2026 : « lignes plus allegees ») pour ne
+// garder dans la liste que l'essentiel (employe, type, heure).
+function AuditDetailModal({ entree, onClose }) {
+  return (
+    <div className="manager-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <section className="manager-modal" role="dialog" aria-modal="true" aria-labelledby="audit-detail-title">
+        <div className="manager-modal-header">
+          <div>
+            <p className="manager-eyebrow">{DOMAINES_AUDIT[entree.domaine].label}</p>
+            <h2 id="audit-detail-title">Détail de l’action</h2>
+          </div>
+          <button className="manager-icon-button" type="button" aria-label="Fermer" onClick={onClose}>
+            <i className="fa-solid fa-xmark" aria-hidden="true" />
+          </button>
+        </div>
+        <dl className="staff-user-details">
+          <div><dt>Employé</dt><dd>{entree.acteur.nom}</dd></div>
+          <div><dt>Rôle</dt><dd>{ROLE_LABELS[entree.acteur.role]}</dd></div>
+          <div><dt>Type d’action</dt><dd>{DOMAINES_AUDIT[entree.domaine].label}</dd></div>
+          <div><dt>Date</dt><dd>{new Date(entree.createdAt).toLocaleString('fr-FR')}</dd></div>
+          <div className="staff-user-detail-wide"><dt>Description</dt><dd>{entree.action}</dd></div>
+        </dl>
+      </section>
+    </div>
+  )
 }
 
 function ExportAuditModal({ entrees, filtres, onExported, onClose }) {
@@ -171,12 +211,18 @@ export default function JournalAudit() {
   // a chaque rendu. On ne redirige qu’a la toute fin, dans le JSX.
   const role = roleResolu ?? ROLES_AUDIT[0]
 
+  const entreesDuRole = useMemo(
+    () => journalAudit.filter((entree) => entree.acteur.role === role),
+    [role],
+  )
+
   const [recherche, setRecherche] = useState('')
-  const [domaine, setDomaine] = useState(TOUS)
+  const [domaine, setDomaine] = useState(() => domainePrincipal(entreesDuRole))
   const [page, setPage] = useState(1)
   const [rows, setRows] = useState(ROWS_OPTIONS[0])
   const [exportOuvert, setExportOuvert] = useState(false)
   const [toast, setToast] = useState(null)
+  const [detail, setDetail] = useState(null)
 
   // Recherche/domaine/pagination ne survivent pas a un changement de role
   // (pilule en haut de page ou dropdown sidebar) : on repart d’une page
@@ -184,28 +230,20 @@ export default function JournalAudit() {
   // peut-etre plus de sens.
   useEffect(() => {
     setRecherche('')
-    setDomaine(TOUS)
+    setDomaine(domainePrincipal(entreesDuRole))
     setPage(1)
-  }, [role])
+  }, [role, entreesDuRole])
 
-  const entreesDuRole = useMemo(
-    () => journalAudit.filter((entree) => entree.acteur.role === role),
-    [role],
-  )
-
-  const domaineItems = useMemo(() => [
-    { key: TOUS, label: 'Toutes', icon: 'fa-layer-group', value: entreesDuRole.length, ...TOUTES_ACCENT },
-    ...Object.entries(DOMAINES_AUDIT).map(([key, { label, icon }]) => ({
-      key,
-      label,
-      icon,
-      value: entreesDuRole.filter((entree) => entree.domaine === key).length,
-      ...DOMAINE_ACCENTS[key],
-    })),
-  ], [entreesDuRole])
+  const domaineItems = useMemo(() => DOMAINES_CARTES.map((key) => ({
+    key,
+    label: DOMAINES_AUDIT[key].label,
+    icon: DOMAINES_AUDIT[key].icon,
+    value: entreesDuRole.filter((entree) => entree.domaine === key).length,
+    ...DOMAINE_ACCENTS[key],
+  })), [entreesDuRole])
 
   const filtres = { role, domaine, recherche }
-  const filtresActifs = domaine !== TOUS || recherche.trim() !== ''
+  const filtresActifs = domaine !== domainePrincipal(entreesDuRole) || recherche.trim() !== ''
   const resultats = useMemo(
     () => filtrerJournal(entreesDuRole, { domaine, recherche }),
     [entreesDuRole, domaine, recherche],
@@ -225,7 +263,7 @@ export default function JournalAudit() {
 
   function reinitialiser() {
     setRecherche('')
-    setDomaine(TOUS)
+    setDomaine(domainePrincipal(entreesDuRole))
     setPage(1)
   }
 
@@ -296,12 +334,20 @@ export default function JournalAudit() {
                       <div className="dashboard-activity-row is-static is-wrapping">
                         <span className="dashboard-activity-icon" aria-hidden="true"><i className={`fa-solid ${DOMAINES_AUDIT[entree.domaine].icon}`} /></span>
                         <span className="dashboard-activity-text">
-                          <strong>{entree.acteur.nom} {entree.action}</strong>
-                          <span>{ROLE_LABELS[entree.acteur.role]} · {DOMAINES_AUDIT[entree.domaine].label}</span>
+                          <strong>{entree.acteur.nom}</strong>
+                          <span>{DOMAINES_AUDIT[entree.domaine].label}</span>
                         </span>
                         <time className="dashboard-activity-time" dateTime={entree.createdAt} title={new Date(entree.createdAt).toLocaleString('fr-FR')}>
                           {new Date(entree.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                         </time>
+                        <button
+                          className="audit-row-view"
+                          type="button"
+                          aria-label={`Voir le détail de l’action de ${entree.acteur.nom}`}
+                          onClick={() => setDetail(entree)}
+                        >
+                          <i className="fa-solid fa-eye" aria-hidden="true" />
+                        </button>
                       </div>
                     </li>
                   ))}
@@ -333,6 +379,7 @@ export default function JournalAudit() {
           }}
         />
       )}
+      {detail && <AuditDetailModal entree={detail} onClose={() => setDetail(null)} />}
       <Toast toast={toast} onClose={() => setToast(null)} />
     </Layout>
   )

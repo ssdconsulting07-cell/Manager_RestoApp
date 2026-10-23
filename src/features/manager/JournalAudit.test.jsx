@@ -93,8 +93,35 @@ describe('Journal d’audit page', () => {
     const cuisine = journalAudit.filter((e) => e.acteur.role === 'CUISINE')
     expect(screen.getByText(`1–10 sur ${cuisine.length}`)).toBeInTheDocument()
     expect(screen.getAllByRole('listitem')).toHaveLength(10)
-    // Consultation seule : aucun bouton d'action sur les lignes.
-    screen.getAllByRole('listitem').forEach((li) => expect(within(li).queryByRole('button')).not.toBeInTheDocument())
+    // Lignes allegees (retour utilisateur 23/10/2026) : un seul bouton par
+    // ligne, l'icone « voir » vers le detail complet - pas d'action directe.
+    screen.getAllByRole('listitem').forEach((li) => expect(within(li).getAllByRole('button')).toHaveLength(1))
+  })
+
+  it('shows exactly four domain cards, no « Toutes » nor « Catégories »', () => {
+    renderPage('gerant')
+    const tabs = screen.getAllByRole('tab')
+    expect(tabs).toHaveLength(4)
+    ;['Commandes', 'Produits', 'Annonces', 'Personnel'].forEach((label) => {
+      expect(screen.getByRole('tab', { name: new RegExp(label) })).toBeInTheDocument()
+    })
+    expect(screen.queryByRole('tab', { name: /Toutes/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('tab', { name: /Catégorie/ })).not.toBeInTheDocument()
+  })
+
+  it('opens the full detail (role, description, date) on the view icon, and closes it', () => {
+    renderPage('cuisine')
+    const premiere = journalAudit.filter((e) => e.acteur.role === 'CUISINE')[0]
+    // La ligne elle-meme n'affiche plus la phrase d'action complete.
+    expect(screen.queryByText(premiere.action)).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getAllByRole('button', { name: /Voir le détail/ })[0])
+    const dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByText(premiere.action)).toBeInTheDocument()
+    expect(within(dialog).getByText('Cuisine')).toBeInTheDocument()
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Fermer' }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('redirects an unknown role slug to the Cuisine sub-page', () => {
@@ -114,11 +141,13 @@ describe('Journal d’audit page', () => {
   it('switches role through the pills, resetting the domain filter and page', () => {
     renderPage('cuisine')
     const cuisine = journalAudit.filter((e) => e.acteur.role === 'CUISINE')
-    const gerant = journalAudit.filter((e) => e.acteur.role === 'GERANT')
     expect(screen.getByText(`1–10 sur ${cuisine.length}`)).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('link', { name: 'Gérant' }))
-    expect(screen.getByText(`1–10 sur ${gerant.length}`)).toBeInTheDocument()
+    // Le Gerant n'a aucune entree Commandes (voir auditData.js) : la carte
+    // par defaut tombe donc sur Produits, la premiere non vide pour ce role.
+    const produitsGerant = journalAudit.filter((e) => e.acteur.role === 'GERANT' && e.domaine === 'PRODUIT')
+    expect(screen.getByText(`1–${produitsGerant.length} sur ${produitsGerant.length}`)).toBeInTheDocument()
   })
 
   it('filters by domain through the stat cards, and offers a reset when nothing matches', () => {
@@ -132,9 +161,10 @@ describe('Journal d’audit page', () => {
     expect(screen.getByText(`1–10 sur ${cuisine.length}`)).toBeInTheDocument()
   })
 
-  it('exports exactly the role’s entries within the period, and blocks an inverted period', async () => {
+  it('exports exactly the entries of the selected domain card, and blocks an inverted period', async () => {
     renderPage('gerant')
-    const gerants = journalAudit.filter((e) => e.acteur.role === 'GERANT')
+    const personnel = journalAudit.filter((e) => e.acteur.role === 'GERANT' && e.domaine === 'PERSONNEL')
+    fireEvent.click(screen.getByRole('tab', { name: /Personnel/ }))
     fireEvent.click(screen.getByRole('button', { name: /Exporter/ }))
     const dialog = screen.getByRole('dialog')
 
@@ -145,13 +175,13 @@ describe('Journal d’audit page', () => {
 
     fireEvent.change(within(dialog).getByLabelText('Début'), { target: { value: '' } })
     fireEvent.change(within(dialog).getByLabelText('Fin'), { target: { value: '' } })
-    expect(within(dialog).getByText(`${gerants.length} actions à exporter`)).toBeInTheDocument()
+    expect(within(dialog).getByText(`${personnel.length} actions à exporter`)).toBeInTheDocument()
     fireEvent.click(within(dialog).getByRole('button', { name: /Exporter/ }))
 
     await waitFor(() => expect(exporterJournalAudit).toHaveBeenCalledTimes(1))
     const { entrees, parametres } = exporterJournalAudit.mock.calls[0][0]
-    expect(entrees.map((e) => e.id)).toEqual(gerants.map((e) => e.id))
-    expect(parametres).toMatchObject({ role: 'Gérant', domaine: 'Tous les types', periode: 'Toute la période' })
+    expect(entrees.map((e) => e.id)).toEqual(personnel.map((e) => e.id))
+    expect(parametres).toMatchObject({ role: 'Gérant', domaine: 'Personnel', periode: 'Toute la période' })
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   })
 })

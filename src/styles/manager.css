@@ -447,6 +447,9 @@
   .audit-export-dates { grid-template-columns: 1fr; }
   .dashboard-activity-row.is-wrapping { display: grid; grid-template-columns: 34px minmax(0, 1fr); column-gap: 12px; row-gap: 3px; }
   .dashboard-activity-row.is-wrapping .dashboard-activity-time { grid-column: 2; padding-top: 0; }
+  /* Bouton « voir » (JournalAudit.jsx) : 3e ligne de la colonne de texte,
+     plutot qu'un retour dans la colonne icone. */
+  .dashboard-activity-row.is-wrapping .audit-row-view { grid-column: 2; justify-self: start; }
 }
 
 @media (max-width: 760px) {
@@ -487,6 +490,7 @@
   .manager-profile-menu-mobile-only { display: block; }
   .manager-bottom-tabbar { display: flex; }
   .manager-workarea.has-bottom-tabbar { padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
+  .audit-role-tabs { display: flex; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -895,8 +899,11 @@
    sidebar ci-dessus : seul moyen de changer de role sur mobile (pas de
    sidebar, voir Layout.jsx, le tiroir hors-ecran n'est plus accessible
    depuis le 20/10/2026) ; sert aussi de reperage visuel sur desktop. */
-.audit-role-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-.audit-role-tab { border: 1px solid #e7e4e1; border-radius: 999px; padding: 8px 16px; color: #52504d; background: #fff; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; }
+/* Masquees par defaut (PC) : redondant avec le dropdown sidebar (retour
+   utilisateur 23/10/2026) - reaffichees seulement sur mobile (pas de
+   sidebar, voir media query 760px plus bas et Layout.jsx). */
+.audit-role-tabs { display: none; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.audit-role-tab { border: 1px solid #e7e4e1; border-radius: 999px; padding: 8px 16px; color: #52504d; background: #fff; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; text-decoration: none; }
 .audit-role-tab:hover { border-color: #d8b3bb; color: #a6192e; }
 .audit-role-tab.is-active { border-color: #a6192e; color: #fff; background: #a6192e; }
 
@@ -905,3 +912,13 @@
 .manager-shell.is-dark .audit-role-tab { border-color: #2a2a2e; color: #d8d8da; background: #1c1c20; }
 .manager-shell.is-dark .audit-role-tab:hover { border-color: #5a3038; color: #e14b64; }
 .manager-shell.is-dark .audit-role-tab.is-active { border-color: #e14b64; color: #fff; background: #e14b64; }
+
+/* Bouton « voir le détail » en fin de ligne (JournalAudit.jsx) : la ligne
+   n'affiche plus que l'essentiel (employé, type, heure), le détail complet
+   (rôle, description, date complète) passe dans une modale au clic - retour
+   utilisateur 23/10/2026 : « lignes plus allégées ». Meme palette que
+   .manager-header-action, en plus petit pour une liste compacte. */
+.audit-row-view { display: grid; flex: none; width: 30px; height: 30px; place-items: center; border: 1px solid #e7e4e1; border-radius: 50%; color: #6b6b6b; background: #fff; cursor: pointer; font-size: 13px; }
+.audit-row-view:hover { color: #a6192e; border-color: #e6c2c9; }
+.manager-shell.is-dark .audit-row-view { border-color: #2a2a2e; color: #9a9a9e; background: #1c1c20; }
+.manager-shell.is-dark .audit-row-view:hover { color: #e14b64; border-color: #5a3038; }

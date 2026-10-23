@@ -231,6 +231,10 @@
 /* === Journal d'audit (Manager) — memes patterns que Produits/Personnel (barre d'outils, panneau, modal) === */
 .audit-toolbar { flex-wrap: wrap; }
 .audit-toolbar .crud-search { flex: 1 1 240px; }
+.audit-date-filter { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
+.audit-date-filter label { display: flex; align-items: center; gap: 6px; color: #6b6b6b; font-size: 12px; font-weight: 700; }
+.audit-date-filter input[type="date"] { border: 1px solid #e5e5e3; border-radius: 999px; padding: 9px 14px; color: #141414; background: #fff; font: inherit; font-size: 13px; outline: none; }
+.audit-date-filter input[type="date"]:focus { border-color: #a6192e; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
 .audit-select, .crud-select { flex: 0 0 auto; border: 1px solid #e5e5e3; border-radius: 999px; padding: 10px 36px 10px 16px; color: #141414; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239a9a9e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center; font: inherit; font-size: 13px; outline: none; cursor: pointer; appearance: none; }
 .audit-select:focus, .crud-select:focus { border-color: #a6192e; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
 .audit-panel { min-height: 0; margin-bottom: 18px; }
@@ -419,6 +423,8 @@
 .manager-shell.is-dark .dashboard-activity-time { color: #9a9a9e; }
 .manager-shell.is-dark .dashboard-activity-row.is-static:hover { background: transparent; }
 .manager-shell.is-dark .audit-select, .manager-shell.is-dark .crud-select { border-color: #2f2f33; color: #f2f2f2; background-color: #121214; color-scheme: dark; }
+.manager-shell.is-dark .audit-date-filter label { color: #9a9a9e; }
+.manager-shell.is-dark .audit-date-filter input[type="date"] { border-color: #2f2f33; color: #f2f2f2; background: #121214; color-scheme: dark; }
 .manager-shell.is-dark .audit-day + .audit-day { border-color: #2a2a2e; }
 .manager-shell.is-dark .audit-panel .audit-day-heading,
 .manager-shell.is-dark .audit-export-hint { color: #9a9a9e; }
@@ -442,11 +448,16 @@
 @media (max-width: 600px) {
   .audit-toolbar .crud-search { flex: 1 1 100%; max-width: none; }
   .audit-select, .crud-select { flex: 1 1 0; min-width: 146px; }
+  .audit-date-filter { flex: 1 1 100%; flex-wrap: wrap; }
+  .audit-date-filter input[type="date"] { flex: 1 1 0; min-width: 0; }
   .audit-toolbar .crud-toolbar-spacer { display: none; }
   .audit-toolbar .crud-add-button { flex: 1 1 100%; justify-content: center; }
   .audit-export-dates { grid-template-columns: 1fr; }
   .dashboard-activity-row.is-wrapping { display: grid; grid-template-columns: 34px minmax(0, 1fr); column-gap: 12px; row-gap: 3px; }
   .dashboard-activity-row.is-wrapping .dashboard-activity-time { grid-column: 2; padding-top: 0; }
+  /* Bouton « voir » (JournalAudit.jsx) : 3e ligne de la colonne de texte,
+     plutot qu'un retour dans la colonne icone. */
+  .dashboard-activity-row.is-wrapping .audit-row-view { grid-column: 2; justify-self: start; }
 }
 
 @media (max-width: 760px) {
@@ -487,6 +498,10 @@
   .manager-profile-menu-mobile-only { display: block; }
   .manager-bottom-tabbar { display: flex; }
   .manager-workarea.has-bottom-tabbar { padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
+  /* Specificite (.manager-shell .audit-role-tabs) plutot que simple
+     (.audit-role-tabs), pour gagner sur la regle "display: none" par
+     defaut plus bas dans ce fichier, quel que soit l'ordre des regles. */
+  .manager-shell .audit-role-tabs { display: flex; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -881,3 +896,40 @@
   .staff-user-form-wide,
   .staff-user-detail-wide { grid-column: auto; }
 }
+
+/* Groupe de nav depliable (sidebar) — ex. Journal d'audit, voir Layout.jsx NAV_ITEMS/children. */
+.manager-nav-group { display: flex; flex-direction: column; }
+.manager-nav-toggle { width: 100%; text-align: left; }
+.manager-nav-chevron { margin-left: auto; font-size: 11px; color: #b9a7ab; transition: transform 160ms ease; }
+.manager-nav-chevron.is-open { transform: rotate(180deg); }
+.manager-nav-children { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 4px 24px; padding-left: 14px; border-left: 1px solid #3a2328; }
+.manager-nav-child { min-height: 38px; font-size: 12px; color: #d9c9cc; }
+.manager-nav-child.is-active { color: #fff; background: #2c171b; font-weight: 700; }
+
+/* Selecteur de role en pilules (JournalAudit.jsx) — complement du dropdown
+   sidebar ci-dessus : seul moyen de changer de role sur mobile (pas de
+   sidebar, voir Layout.jsx, le tiroir hors-ecran n'est plus accessible
+   depuis le 20/10/2026) ; sert aussi de reperage visuel sur desktop. */
+/* Masquees par defaut (PC) : redondant avec le dropdown sidebar (retour
+   utilisateur 23/10/2026) - reaffichees seulement sur mobile (pas de
+   sidebar, voir media query 760px plus bas et Layout.jsx). */
+.audit-role-tabs { display: none; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.audit-role-tab { border: 1px solid #e7e4e1; border-radius: 999px; padding: 8px 16px; color: #52504d; background: #fff; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; text-decoration: none; }
+.audit-role-tab:hover { border-color: #d8b3bb; color: #a6192e; }
+.audit-role-tab.is-active { border-color: #a6192e; color: #fff; background: #a6192e; }
+
+/* .audit-role-tab (JournalAudit.jsx) en theme sombre — meme rose que les
+   onglets actifs de la barre mobile (.manager-bottom-tabbar-link.is-active). */
+.manager-shell.is-dark .audit-role-tab { border-color: #2a2a2e; color: #d8d8da; background: #1c1c20; }
+.manager-shell.is-dark .audit-role-tab:hover { border-color: #5a3038; color: #e14b64; }
+.manager-shell.is-dark .audit-role-tab.is-active { border-color: #e14b64; color: #fff; background: #e14b64; }
+
+/* Bouton « voir le détail » en fin de ligne (JournalAudit.jsx) : la ligne
+   n'affiche plus que l'essentiel (employé, type, heure), le détail complet
+   (rôle, description, date complète) passe dans une modale au clic - retour
+   utilisateur 23/10/2026 : « lignes plus allégées ». Meme palette que
+   .manager-header-action, en plus petit pour une liste compacte. */
+.audit-row-view { display: grid; flex: none; width: 30px; height: 30px; place-items: center; border: 1px solid #e7e4e1; border-radius: 50%; color: #6b6b6b; background: #fff; cursor: pointer; font-size: 13px; }
+.audit-row-view:hover { color: #a6192e; border-color: #e6c2c9; }
+.manager-shell.is-dark .audit-row-view { border-color: #2a2a2e; color: #9a9a9e; background: #1c1c20; }
+.manager-shell.is-dark .audit-row-view:hover { color: #e14b64; border-color: #5a3038; }

@@ -64,8 +64,9 @@ describe('Manager mock data', () => {
     // des flux) : les annulations de commandes sont desormais reservees a
     // la Cuisine (voir transitions.js/auditData.js), et c'etait la seule
     // action que ce mock attribuait au Manager — qui ne fait par ailleurs
-    // que consulter (dashboard/journal), jamais agir.
-    expect(new Set(journalAudit.map((e) => e.acteur.role))).toEqual(new Set(['CUISINE', 'GERANT', 'LIVREUR']))
+    // que consulter (dashboard/journal), jamais agir. VENDEUR ajoute le
+    // 23/10/2026 (ventes comptoir, voir auditData.js/JournalAudit.jsx).
+    expect(new Set(journalAudit.map((e) => e.acteur.role))).toEqual(new Set(['CUISINE', 'GERANT', 'LIVREUR', 'VENDEUR']))
   })
 
   it('reserves Personnel actions to Gerant staff and keeps the Manager on orders', () => {
@@ -100,8 +101,9 @@ describe('Dashboard by role', () => {
 
     const commandes = screen.getByRole('region', { name: 'Commandes du jour' })
     expect(within(commandes).getAllByRole('link')).toHaveLength(6)
-    // Le Manager n'a acces qu'a /dashboard et /journal-audit.
-    screen.getAllByRole('link').forEach((link) => expect(link).toHaveAttribute('href', '/journal-audit'))
+    // Le Manager n'a acces qu'a /dashboard et /journal-audit (sous-page
+    // Cuisine par defaut, voir ManagerDashboard.jsx).
+    screen.getAllByRole('link').forEach((link) => expect(link).toHaveAttribute('href', '/journal-audit/cuisine'))
 
     // Le flux n'est qu'un apercu des 12 dernieres actions du Journal d'audit.
     const audit = screen.getByRole('region', { name: 'Actions du personnel' })

@@ -18,8 +18,11 @@ import { DOMAINES_AUDIT, journalAudit } from './auditData.js'
 // bord Gerant (cartes KPI, panneaux, graphiques recharts, flux d'activite).
 // Commandes, paiements et audit n'existent pas encore cote Backend : tout vient
 // des mocks en memoire de ce dossier. Le Manager n'a acces qu'a /dashboard et
-// /journal-audit : les cartes menent donc toutes vers /journal-audit.
-const JOURNAL_AUDIT = '/journal-audit'
+// /journal-audit : les cartes menent donc toutes vers /journal-audit. Direction
+// Cuisine par defaut (23/10/2026, voir JournalAudit.jsx : page desormais une
+// sous-page par role) - choix arbitraire, Cuisine etant le role le plus
+// represente dans le mock (voir auditData.js).
+const JOURNAL_AUDIT = '/journal-audit/cuisine'
 // Le flux du tableau de bord n'est qu'un apercu du Journal d'audit.
 const APERCU_AUDIT = 12
 

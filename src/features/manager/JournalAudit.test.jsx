@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import JournalAudit from './JournalAudit.jsx'
 import { journalAudit } from './auditData.js'
@@ -66,41 +66,75 @@ describe('Journal d’audit filters', () => {
   })
 })
 
+// Depuis le 23/10/2026 (retour utilisateur : page trop chargee), le Journal
+// d'audit est une sous-page par role (/journal-audit/:roleSlug, voir
+// App.jsx) plutot qu'un unique select « Tous les roles » — ces tests
+// rendent donc la page a l'interieur d'une vraie Route parametree, comme en
+// production (voir App.jsx), pour exercer le meme code de resolution de
+// role (roleDepuisSlug) et la meme redirection sur slug invalide.
 describe('Journal d’audit page', () => {
   afterEach(() => {
     cleanup()
     vi.clearAllMocks()
   })
 
-  function renderPage() {
-    return render(<MemoryRouter><JournalAudit /></MemoryRouter>)
+  function renderPage(roleSlug = 'cuisine') {
+    return render(
+      <MemoryRouter initialEntries={[`/journal-audit/${roleSlug}`]}>
+        <Routes>
+          <Route path="/journal-audit/:roleSlug" element={<JournalAudit />} />
+        </Routes>
+      </MemoryRouter>,
+    )
   }
 
-  it('lists the whole log paginated, read-only', () => {
-    renderPage()
-    expect(screen.getByText(`1–10 sur ${journalAudit.length}`)).toBeInTheDocument()
+  it('lists one role’s log, paginated, read-only', () => {
+    renderPage('cuisine')
+    const cuisine = journalAudit.filter((e) => e.acteur.role === 'CUISINE')
+    expect(screen.getByText(`1–10 sur ${cuisine.length}`)).toBeInTheDocument()
     expect(screen.getAllByRole('listitem')).toHaveLength(10)
     // Consultation seule : aucun bouton d'action sur les lignes.
     screen.getAllByRole('listitem').forEach((li) => expect(within(li).queryByRole('button')).not.toBeInTheDocument())
   })
 
-  it('combines role and type filters, and offers a reset when nothing matches', () => {
-    renderPage()
-    fireEvent.change(screen.getByLabelText('Filtrer par rôle'), { target: { value: 'MANAGER' } })
-    fireEvent.change(screen.getByLabelText('Filtrer par type d’action'), { target: { value: 'PERSONNEL' } })
-    expect(screen.getByText('Aucune action ne correspond à ces filtres.')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Réinitialiser les filtres' }))
-    expect(screen.getByText(`1–10 sur ${journalAudit.length}`)).toBeInTheDocument()
+  it('redirects an unknown role slug to the Cuisine sub-page', () => {
+    renderPage('does-not-exist')
+    const cuisine = journalAudit.filter((e) => e.acteur.role === 'CUISINE')
+    expect(screen.getByText(`1–10 sur ${cuisine.length}`)).toBeInTheDocument()
   })
 
-  it('exports exactly the filtered entries within the period, and blocks an inverted period', async () => {
-    renderPage()
-    // Filtre sur GERANT plutot que MANAGER : depuis le 16/10/2026 (audit de
-    // coherence des flux), les annulations de commandes sont reservees a la
-    // Cuisine, pas au Manager (voir transitions.js/auditData.js) — un Manager
-    // n'a donc plus jamais d'entree dans ce journal (il ne fait que
-    // consulter), ce qui rendrait ce test non representatif avec ce role.
-    fireEvent.change(screen.getByLabelText('Filtrer par rôle'), { target: { value: 'GERANT' } })
+  it('renders a pill for each role, marking the current one active', () => {
+    renderPage('livreur')
+    ;['Cuisine', 'Gérant', 'Livreur', 'Vendeur'].forEach((label) => {
+      expect(screen.getByRole('link', { name: label })).toBeInTheDocument()
+    })
+    expect(screen.getByRole('link', { name: 'Livreur' })).toHaveClass('is-active')
+  })
+
+  it('switches role through the pills, resetting the domain filter and page', () => {
+    renderPage('cuisine')
+    const cuisine = journalAudit.filter((e) => e.acteur.role === 'CUISINE')
+    const gerant = journalAudit.filter((e) => e.acteur.role === 'GERANT')
+    expect(screen.getByText(`1–10 sur ${cuisine.length}`)).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('link', { name: 'Gérant' }))
+    expect(screen.getByText(`1–10 sur ${gerant.length}`)).toBeInTheDocument()
+  })
+
+  it('filters by domain through the stat cards, and offers a reset when nothing matches', () => {
+    renderPage('cuisine')
+    // Aucune action Personnel cote Cuisine (reservees au Gerant, voir
+    // auditData.js) : la carte tombe donc a 0 et vide la liste.
+    fireEvent.click(screen.getByRole('tab', { name: /Personnel/ }))
+    expect(screen.getByText('Aucune action ne correspond à ces filtres.')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Réinitialiser les filtres' }))
+    const cuisine = journalAudit.filter((e) => e.acteur.role === 'CUISINE')
+    expect(screen.getByText(`1–10 sur ${cuisine.length}`)).toBeInTheDocument()
+  })
+
+  it('exports exactly the role’s entries within the period, and blocks an inverted period', async () => {
+    renderPage('gerant')
+    const gerants = journalAudit.filter((e) => e.acteur.role === 'GERANT')
     fireEvent.click(screen.getByRole('button', { name: /Exporter/ }))
     const dialog = screen.getByRole('dialog')
 
@@ -111,7 +145,6 @@ describe('Journal d’audit page', () => {
 
     fireEvent.change(within(dialog).getByLabelText('Début'), { target: { value: '' } })
     fireEvent.change(within(dialog).getByLabelText('Fin'), { target: { value: '' } })
-    const gerants = journalAudit.filter((e) => e.acteur.role === 'GERANT')
     expect(within(dialog).getByText(`${gerants.length} actions à exporter`)).toBeInTheDocument()
     fireEvent.click(within(dialog).getByRole('button', { name: /Exporter/ }))
 

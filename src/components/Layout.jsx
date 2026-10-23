@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { ROLE_LABELS } from '../auth/roles.js'
 import { useAuth } from '../auth/AuthContext.jsx'
 import Toast from './Toast.jsx'
@@ -12,7 +12,21 @@ const NAV_ITEMS = [
   { path: '/produits', label: 'Produits', icon: 'fa-utensils', roles: ['GERANT'] },
   { path: '/categories', label: 'Catégories', icon: 'fa-tags', roles: ['GERANT'] },
   { path: '/annonces', label: 'Annonces', icon: 'fa-bullhorn', roles: ['GERANT'] },
-  { path: '/journal-audit', label: 'Journal d’audit', icon: 'fa-clipboard-list', roles: ['MANAGER'] },
+  {
+    path: '/journal-audit',
+    label: 'Journal d’audit',
+    icon: 'fa-clipboard-list',
+    roles: ['MANAGER'],
+    // Dropdown plutot qu'une page a lui (retour utilisateur du 23/10/2026 :
+    // page trop chargee) - une sous-page par role, le Manager lui-meme
+    // n'y figure jamais (voir auditData.js).
+    children: [
+      { path: '/journal-audit/cuisine', label: 'Cuisine' },
+      { path: '/journal-audit/gerant', label: 'Gérant' },
+      { path: '/journal-audit/livreur', label: 'Livreur' },
+      { path: '/journal-audit/vendeur', label: 'Vendeur' },
+    ],
+  },
   { path: '/personnel', label: 'Utilisateurs', icon: 'fa-users', roles: ['GERANT'] },
   { path: '/livraisons', label: 'Livraisons', icon: 'fa-truck-fast', roles: ['LIVREUR'] },
   { path: '/historique-livraisons', label: 'Historique des livraisons', icon: 'fa-clipboard-list', roles: ['LIVREUR'] },
@@ -193,6 +207,25 @@ export default function Layout({ children }) {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('senyummies_manager_theme') === 'dark')
   const [now, setNow] = useState(() => new Date())
   const [toast, setToast] = useState(null)
+  const location = useLocation()
+  // Groupes de nav depliables (voir NAV_ITEMS : "children") - ouverts par
+  // defaut si on est deja sur une de leurs sous-pages au montage.
+  const [openGroups, setOpenGroups] = useState(() => {
+    const initial = new Set()
+    for (const item of NAV_ITEMS) {
+      if (item.children?.some((child) => location.pathname.startsWith(child.path))) initial.add(item.path)
+    }
+    return initial
+  })
+
+  function toggleGroup(path) {
+    setOpenGroups((current) => {
+      const next = new Set(current)
+      if (next.has(path)) next.delete(path)
+      else next.add(path)
+      return next
+    })
+  }
 
   function toggleSidebar() {
     if (window.matchMedia('(max-width: 760px)').matches) {
@@ -289,19 +322,73 @@ export default function Layout({ children }) {
           <strong>{ROLE_LABELS[role]}</strong>
         </div>
         <nav className="manager-nav">
-          {visibleItems.map((item) => (
-            <NavLink
-              className={({ isActive }) => `manager-nav-link ${isActive ? 'is-active' : ''}`}
-              key={item.path}
-              to={item.path}
-              onClick={() => setMobileOpen(false)}
-              title={collapsed ? item.label : undefined}
-            >
-              <span className="manager-nav-icon" aria-hidden="true"><i className={`fa-solid ${item.icon}`} /></span>
-              <span className="manager-nav-label">{item.label}</span>
-              {unreadFor(item.path) > 0 && <span className="manager-nav-badge">{unreadFor(item.path)}</span>}
-            </NavLink>
-          ))}
+          {visibleItems.map((item) => {
+            if (item.children && collapsed) {
+              // Rail d'icones (sidebar reduite) : pas de place pour un sous-menu,
+              // un seul lien vers la 1re sous-page, actif pour n'importe laquelle.
+              const isGroupActive = location.pathname.startsWith(item.path)
+              return (
+                <NavLink
+                  className={`manager-nav-link ${isGroupActive ? 'is-active' : ''}`}
+                  key={item.path}
+                  to={item.children[0].path}
+                  onClick={() => setMobileOpen(false)}
+                  title={item.label}
+                >
+                  <span className="manager-nav-icon" aria-hidden="true"><i className={`fa-solid ${item.icon}`} /></span>
+                  {unreadFor(item.path) > 0 && <span className="manager-nav-badge">{unreadFor(item.path)}</span>}
+                </NavLink>
+              )
+            }
+
+            if (item.children) {
+              const isOpen = openGroups.has(item.path)
+              const isChildActive = location.pathname.startsWith(item.path)
+              return (
+                <div className="manager-nav-group" key={item.path}>
+                  <button
+                    type="button"
+                    className={`manager-nav-link manager-nav-toggle ${isChildActive ? 'is-active' : ''}`}
+                    aria-expanded={isOpen}
+                    onClick={() => toggleGroup(item.path)}
+                  >
+                    <span className="manager-nav-icon" aria-hidden="true"><i className={`fa-solid ${item.icon}`} /></span>
+                    <span className="manager-nav-label">{item.label}</span>
+                    {unreadFor(item.path) > 0 && <span className="manager-nav-badge">{unreadFor(item.path)}</span>}
+                    <i className={`fa-solid fa-chevron-down manager-nav-chevron ${isOpen ? 'is-open' : ''}`} aria-hidden="true" />
+                  </button>
+                  {isOpen && (
+                    <div className="manager-nav-children">
+                      {item.children.map((child) => (
+                        <NavLink
+                          key={child.path}
+                          to={child.path}
+                          className={({ isActive }) => `manager-nav-link manager-nav-child ${isActive ? 'is-active' : ''}`}
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          <span className="manager-nav-label">{child.label}</span>
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            }
+
+            return (
+              <NavLink
+                className={({ isActive }) => `manager-nav-link ${isActive ? 'is-active' : ''}`}
+                key={item.path}
+                to={item.path}
+                onClick={() => setMobileOpen(false)}
+                title={collapsed ? item.label : undefined}
+              >
+                <span className="manager-nav-icon" aria-hidden="true"><i className={`fa-solid ${item.icon}`} /></span>
+                <span className="manager-nav-label">{item.label}</span>
+                {unreadFor(item.path) > 0 && <span className="manager-nav-badge">{unreadFor(item.path)}</span>}
+              </NavLink>
+            )
+          })}
         </nav>
         <div className="manager-sidebar-footer">
           <button className="manager-nav-link manager-logout-link" type="button" onClick={logout}>
@@ -426,16 +513,20 @@ export default function Layout({ children }) {
         <footer className="manager-workarea-footer">© SSD Consulting</footer>
       </div>
       <nav className="manager-bottom-tabbar" aria-label={`Navigation ${ROLE_LABELS[role]}`}>
-        {visibleItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) => `manager-bottom-tabbar-link ${isActive ? 'is-active' : ''}`}
-          >
-            <span className="manager-bottom-tabbar-icon" aria-hidden="true"><i className={`fa-solid ${item.icon}`} /></span>
-            <span className="manager-bottom-tabbar-label">{BOTTOM_TAB_LABELS[item.path] || item.label}</span>
-          </NavLink>
-        ))}
+        {visibleItems.map((item) => {
+          const target = item.children ? item.children[0].path : item.path
+          const isGroupActive = item.children && location.pathname.startsWith(item.path)
+          return (
+            <NavLink
+              key={item.path}
+              to={target}
+              className={({ isActive }) => `manager-bottom-tabbar-link ${isActive || isGroupActive ? 'is-active' : ''}`}
+            >
+              <span className="manager-bottom-tabbar-icon" aria-hidden="true"><i className={`fa-solid ${item.icon}`} /></span>
+              <span className="manager-bottom-tabbar-label">{BOTTOM_TAB_LABELS[item.path] || item.label}</span>
+            </NavLink>
+          )
+        })}
       </nav>
       {mobileOpen && <button className="manager-mobile-backdrop" aria-label="Fermer la navigation" type="button" onClick={() => setMobileOpen(false)} />}
       {passwordOpen && <ChangePasswordModal onClose={() => setPasswordOpen(false)} onNotice={showNotice} />}

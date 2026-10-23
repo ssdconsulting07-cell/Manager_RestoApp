@@ -26,7 +26,7 @@ const PAGES = {
   '/categories': lazy(() => import('./features/gerant/Categories.jsx')),
   '/annonces': lazy(() => import('./features/gerant/Annonces.jsx')),
   '/personnel': lazy(() => import('./features/gerant/Personnel.jsx')),
-  '/journal-audit': lazy(() => import('./features/manager/JournalAudit.jsx')),
+  '/journal-audit/:roleSlug': lazy(() => import('./features/manager/JournalAudit.jsx')),
   '/vente': lazy(() => import('./features/vendeur/Vente.jsx')),
   '/historique-ventes': lazy(() => import('./features/vendeur/HistoriqueVentes.jsx')),
 }
@@ -45,6 +45,20 @@ export default function App() {
             <NetworkStatus />
             <Routes>
               <Route path="/login" element={<Connexion />} />
+              {/* Pas de page "tous roles" (voir JournalAudit.jsx) : le lien
+                  nu redirige sur Cuisine. Protegee ici (pas un simple
+                  <Navigate> libre) pour que le "from" capture par
+                  ProtectedRoute reste /journal-audit (et non deja
+                  /journal-audit/cuisine) si la connexion s'interpose -
+                  voir ROUTE_ROLES dans roles.js et Connexion.jsx. */}
+              <Route
+                path="/journal-audit"
+                element={
+                  <ProtectedRoute roles={ROUTE_ROLES['/journal-audit']}>
+                    <Navigate to="/journal-audit/cuisine" replace />
+                  </ProtectedRoute>
+                }
+              />
               {Object.entries(PAGES).map(([path, Page]) => (
                 <Route
                   key={path}

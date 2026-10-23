@@ -12,7 +12,10 @@
 //   /commandes, voir roles.js) ;
 // - le role enregistre est celui de l'employe AU MOMENT de l'action
 //   (Mariama Sy etait en Cuisine avant sa promotion en Gerant) ;
-// - un employe n'apparait qu'apres la creation de son compte.
+// - un employe n'apparait qu'apres la creation de son compte ;
+// - les ventes comptoir (encaissement, domaine COMMANDE) sont enregistrees
+//   par les Vendeurs (23/10/2026, voir Vente.jsx) ; comme les Livreurs, ils
+//   n'annulent jamais de commande (reserve a la Cuisine, voir ci-dessus).
 // Les horodatages sont relatifs au chargement de l'ecran pour que le journal
 // reste "recent" en demo.
 export const DOMAINES_AUDIT = {
@@ -32,6 +35,8 @@ const ACTEURS = {
   ibrahima: { nom: 'Ibrahima Fall', role: 'LIVREUR' },
   pape: { nom: 'Pape Gueye', role: 'LIVREUR' },
   fatou: { nom: 'Fatou Sarr', role: 'MANAGER' },
+  khadidiatou: { nom: 'Khadidiatou Diallo', role: 'VENDEUR' },
+  modou: { nom: 'Modou Seck', role: 'VENDEUR' },
 }
 
 // Aujourd'hui : [minutes ecoulees, acteur, domaine, action]
@@ -48,6 +53,9 @@ const ENTREES_DU_JOUR = [
   [190, 'awa', 'CATEGORIE', 'a renommé la catégorie « Snacks » en « Accompagnements »'],
   [260, 'awa', 'PERSONNEL', 'a modifié le rôle de Mariama Sy : Cuisine → Gérant'],
   [1500, 'awa', 'ANNONCE', 'a archivé l’annonce « Ancienne offre de lancement »'],
+  [15, 'khadidiatou', 'COMMANDE', 'a encaissé la commande #483 au comptoir'],
+  [50, 'modou', 'COMMANDE', 'a enregistré la commande #480 au comptoir'],
+  [300, 'khadidiatou', 'COMMANDE', 'a encaissé la commande #468 au comptoir'],
 ]
 
 // Jours precedents : [jours avant aujourd'hui, heure, acteur, domaine, action]
@@ -93,6 +101,11 @@ const ENTREES_ANTERIEURES = [
   [9, '18:26', 'mariamaCuisine', 'COMMANDE', 'a annulé la commande #64 à la demande du client'],
   [9, '14:03', 'ousmane', 'PERSONNEL', 'a créé le compte cuisine d’Aminata Ba'],
   [9, '10:35', 'awa', 'ANNONCE', 'a archivé l’annonce « Promo Korité »'],
+  [1, '20:10', 'modou', 'COMMANDE', 'a encaissé la commande #421 au comptoir'],
+  [2, '11:05', 'khadidiatou', 'COMMANDE', 'a enregistré la commande #392 au comptoir'],
+  [3, '22:30', 'modou', 'COMMANDE', 'a encaissé la commande #336 au comptoir'],
+  [4, '14:15', 'khadidiatou', 'COMMANDE', 'a enregistré la commande #292 au comptoir'],
+  [5, '09:40', 'modou', 'COMMANDE', 'a encaissé la commande #248 au comptoir'],
 ]
 
 const chargeLe = new Date()

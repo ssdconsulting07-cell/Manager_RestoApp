@@ -1,16 +1,46 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Navigate, NavLink, useParams } from 'react-router-dom'
 import Layout from '../../components/Layout.jsx'
 import Toast from '../../components/Toast.jsx'
 import Pagination from '../../components/crud/Pagination.jsx'
-import { ROLE_LABELS, ROLES } from '../../auth/roles.js'
+import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
+import { ROLE_LABELS } from '../../auth/roles.js'
 import { DOMAINES_AUDIT, journalAudit } from './auditData.js'
 import {
   TOUS, erreurPeriode, filtrerJournal, filtrerParPeriode, libellePeriode, libellesFiltres, nomFichierExport,
 } from './journalAuditFiltres.js'
 import { exporterJournalAudit } from './exportJournalAudit.js'
 
-// Journal d'audit (Manager) : consultation seule de toutes les actions metier
-// du personnel. Meme source que l'apercu du tableau de bord (auditData.js).
+// Journal d’audit (Manager) : consultation seule de toutes les actions
+// metier du personnel, UNE SOUS-PAGE PAR ROLE (retour utilisateur du
+// 23/10/2026 : page trop chargee quand les 4 roles etaient melanges derriere
+// un simple select) — voir Layout.jsx (dropdown sidebar, children) et
+// App.jsx (route /journal-audit/:roleSlug). Le Manager n’a jamais sa
+// propre sous-page ici (voir auditData.js : 0 action a son nom depuis le
+// 16/10/2026).
+export const ROLES_AUDIT = ['CUISINE', 'GERANT', 'LIVREUR', 'VENDEUR']
+
+const SLUG_PAR_ROLE = { CUISINE: 'cuisine', GERANT: 'gerant', LIVREUR: 'livreur', VENDEUR: 'vendeur' }
+const ROLE_PAR_SLUG = Object.fromEntries(Object.entries(SLUG_PAR_ROLE).map(([role, slug]) => [slug, role]))
+
+export function roleDepuisSlug(slug) {
+  return ROLE_PAR_SLUG[slug] ?? null
+}
+
+// Couleurs des cartes-filtre de domaine (StatFilterCards) : memes teintes que
+// les cartes du tableau de bord Gerant/Manager (dashboard-stat-card) et le
+// badge de statut cuisine (STATUT_META, voir cuisineUtils.js) — pas de
+// nouvelle convention de couleur, sauf « Annonces » (violet), ce domaine
+// n’ayant pas d’equivalent ailleurs dans l’appli.
+const DOMAINE_ACCENTS = {
+  COMMANDE: { accent: '#a6192e', accentBg: '#f8e9ec' },
+  PRODUIT: { accent: '#2f6fed', accentBg: '#e8eefc' },
+  CATEGORIE: { accent: '#9c6b0c', accentBg: '#f6ecd9' },
+  ANNONCE: { accent: '#6a3fa0', accentBg: '#efe7f7' },
+  PERSONNEL: { accent: '#1f6f57', accentBg: '#e2f2ec' },
+}
+const TOUTES_ACCENT = { accent: '#5b5b5f', accentBg: '#ececea' }
+
 const ROWS_OPTIONS = [10, 25, 50]
 
 function cleJour(date) {
@@ -130,61 +160,118 @@ function ExportAuditModal({ entrees, filtres, onExported, onClose }) {
 }
 
 export default function JournalAudit() {
+  const { roleSlug } = useParams()
+  const roleResolu = roleDepuisSlug(roleSlug)
+  const roleValide = roleResolu !== null
+  // Repli pour que les Hooks ci-dessous recoivent toujours un role audit
+  // valide, meme sur un slug invalide : on ne doit JAMAIS retourner avant
+  // d’avoir appele tous les Hooks (regle des Hooks) — un slug
+  // invalide change ici sans demontage (meme route /journal-audit/:roleSlug
+  // appariee), le nombre d’appels de Hooks doit donc rester identique
+  // a chaque rendu. On ne redirige qu’a la toute fin, dans le JSX.
+  const role = roleResolu ?? ROLES_AUDIT[0]
+
   const [recherche, setRecherche] = useState('')
-  const [role, setRole] = useState(TOUS)
   const [domaine, setDomaine] = useState(TOUS)
   const [page, setPage] = useState(1)
   const [rows, setRows] = useState(ROWS_OPTIONS[0])
   const [exportOuvert, setExportOuvert] = useState(false)
   const [toast, setToast] = useState(null)
 
+  // Recherche/domaine/pagination ne survivent pas a un changement de role
+  // (pilule en haut de page ou dropdown sidebar) : on repart d’une page
+  // propre sur le nouveau role plutot que de garder un filtre qui n’a
+  // peut-etre plus de sens.
+  useEffect(() => {
+    setRecherche('')
+    setDomaine(TOUS)
+    setPage(1)
+  }, [role])
+
+  const entreesDuRole = useMemo(
+    () => journalAudit.filter((entree) => entree.acteur.role === role),
+    [role],
+  )
+
+  const domaineItems = useMemo(() => [
+    { key: TOUS, label: 'Toutes', icon: 'fa-layer-group', value: entreesDuRole.length, ...TOUTES_ACCENT },
+    ...Object.entries(DOMAINES_AUDIT).map(([key, { label, icon }]) => ({
+      key,
+      label,
+      icon,
+      value: entreesDuRole.filter((entree) => entree.domaine === key).length,
+      ...DOMAINE_ACCENTS[key],
+    })),
+  ], [entreesDuRole])
+
   const filtres = { role, domaine, recherche }
-  const filtresActifs = role !== TOUS || domaine !== TOUS || recherche.trim() !== ''
-  const resultats = useMemo(() => filtrerJournal(journalAudit, { role, domaine, recherche }), [role, domaine, recherche])
+  const filtresActifs = domaine !== TOUS || recherche.trim() !== ''
+  const resultats = useMemo(
+    () => filtrerJournal(entreesDuRole, { domaine, recherche }),
+    [entreesDuRole, domaine, recherche],
+  )
   const pageCount = Math.max(1, Math.ceil(resultats.length / rows))
   const groupes = grouperParJour(resultats.slice((page - 1) * rows, page * rows))
 
-  function changer(setter) {
-    return (valeur) => { setter(valeur); setPage(1) }
+  function changerDomaine(key) {
+    setDomaine(key)
+    setPage(1)
+  }
+
+  function changerRecherche(valeur) {
+    setRecherche(valeur)
+    setPage(1)
   }
 
   function reinitialiser() {
     setRecherche('')
-    setRole(TOUS)
     setDomaine(TOUS)
     setPage(1)
   }
+
+  if (!roleValide) return <Navigate to="/journal-audit/cuisine" replace />
 
   return (
     <Layout>
       <section className="dashboard-intro">
         <div>
           <p className="manager-eyebrow">Traçabilité</p>
-          <h1>Journal d’audit</h1>
-          <p>Toutes les actions du personnel sur les commandes, le menu, les annonces et les comptes, en consultation seule.</p>
+          <h1>Journal d’audit · {ROLE_LABELS[role]}</h1>
+          <p>Toutes les actions enregistrées pour l’équipe {ROLE_LABELS[role]}, en consultation seule.</p>
         </div>
       </section>
 
       <section>
+        <nav className="audit-role-tabs" aria-label="Choisir un rôle">
+          {ROLES_AUDIT.map((r) => (
+            <NavLink
+              key={r}
+              to={`/journal-audit/${SLUG_PAR_ROLE[r]}`}
+              className={({ isActive }) => `audit-role-tab ${isActive ? 'is-active' : ''}`}
+            >
+              {ROLE_LABELS[r]}
+            </NavLink>
+          ))}
+        </nav>
+
+        <StatFilterCards
+          items={domaineItems}
+          selected={domaine}
+          onSelect={changerDomaine}
+          ariaLabel="Filtrer par type d’action"
+        />
+
         <div className="crud-toolbar audit-toolbar">
           <div className="crud-search">
             <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
             <input
               type="search"
-              placeholder="Employé ou mot-clé…"
+              placeholder="Mot-clé ou nom d’employé…"
               aria-label="Rechercher un employé ou une action"
               value={recherche}
-              onChange={(event) => changer(setRecherche)(event.target.value)}
+              onChange={(event) => changerRecherche(event.target.value)}
             />
           </div>
-          <select className="audit-select" aria-label="Filtrer par rôle" value={role} onChange={(event) => changer(setRole)(event.target.value)}>
-            <option value={TOUS}>Tous les rôles</option>
-            {ROLES.map((value) => <option key={value} value={value}>{ROLE_LABELS[value]}</option>)}
-          </select>
-          <select className="audit-select" aria-label="Filtrer par type d’action" value={domaine} onChange={(event) => changer(setDomaine)(event.target.value)}>
-            <option value={TOUS}>Tous les types</option>
-            {Object.entries(DOMAINES_AUDIT).map(([value, { label }]) => <option key={value} value={value}>{label}</option>)}
-          </select>
           <span className="crud-toolbar-spacer" />
           <button className="crud-add-button" type="button" onClick={() => setExportOuvert(true)}>
             <i className="fa-solid fa-file-excel" aria-hidden="true" /> Exporter

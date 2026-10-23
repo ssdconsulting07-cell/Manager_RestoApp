@@ -881,3 +881,27 @@
   .staff-user-form-wide,
   .staff-user-detail-wide { grid-column: auto; }
 }
+
+/* Groupe de nav depliable (sidebar) — ex. Journal d'audit, voir Layout.jsx NAV_ITEMS/children. */
+.manager-nav-group { display: flex; flex-direction: column; }
+.manager-nav-toggle { width: 100%; text-align: left; }
+.manager-nav-chevron { margin-left: auto; font-size: 11px; color: #b9a7ab; transition: transform 160ms ease; }
+.manager-nav-chevron.is-open { transform: rotate(180deg); }
+.manager-nav-children { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 4px 24px; padding-left: 14px; border-left: 1px solid #3a2328; }
+.manager-nav-child { min-height: 38px; font-size: 12px; color: #d9c9cc; }
+.manager-nav-child.is-active { color: #fff; background: #2c171b; font-weight: 700; }
+
+/* Selecteur de role en pilules (JournalAudit.jsx) — complement du dropdown
+   sidebar ci-dessus : seul moyen de changer de role sur mobile (pas de
+   sidebar, voir Layout.jsx, le tiroir hors-ecran n'est plus accessible
+   depuis le 20/10/2026) ; sert aussi de reperage visuel sur desktop. */
+.audit-role-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.audit-role-tab { border: 1px solid #e7e4e1; border-radius: 999px; padding: 8px 16px; color: #52504d; background: #fff; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; }
+.audit-role-tab:hover { border-color: #d8b3bb; color: #a6192e; }
+.audit-role-tab.is-active { border-color: #a6192e; color: #fff; background: #a6192e; }
+
+/* .audit-role-tab (JournalAudit.jsx) en theme sombre — meme rose que les
+   onglets actifs de la barre mobile (.manager-bottom-tabbar-link.is-active). */
+.manager-shell.is-dark .audit-role-tab { border-color: #2a2a2e; color: #d8d8da; background: #1c1c20; }
+.manager-shell.is-dark .audit-role-tab:hover { border-color: #5a3038; color: #e14b64; }
+.manager-shell.is-dark .audit-role-tab.is-active { border-color: #e14b64; color: #fff; background: #e14b64; }

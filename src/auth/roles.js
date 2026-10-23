@@ -29,7 +29,15 @@ export const ROUTE_ROLES = {
   '/produits': ['GERANT'],
   '/categories': ['GERANT'],
   '/annonces': ['GERANT'],
+  // Une sous-page par role (voir Layout.jsx : dropdown sidebar) - le
+  // Manager lui-meme n'a jamais sa propre page ici (voir auditData.js).
+  // Les deux entrees sont necessaires (meme liste de roles) : la premiere
+  // pour le lien nu /journal-audit (App.jsx, route de redirection vers la
+  // sous-page Cuisine - protegee elle aussi, pour que le "from" de
+  // ProtectedRoute/Connexion.jsx reste exploitable apres connexion), la
+  // seconde pour la sous-page elle-meme.
   '/journal-audit': ['MANAGER'],
+  '/journal-audit/:roleSlug': ['MANAGER'],
   // A revoir quand le mode d'attribution des livraisons sera tranche
   // (le Manager pourrait avoir besoin de cet ecran s'il affecte les livreurs).
   '/livraisons': ['LIVREUR'],

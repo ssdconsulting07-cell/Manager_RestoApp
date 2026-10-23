@@ -231,6 +231,10 @@
 /* === Journal d'audit (Manager) — memes patterns que Produits/Personnel (barre d'outils, panneau, modal) === */
 .audit-toolbar { flex-wrap: wrap; }
 .audit-toolbar .crud-search { flex: 1 1 240px; }
+.audit-date-filter { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
+.audit-date-filter label { display: flex; align-items: center; gap: 6px; color: #6b6b6b; font-size: 12px; font-weight: 700; }
+.audit-date-filter input[type="date"] { border: 1px solid #e5e5e3; border-radius: 999px; padding: 9px 14px; color: #141414; background: #fff; font: inherit; font-size: 13px; outline: none; }
+.audit-date-filter input[type="date"]:focus { border-color: #a6192e; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
 .audit-select, .crud-select { flex: 0 0 auto; border: 1px solid #e5e5e3; border-radius: 999px; padding: 10px 36px 10px 16px; color: #141414; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239a9a9e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center; font: inherit; font-size: 13px; outline: none; cursor: pointer; appearance: none; }
 .audit-select:focus, .crud-select:focus { border-color: #a6192e; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
 .audit-panel { min-height: 0; margin-bottom: 18px; }
@@ -419,6 +423,8 @@
 .manager-shell.is-dark .dashboard-activity-time { color: #9a9a9e; }
 .manager-shell.is-dark .dashboard-activity-row.is-static:hover { background: transparent; }
 .manager-shell.is-dark .audit-select, .manager-shell.is-dark .crud-select { border-color: #2f2f33; color: #f2f2f2; background-color: #121214; color-scheme: dark; }
+.manager-shell.is-dark .audit-date-filter label { color: #9a9a9e; }
+.manager-shell.is-dark .audit-date-filter input[type="date"] { border-color: #2f2f33; color: #f2f2f2; background: #121214; color-scheme: dark; }
 .manager-shell.is-dark .audit-day + .audit-day { border-color: #2a2a2e; }
 .manager-shell.is-dark .audit-panel .audit-day-heading,
 .manager-shell.is-dark .audit-export-hint { color: #9a9a9e; }
@@ -442,6 +448,8 @@
 @media (max-width: 600px) {
   .audit-toolbar .crud-search { flex: 1 1 100%; max-width: none; }
   .audit-select, .crud-select { flex: 1 1 0; min-width: 146px; }
+  .audit-date-filter { flex: 1 1 100%; flex-wrap: wrap; }
+  .audit-date-filter input[type="date"] { flex: 1 1 0; min-width: 0; }
   .audit-toolbar .crud-toolbar-spacer { display: none; }
   .audit-toolbar .crud-add-button { flex: 1 1 100%; justify-content: center; }
   .audit-export-dates { grid-template-columns: 1fr; }

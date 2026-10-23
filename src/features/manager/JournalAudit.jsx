@@ -223,14 +223,22 @@ export default function JournalAudit() {
   const [exportOuvert, setExportOuvert] = useState(false)
   const [toast, setToast] = useState(null)
   const [detail, setDetail] = useState(null)
+  // Filtre date de la liste (barre d'outils) - distinct de la periode de
+  // l'export (ExportAuditModal, propre modale) : celle-ci ne fait que
+  // reduire la liste affichee, l'export part ensuite de ce qui est deja
+  // affiche (resultats) et peut la restreindre davantage.
+  const [dateDebut, setDateDebut] = useState('')
+  const [dateFin, setDateFin] = useState('')
 
-  // Recherche/domaine/pagination ne survivent pas a un changement de role
-  // (pilule en haut de page ou dropdown sidebar) : on repart d’une page
-  // propre sur le nouveau role plutot que de garder un filtre qui n’a
-  // peut-etre plus de sens.
+  // Recherche/domaine/dates/pagination ne survivent pas a un changement de
+  // role (pilule en haut de page ou dropdown sidebar) : on repart d’une
+  // page propre sur le nouveau role plutot que de garder un filtre qui
+  // n’a peut-etre plus de sens.
   useEffect(() => {
     setRecherche('')
     setDomaine(domainePrincipal(entreesDuRole))
+    setDateDebut('')
+    setDateFin('')
     setPage(1)
   }, [role, entreesDuRole])
 
@@ -243,17 +251,24 @@ export default function JournalAudit() {
   })), [entreesDuRole])
 
   const filtres = { role, domaine, recherche }
-  const filtresActifs = domaine !== domainePrincipal(entreesDuRole) || recherche.trim() !== ''
-  const resultats = useMemo(
-    () => filtrerJournal(entreesDuRole, { domaine, recherche }),
-    [entreesDuRole, domaine, recherche],
-  )
+  const periode = { debut: dateDebut, fin: dateFin }
+  const erreurDate = erreurPeriode(periode)
+  const filtresActifs = domaine !== domainePrincipal(entreesDuRole) || recherche.trim() !== '' || Boolean(dateDebut) || Boolean(dateFin)
+  const resultats = useMemo(() => {
+    const entreesPeriode = erreurDate ? entreesDuRole : filtrerParPeriode(entreesDuRole, periode)
+    return filtrerJournal(entreesPeriode, { domaine, recherche })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entreesDuRole, domaine, recherche, dateDebut, dateFin])
   const pageCount = Math.max(1, Math.ceil(resultats.length / rows))
   const groupes = grouperParJour(resultats.slice((page - 1) * rows, page * rows))
 
   function changerDomaine(key) {
     setDomaine(key)
     setPage(1)
+  }
+
+  function changerDate(setter) {
+    return (valeur) => { setter(valeur); setPage(1) }
   }
 
   function changerRecherche(valeur) {
@@ -264,6 +279,8 @@ export default function JournalAudit() {
   function reinitialiser() {
     setRecherche('')
     setDomaine(domainePrincipal(entreesDuRole))
+    setDateDebut('')
+    setDateFin('')
     setPage(1)
   }
 
@@ -297,6 +314,7 @@ export default function JournalAudit() {
           selected={domaine}
           onSelect={changerDomaine}
           ariaLabel="Filtrer par type d’action"
+          className="is-4col"
         />
 
         <div className="crud-toolbar audit-toolbar">
@@ -309,6 +327,31 @@ export default function JournalAudit() {
               value={recherche}
               onChange={(event) => changerRecherche(event.target.value)}
             />
+          </div>
+          <div className="audit-date-filter">
+            <label>
+              Du
+              <input
+                type="date"
+                value={dateDebut}
+                max={dateFin || aujourdhuiIso()}
+                aria-label="Filtrer depuis le"
+                aria-invalid={Boolean(erreurDate)}
+                onChange={(event) => changerDate(setDateDebut)(event.target.value)}
+              />
+            </label>
+            <label>
+              Au
+              <input
+                type="date"
+                value={dateFin}
+                min={dateDebut || undefined}
+                max={aujourdhuiIso()}
+                aria-label="Filtrer jusqu’au"
+                aria-invalid={Boolean(erreurDate)}
+                onChange={(event) => changerDate(setDateFin)(event.target.value)}
+              />
+            </label>
           </div>
           <span className="crud-toolbar-spacer" />
           <button className="crud-add-button" type="button" onClick={() => setExportOuvert(true)}>

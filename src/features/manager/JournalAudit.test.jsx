@@ -161,6 +161,25 @@ describe('Journal d’audit page', () => {
     expect(screen.getByText(`1–10 sur ${cuisine.length}`)).toBeInTheDocument()
   })
 
+  it('filters the list by date range from the toolbar, independently of the export period', () => {
+    renderPage('cuisine')
+    const cuisine = journalAudit.filter((e) => e.acteur.role === 'CUISINE')
+    const d = new Date()
+    const aujourdhui = [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
+    const attendu = filtrerParPeriode(cuisine, { debut: aujourdhui, fin: aujourdhui })
+    expect(attendu.length).toBeGreaterThan(0)
+
+    fireEvent.change(screen.getByLabelText('Filtrer depuis le'), { target: { value: aujourdhui } })
+    fireEvent.change(screen.getByLabelText('Filtrer jusqu’au'), { target: { value: aujourdhui } })
+    expect(screen.getByText(`1–${Math.min(10, attendu.length)} sur ${attendu.length}`)).toBeInTheDocument()
+
+    // Pas de bouton de reinitialisation ici (reserve a l'etat " 0 resultat ",
+    // voir plus haut) : on vide simplement les deux champs.
+    fireEvent.change(screen.getByLabelText('Filtrer depuis le'), { target: { value: '' } })
+    fireEvent.change(screen.getByLabelText('Filtrer jusqu’au'), { target: { value: '' } })
+    expect(screen.getByText(`1–10 sur ${cuisine.length}`)).toBeInTheDocument()
+  })
+
   it('exports exactly the entries of the selected domain card, and blocks an inverted period', async () => {
     renderPage('gerant')
     const personnel = journalAudit.filter((e) => e.acteur.role === 'GERANT' && e.domaine === 'PERSONNEL')

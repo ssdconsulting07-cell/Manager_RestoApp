@@ -22,14 +22,18 @@
 // ("role responsable non precise par les specs"). Reservee au mode
 // RETRAIT, symetrique de EN_LIVRAISON qui est reservee a LIVRAISON.
 //
-// PAYEE/EN_PREPARATION/PRETE -> ANNULEE (16/10/2026, meme audit) :
-// declenchee par la Cuisine, seul role avec un ecran sur les commandes
-// actives (/commandes) — pas par le Manager, qui n'y a pas acces (voir
-// roles.js). Le statut ANNULEE etait jusque-la purement mock (dashboard et
-// journal d'audit Manager, voir commandesData.js/auditData.js) sans jamais
-// etre atteignable dans le vrai cycle de vie d'une commande. Pas de
-// transition depuis EN_LIVRAISON : une fois partie avec le livreur, trop
-// tard pour annuler depuis cet ecran.
+// PAYEE -> ANNULEE (16/10/2026, meme audit ; restreint le 24/10/2026 a
+// PAYEE seule, demande du gerant) : declenchee par la Cuisine, seul role
+// avec un ecran sur les commandes actives (/commandes) — pas par le
+// Manager, qui n'y a pas acces (voir roles.js). Le statut ANNULEE etait
+// jusque-la purement mock (dashboard et journal d'audit Manager, voir
+// commandesData.js/auditData.js) sans jamais etre atteignable dans le
+// vrai cycle de vie d'une commande. Limitee aux commandes PAS ENCORE
+// COMMENCEES (PAYEE) : une fois la preparation entamee (EN_PREPARATION)
+// ou le plat pret (PRETE), les ingredients sont deja engages/le plat est
+// deja fait — plus de bouton Annuler a ce stade (retour utilisateur du
+// 24/10/2026). Toujours pas de transition depuis EN_LIVRAISON : une fois
+// partie avec le livreur, trop tard pour annuler depuis cet ecran.
 export const TRANSITIONS = [
   { from: 'PAYEE', to: 'EN_PREPARATION', roles: ['CUISINE'], label: 'Commencer la préparation' },
   { from: 'EN_PREPARATION', to: 'PRETE', roles: ['CUISINE'], label: 'Marquer prête' },
@@ -38,8 +42,6 @@ export const TRANSITIONS = [
   { from: 'EN_LIVRAISON', to: 'LIVREE', roles: ['LIVREUR'], mode: 'LIVRAISON', label: 'Marquer livrée' },
   { from: 'PRETE', to: 'RETIREE', roles: ['VENDEUR'], mode: 'RETRAIT', label: 'Remettre au client' },
   { from: 'PAYEE', to: 'ANNULEE', roles: ['CUISINE'], label: 'Annuler' },
-  { from: 'EN_PREPARATION', to: 'ANNULEE', roles: ['CUISINE'], label: 'Annuler' },
-  { from: 'PRETE', to: 'ANNULEE', roles: ['CUISINE'], label: 'Annuler' },
 ]
 
 export const STATUT_LABELS = {

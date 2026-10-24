@@ -327,6 +327,8 @@ export default function StaffUserSection({
   emptyLabel = 'Aucun membre du personnel correspondant.',
   searchPlaceholder = 'Rechercher un nom, identifiant ou rôle…',
   createLabel = 'Créer un compte',
+  hideStatusFilter = false,
+  compactStatusActions = false,
 }) {
   const { username: currentUsername } = useAuth()
   const [allUsers, setAllUsers] = useState([])
@@ -481,11 +483,13 @@ export default function StaffUserSection({
 
   const body = (
     <>
-      <StatFilterCards
-        items={FILTER_DEFS.map((item) => ({ ...item, value: counts[item.key] }))}
-        selected={filter}
-        onSelect={changeFilter}
-      />
+      {!hideStatusFilter && (
+        <StatFilterCards
+          items={FILTER_DEFS.map((item) => ({ ...item, value: counts[item.key] }))}
+          selected={filter}
+          onSelect={changeFilter}
+        />
+      )}
 
       <div className="crud-toolbar">
         <div className="crud-search">
@@ -523,7 +527,21 @@ export default function StaffUserSection({
                   <td>{user.username}</td>
                   <td>{ROLE_LABELS[user.role]}</td>
                   <td>{user.phone || '—'}</td>
-                  <td><StatusBadge statut={user.active ? 'ACTIF' : 'ARCHIVE'} label={user.active ? 'Actif' : 'Désactivé'} /></td>
+                  <td>
+                    {compactStatusActions && !readOnly && !protectedRoles.includes(user.role) ? (
+                      <button
+                        type="button"
+                        className="staff-status-toggle"
+                        disabled={user.username === currentUsername}
+                        onClick={() => (user.active ? setModal({ kind: 'deactivate', user }) : handleActivate(user))}
+                        title={user.active ? 'Cliquer pour désactiver ce compte' : 'Cliquer pour activer ce compte'}
+                      >
+                        <StatusBadge statut={user.active ? 'ACTIF' : 'ARCHIVE'} label={user.active ? 'Actif' : 'Désactivé'} />
+                      </button>
+                    ) : (
+                      <StatusBadge statut={user.active ? 'ACTIF' : 'ARCHIVE'} label={user.active ? 'Actif' : 'Désactivé'} />
+                    )}
+                  </td>
                   <td>
                     <div className="staff-users-actions">
                       <button className="crud-action is-accent-green" type="button" onClick={() => setModal({ kind: 'detail', user })}>
@@ -546,7 +564,13 @@ export default function StaffUserSection({
                               <i className="fa-solid fa-key" aria-hidden="true" /> Régénérer password
                             </button>
                           )}
-                          {user.active ? (
+                          {compactStatusActions ? (
+                            !user.active && (
+                              <button className="crud-action is-danger" type="button" onClick={() => setModal({ kind: 'delete', user })}>
+                                <i className="fa-solid fa-trash" aria-hidden="true" /> Supprimer définitivement
+                              </button>
+                            )
+                          ) : user.active ? (
                             <button
                               className="crud-action is-danger"
                               type="button"

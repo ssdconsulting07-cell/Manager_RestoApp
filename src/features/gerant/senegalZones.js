@@ -1,0 +1,208 @@
+// Decoupage administratif du Senegal (14 regions, departements,
+// arrondissements) - compile depuis les pages Wikipedia "Regions of
+// Senegal", "Departments of Senegal" et "Arrondissements of Senegal"
+// (reference 2008 pour le detail par arrondissement : certains
+// departements recents, comme Keur Massar, n'y figurent pas encore et
+// sont completes ici par un arrondissement unique). A usage d'affichage
+// uniquement pour la page "Zones de livraison" (entierement mockee, voir
+// zonesLivraisonData.js) - a faire valider par une source officielle
+// (ADIE) si une precision totale devient necessaire.
+
+export const REGIONS = [
+  { code: 'DAKAR', nom: 'Dakar' },
+  { code: 'THIES', nom: 'Thiès' },
+  { code: 'DIOURBEL', nom: 'Diourbel' },
+  { code: 'FATICK', nom: 'Fatick' },
+  { code: 'KAOLACK', nom: 'Kaolack' },
+  { code: 'KAFFRINE', nom: 'Kaffrine' },
+  { code: 'LOUGA', nom: 'Louga' },
+  { code: 'SAINT_LOUIS', nom: 'Saint-Louis' },
+  { code: 'MATAM', nom: 'Matam' },
+  { code: 'TAMBACOUNDA', nom: 'Tambacounda' },
+  { code: 'KEDOUGOU', nom: 'Kédougou' },
+  { code: 'ZIGUINCHOR', nom: 'Ziguinchor' },
+  { code: 'SEDHIOU', nom: 'Sédhiou' },
+  { code: 'KOLDA', nom: 'Kolda' },
+]
+
+// Position schematique (grille a 6 colonnes) pour la carte cliquable -
+// approximation des positions RELATIVES reelles, pas des contours
+// geographiques exacts (voir CarteSenegal.jsx). La bande "Gambie" entre
+// les lignes 4 et 5 n'est pas une region du Senegal : elle separe
+// visuellement la Casamance (Ziguinchor/Sédhiou/Kolda) du reste du pays.
+export const POSITION_CARTE = {
+  SAINT_LOUIS: { colonne: 2, ligne: 1 },
+  MATAM: { colonne: 5, ligne: 1, colspan: 2 },
+  LOUGA: { colonne: 2, ligne: 2 },
+  DAKAR: { colonne: 1, ligne: 3 },
+  THIES: { colonne: 2, ligne: 3 },
+  DIOURBEL: { colonne: 3, ligne: 3 },
+  TAMBACOUNDA: { colonne: 5, ligne: 3, lignespan: 2, colspan: 2 },
+  FATICK: { colonne: 2, ligne: 4 },
+  KAOLACK: { colonne: 3, ligne: 4 },
+  KAFFRINE: { colonne: 4, ligne: 4 },
+  KEDOUGOU: { colonne: 4, ligne: 6 },
+  ZIGUINCHOR: { colonne: 1, ligne: 6 },
+  SEDHIOU: { colonne: 2, ligne: 6 },
+  KOLDA: { colonne: 3, ligne: 6 },
+}
+
+export const ARRONDISSEMENTS_PAR_REGION = {
+  DAKAR: [
+    { departement: 'Dakar', nom: 'Almadies' },
+    { departement: 'Dakar', nom: 'Grand Dakar' },
+    { departement: 'Dakar', nom: 'Parcelles Assainies' },
+    { departement: 'Dakar', nom: 'Plateau/Gorée' },
+    { departement: 'Guédiawaye', nom: 'Guédiawaye' },
+    { departement: 'Keur Massar', nom: 'Keur Massar' },
+    { departement: 'Pikine', nom: 'Dagoudane' },
+    { departement: 'Pikine', nom: 'Niayes' },
+    { departement: 'Pikine', nom: 'Thiaroye' },
+    { departement: 'Rufisque', nom: 'Rufisque' },
+    { departement: 'Rufisque', nom: 'Sébikotane' },
+  ],
+  THIES: [
+    { departement: 'M’bour', nom: 'Fissel' },
+    { departement: 'M’bour', nom: 'Séssène' },
+    { departement: 'M’bour', nom: 'Sindia' },
+    { departement: 'Thiès', nom: 'Keur Moussa' },
+    { departement: 'Thiès', nom: 'Notto' },
+    { departement: 'Thiès', nom: 'Thiénaba' },
+    { departement: 'Thiès', nom: 'Thiès Nord' },
+    { departement: 'Thiès', nom: 'Thiès Sud' },
+    { departement: 'Tivaouane', nom: 'Méouane' },
+    { departement: 'Tivaouane', nom: 'Mérina Dakhar' },
+    { departement: 'Tivaouane', nom: 'Niakhène' },
+    { departement: 'Tivaouane', nom: 'Pambal' },
+  ],
+  DIOURBEL: [
+    { departement: 'Bambey', nom: 'Baba Garage' },
+    { departement: 'Bambey', nom: 'Lambaye' },
+    { departement: 'Bambey', nom: 'Ngoye' },
+    { departement: 'Diourbel', nom: 'Ndindy' },
+    { departement: 'Diourbel', nom: 'Ndoulo' },
+    { departement: 'Mbacké', nom: 'Kael' },
+    { departement: 'Mbacké', nom: 'Ndame' },
+    { departement: 'Mbacké', nom: 'Taïf' },
+  ],
+  FATICK: [
+    { departement: 'Fatick', nom: 'Diakhao' },
+    { departement: 'Fatick', nom: 'Fimela' },
+    { departement: 'Fatick', nom: 'Niakhar' },
+    { departement: 'Fatick', nom: 'Tattaguine' },
+    { departement: 'Foundiougne', nom: 'Djilor' },
+    { departement: 'Foundiougne', nom: 'Niodior' },
+    { departement: 'Foundiougne', nom: 'Toubacouta' },
+    { departement: 'Gossas', nom: 'Colobane' },
+    { departement: 'Gossas', nom: 'Ouadiour' },
+  ],
+  KAOLACK: [
+    { departement: 'Guinguinéo', nom: 'Mbadakhoune' },
+    { departement: 'Guinguinéo', nom: 'Nguélou' },
+    { departement: 'Kaolack', nom: 'Koumbal' },
+    { departement: 'Kaolack', nom: 'Ndiédieng' },
+    { departement: 'Kaolack', nom: 'Ngothié' },
+    { departement: 'Nioro du Rip', nom: 'Médina Sabakh' },
+    { departement: 'Nioro du Rip', nom: 'Paoskoto' },
+    { departement: 'Nioro du Rip', nom: 'Wack Ngouna' },
+  ],
+  KAFFRINE: [
+    { departement: 'Kaffrine', nom: 'Gniby' },
+    { departement: 'Kaffrine', nom: 'Katakel' },
+    { departement: 'Birkilane', nom: 'Keur Mboucki' },
+    { departement: 'Birkilane', nom: 'Mabo' },
+    { departement: 'Koungheul', nom: 'Ida Mouride' },
+    { departement: 'Koungheul', nom: 'Lour Escale' },
+    { departement: 'Koungheul', nom: 'Missirah Wadène' },
+    { departement: 'Malem Hodar', nom: 'Darou Minam' },
+    { departement: 'Malem Hodar', nom: 'Sagna' },
+  ],
+  LOUGA: [
+    { departement: 'Kébémer', nom: 'Darou Mousti' },
+    { departement: 'Kébémer', nom: 'Ndande' },
+    { departement: 'Kébémer', nom: 'Sagata' },
+    { departement: 'Linguère', nom: 'Barkedji' },
+    { departement: 'Linguère', nom: 'Dodji' },
+    { departement: 'Linguère', nom: 'Sagatta Dioloff' },
+    { departement: 'Linguère', nom: 'Yang-Yang' },
+    { departement: 'Louga', nom: 'Keur Momar Sarr' },
+    { departement: 'Louga', nom: 'Koki' },
+    { departement: 'Louga', nom: 'Mbédiène' },
+    { departement: 'Louga', nom: 'Sakal' },
+  ],
+  SAINT_LOUIS: [
+    { departement: 'Dagana', nom: 'Mbane' },
+    { departement: 'Dagana', nom: 'Ndiaye' },
+    { departement: 'Podor', nom: 'Cas-Cas' },
+    { departement: 'Podor', nom: 'Gamadji Saré' },
+    { departement: 'Podor', nom: 'Salde' },
+    { departement: 'Podor', nom: 'Thillé Boubacar' },
+    { departement: 'Saint-Louis', nom: 'Rao' },
+  ],
+  MATAM: [
+    { departement: 'Kanel', nom: 'Orkadiéré' },
+    { departement: 'Kanel', nom: 'Wouro Sidy' },
+    { departement: 'Matam', nom: 'Agnam Civol' },
+    { departement: 'Matam', nom: 'Ogo' },
+    { departement: 'Ranérou Ferlo', nom: 'Ranérou Ferlo' },
+    { departement: 'Ranérou Ferlo', nom: 'Vélingara (Ranérou)' },
+  ],
+  TAMBACOUNDA: [
+    { departement: 'Bakel', nom: 'Bélé' },
+    { departement: 'Bakel', nom: 'Kéniaba' },
+    { departement: 'Bakel', nom: 'Moudéry' },
+    { departement: 'Goudiry', nom: 'Bala' },
+    { departement: 'Goudiry', nom: 'Boynguel Bamba' },
+    { departement: 'Goudiry', nom: 'Dianké Makha' },
+    { departement: 'Goudiry', nom: 'Koulor' },
+    { departement: 'Koumpentoum', nom: 'Bamba Thialène' },
+    { departement: 'Koumpentoum', nom: 'Kouthiaba Wolof' },
+    { departement: 'Tambacounda', nom: 'Koussanar' },
+    { departement: 'Tambacounda', nom: 'Makacolibantang' },
+    { departement: 'Tambacounda', nom: 'Missirah' },
+  ],
+  KEDOUGOU: [
+    { departement: 'Kédougou', nom: 'Bandafassi' },
+    { departement: 'Kédougou', nom: 'Fongolimbi' },
+    { departement: 'Salémata', nom: 'Dakateli' },
+    { departement: 'Salémata', nom: 'Dar Salam' },
+    { departement: 'Saraya', nom: 'Bembou' },
+    { departement: 'Saraya', nom: 'Sabodala' },
+  ],
+  ZIGUINCHOR: [
+    { departement: 'Bignona', nom: 'Kataba' },
+    { departement: 'Bignona', nom: 'Sindian' },
+    { departement: 'Bignona', nom: 'Tendouck' },
+    { departement: 'Bignona', nom: 'Tenghori' },
+    { departement: 'Oussouye', nom: 'Cabrousse' },
+    { departement: 'Oussouye', nom: 'Loudia Ouolof' },
+    { departement: 'Ziguinchor', nom: 'Niaguis' },
+    { departement: 'Ziguinchor', nom: 'Nyassia' },
+  ],
+  SEDHIOU: [
+    { departement: 'Bounkiling', nom: 'Boghal' },
+    { departement: 'Bounkiling', nom: 'Bona' },
+    { departement: 'Bounkiling', nom: 'Diaroumé' },
+    { departement: 'Goudomp', nom: 'Djibanar' },
+    { departement: 'Goudomp', nom: 'Simbandi Brassou' },
+    { departement: 'Goudomp', nom: 'Karantaba' },
+    { departement: 'Sédhiou', nom: 'Diendé' },
+    { departement: 'Sédhiou', nom: 'Djibabouya' },
+    { departement: 'Sédhiou', nom: 'Djirédji' },
+  ],
+  KOLDA: [
+    { departement: 'Kolda', nom: 'Djoulacolon' },
+    { departement: 'Kolda', nom: 'Mampatim' },
+    { departement: 'Kolda', nom: 'Saré Bidji' },
+    { departement: 'Médina Yoro Foulah', nom: 'Fafacourou' },
+    { departement: 'Médina Yoro Foulah', nom: 'Ndorna' },
+    { departement: 'Médina Yoro Foulah', nom: 'Niaming' },
+    { departement: 'Vélingara', nom: 'Bonconto' },
+    { departement: 'Vélingara', nom: 'Pakour' },
+    { departement: 'Vélingara', nom: 'Saré Coly Sallé' },
+  ],
+}
+
+export function regionLabel(code) {
+  return REGIONS.find((region) => region.code === code)?.nom || code
+}

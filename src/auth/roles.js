@@ -44,6 +44,14 @@ export const ROUTE_ROLES = {
   '/historique-livraisons': ['LIVREUR'],
   // Non couvert par les specs MVP : a confirmer avec l'equipe Chez Ketchup.
   '/personnel': ['GERANT'],
+  // Gestion des comptes Gerant + vue lecture seule sur les autres employes
+  // (24/10/2026, voir brainstorming-chez-ketchup.md) : desormais seul le
+  // Manager gere les comptes Gerant, le Gerant ne gerant plus que
+  // Cuisine/Livreur/Vendeur sur sa propre page /personnel ci-dessus.
+  '/equipe': ['MANAGER'],
+  // Carte des 14 regions + prix de livraison par arrondissement (mock
+  // front uniquement, 24/10/2026).
+  '/zones-livraison': ['GERANT'],
   '/vente': ['VENDEUR'],
   '/historique-ventes': ['VENDEUR'],
 }

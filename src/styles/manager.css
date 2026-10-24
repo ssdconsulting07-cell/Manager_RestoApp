@@ -576,6 +576,9 @@
 .crud-status-badge.is-actif { color: #1f6f57; background: #e2f2ec; }
 .crud-status-badge.is-brouillon { color: #9c6b0c; background: #f6ecd9; }
 .crud-status-badge.is-archive { color: #5b5b5f; background: #ececea; }
+.staff-status-toggle { border: none; background: none; padding: 0; margin: 0; cursor: pointer; font: inherit; border-radius: 999px; }
+.staff-status-toggle:hover .crud-status-badge, .staff-status-toggle:focus-visible .crud-status-badge { outline: 2px solid currentColor; outline-offset: 2px; }
+.staff-status-toggle:disabled { cursor: not-allowed; opacity: .6; }
 
 .crud-availability-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; }
 .crud-availability-badge.is-rupture { color: #b3261e; }
@@ -933,3 +936,68 @@
 .audit-row-view:hover { color: #a6192e; border-color: #e6c2c9; }
 .manager-shell.is-dark .audit-row-view { border-color: #2a2a2e; color: #9a9a9e; background: #1c1c20; }
 .manager-shell.is-dark .audit-row-view:hover { color: #e14b64; border-color: #5a3038; }
+
+/* Role unique force (StaffUserSection.jsx) — page Manager de gestion des
+   comptes Gerant : un seul role assignable, pas la peine d'afficher un
+   <select> a une seule option (24/10/2026). */
+.staff-user-fixed-role { grid-column: 1 / -1; margin: 0; color: #6b6b6b; font-size: 12px; }
+.staff-user-fixed-role strong { color: #141414; }
+.manager-shell.is-dark .staff-user-fixed-role { color: #9a9a9e; }
+.manager-shell.is-dark .staff-user-fixed-role strong { color: #f2f2f2; }
+
+/* Carte reelle des 14 regions (ZonesLivraison.jsx, Gerant, 24/10/2026) —
+   contours SVG simplifies derives de geoBoundaries (voir senegalGeo.js),
+   pas une grille schematique. */
+.senegal-carte { margin-bottom: 8px; }
+.senegal-carte-nom { margin: 0 0 8px; min-height: 18px; color: #a6192e; font-size: 13px; font-weight: 750; }
+.senegal-carte-svg { display: block; width: 100%; max-height: 440px; margin: 0 auto 10px; }
+.senegal-region path { fill: #f0efed; stroke: #fff; stroke-width: 1.6; cursor: pointer; transition: fill 120ms ease; }
+.senegal-region:hover path, .senegal-region:focus path { fill: #ecdfe2; }
+.senegal-region:focus { outline: none; }
+.senegal-region:focus path { stroke: #a6192e; stroke-width: 2.4; }
+.senegal-region.is-active path { fill: #1f6f57; }
+.senegal-region.is-active:hover path { fill: #195c48; }
+.senegal-region.is-selected path { stroke: #a6192e; stroke-width: 3; }
+.senegal-region-point { fill: #fff; stroke: #1f6f57; stroke-width: 1.5; pointer-events: none; }
+.senegal-carte-legende { margin: 0; color: #6b6b6b; font-size: 11px; }
+.manager-shell.is-dark .senegal-carte-nom { color: #e14b64; }
+.manager-shell.is-dark .senegal-region path { fill: #232327; stroke: #141416; }
+.manager-shell.is-dark .senegal-region:hover path, .manager-shell.is-dark .senegal-region:focus path { fill: #2d2d33; }
+.manager-shell.is-dark .senegal-region.is-active path { fill: #1f6f57; }
+.manager-shell.is-dark .senegal-region.is-active:hover path { fill: #2f9c7c; }
+.manager-shell.is-dark .senegal-region-point { stroke: #2f9c7c; }
+.manager-shell.is-dark .senegal-carte-legende { color: #9a9a9e; }
+@media (max-width: 640px) {
+  .senegal-carte-svg { max-height: 320px; }
+}
+
+/* Liste des zones de livraison actives + detail par arrondissement
+   (ZonesLivraison.jsx). */
+.zones-actives-liste { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.zones-actives-item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #e5e5e3; border-radius: 10px; padding: 14px 16px; background: #fff; }
+.zones-actives-item strong { display: block; margin-bottom: 3px; color: #141414; font-size: 14px; }
+.zones-actives-item span { color: #6b6b6b; font-size: 12px; }
+.zones-actives-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.zones-departement-groupe { margin-bottom: 18px; }
+.zones-departement-titre { margin: 0 0 10px; color: #6b6b6b; font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: .03em; }
+.zones-arrondissements-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.zones-arrondissement-ligne { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid #e5e5e3; border-radius: 8px; padding: 10px 12px; color: #141414; background: #fcfcfb; font-size: 13px; }
+.zones-prix-champ { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.zones-prix-champ input { width: 76px; border: 1px solid #d8d8d8; border-radius: 6px; padding: 6px 8px; color: #141414; background: #fff; font: inherit; font-size: 13px; text-align: right; }
+.zones-prix-champ input:focus { border-color: #a6192e; outline: none; box-shadow: 0 0 0 3px rgb(166 25 46 / 12%); }
+.zones-prix-unite { color: #6b6b6b; font-size: 11px; }
+.zones-detail-actions { justify-content: space-between; margin-top: 8px; }
+.manager-shell.is-dark .zones-actives-item { border-color: #2a2a2e; background: #1c1c20; }
+.manager-shell.is-dark .zones-actives-item strong { color: #f2f2f2; }
+.manager-shell.is-dark .zones-actives-item span,
+.manager-shell.is-dark .zones-departement-titre,
+.manager-shell.is-dark .zones-prix-unite { color: #9a9a9e; }
+.manager-shell.is-dark .zones-arrondissement-ligne { border-color: #2a2a2e; color: #f2f2f2; background: #151518; }
+.manager-shell.is-dark .zones-prix-champ input { border-color: #2f2f33; color: #f2f2f2; background: #121214; }
+@media (max-width: 600px) {
+  .zones-actives-item,
+  .zones-arrondissement-ligne { flex-direction: column; align-items: flex-start; }
+  .zones-prix-champ { width: 100%; justify-content: space-between; }
+  .zones-prix-champ input { flex: 1; width: auto; }
+  .zones-detail-actions { flex-direction: column; align-items: stretch; }
+}

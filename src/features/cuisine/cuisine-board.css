@@ -147,6 +147,29 @@
   white-space: nowrap;
 }
 
+/* Coordonnees client (espace Livreur uniquement, voir showClient dans
+   CommandeRow.jsx) : sous le resume des plats, toujours visible (pas
+   besoin de deplier) - c'est l'info la plus utile au livreur. */
+.cuisine-row-client {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 6px 0 0;
+}
+
+.cuisine-row-client-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #3a3a3a;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.cuisine-row-client-item i {
+  color: #a6192e;
+}
+
 .cuisine-row-id {
   color: #141414;
   font-size: 15px;
@@ -250,6 +273,28 @@
 }
 
 .cuisine-row-toggle:hover {
+  color: #a6192e;
+  border-color: #e6c2c9;
+}
+
+/* Bouton d'impression du recu (espace Livreur, voir onImprimer dans
+   CommandeRow.jsx) : meme gabarit que cuisine-row-toggle, juste a cote. */
+.cuisine-row-print {
+  display: inline-grid;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid #e5e5e3;
+  border-radius: 8px;
+  padding: 0;
+  background: #fff;
+  color: #6b6b6b;
+  cursor: pointer;
+  font: inherit;
+}
+
+.cuisine-row-print:hover {
   color: #a6192e;
   border-color: #e6c2c9;
 }
@@ -526,6 +571,12 @@
   color: #9a9a9e;
 }
 
+.manager-shell.is-dark .cuisine-row-print {
+  border-color: #2a2a2e;
+  background: #1c1c20;
+  color: #9a9a9e;
+}
+
 .manager-shell.is-dark .cuisine-row-toggle:hover {
   color: #e14b64;
   border-color: rgba(225, 75, 100, 0.35);
@@ -569,6 +620,14 @@
 
 .manager-shell.is-dark .cuisine-row-summary {
   color: #9a9a9e;
+}
+
+.manager-shell.is-dark .cuisine-row-client-item {
+  color: #d8d8da;
+}
+
+.manager-shell.is-dark .cuisine-row-client-item i {
+  color: #e14b64;
 }
 
 .manager-shell.is-dark .cuisine-row-note {

@@ -37,7 +37,7 @@ function minutesAgo(n) {
   return new Date(Date.now() - n * 60_000).toISOString()
 }
 
-const DEMO_VERSION = 8
+const DEMO_VERSION = 9
 
 const DEMO_SEED = [
   // --- File d'attente (PAYEE) ---
@@ -68,6 +68,10 @@ const DEMO_SEED = [
     canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(5),
+    clientPrenom: 'Awa',
+    clientNom: 'Ndiaye',
+    clientTelephone: '77 123 45 67',
+    adresseLivraison: 'Dakar — Plateau',
     note: 'Sonner à l’interphone B12',
     lignes: [
       { produitId: 'p-double', quantite: 1, personnalisation: 'Extra cheddar' },
@@ -81,6 +85,10 @@ const DEMO_SEED = [
     canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(7),
+    clientPrenom: 'Moussa',
+    clientNom: 'Fall',
+    clientTelephone: '76 234 56 78',
+    adresseLivraison: 'Pikine — Guinaw Rail',
     lignes: [{ produitId: 'p-nuggets12', quantite: 1 }],
   },
   {
@@ -102,6 +110,10 @@ const DEMO_SEED = [
     canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(11),
+    clientPrenom: 'Fatou',
+    clientNom: 'Sarr',
+    clientTelephone: '70 345 67 89',
+    adresseLivraison: 'Guédiawaye — Sam Notaire',
     lignes: [
       { produitId: 'p-cheese', quantite: 1 },
       { produitId: 'p-nuggets', quantite: 1 },
@@ -135,6 +147,10 @@ const DEMO_SEED = [
     canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(17),
+    clientPrenom: 'Ibrahima',
+    clientNom: 'Diallo',
+    clientTelephone: '78 456 78 90',
+    adresseLivraison: 'Dakar — Plateau',
     lignes: [
       { produitId: 'p-burger', quantite: 3, accompagnementNom: 'Onion rings' },
       { produitId: 'p-fries', quantite: 2 },
@@ -147,6 +163,10 @@ const DEMO_SEED = [
     canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(19),
+    clientPrenom: 'Sokhna',
+    clientNom: 'Ba',
+    clientTelephone: '77 567 89 01',
+    adresseLivraison: 'Rufisque — Centre',
     lignes: [{ produitId: 'p-dessert', quantite: 2 }],
   },
   {
@@ -168,6 +188,10 @@ const DEMO_SEED = [
     canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(25),
+    clientPrenom: 'Cheikh',
+    clientNom: 'Gueye',
+    clientTelephone: '76 678 90 12',
+    adresseLivraison: 'Pikine — Guinaw Rail',
     lignes: [
       { produitId: 'p-double', quantite: 2, personnalisation: 'Bien cuit' },
       { produitId: 'p-fries-l', quantite: 2 },
@@ -189,6 +213,10 @@ const DEMO_SEED = [
     canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(38),
+    clientPrenom: 'Mariama',
+    clientNom: 'Sow',
+    clientTelephone: '70 789 01 23',
+    adresseLivraison: 'Guédiawaye — Sam Notaire',
     lignes: [
       { produitId: 'p-burger', quantite: 2 },
       { produitId: 'p-fries', quantite: 2 },
@@ -202,6 +230,10 @@ const DEMO_SEED = [
     canal: 'APP',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(44),
+    clientPrenom: 'Abdou',
+    clientNom: 'Diop',
+    clientTelephone: '78 890 12 34',
+    adresseLivraison: 'Dakar — Plateau',
     lignes: [
       { produitId: 'p-wrap', quantite: 1 },
       { produitId: 'p-jus', quantite: 1 },
@@ -220,6 +252,10 @@ const DEMO_SEED = [
     mode: 'LIVRAISON',
     creeLe: minutesAgo(130),
     livreeLe: minutesAgo(95),
+    clientPrenom: 'Khady',
+    clientNom: 'Toure',
+    clientTelephone: '77 901 23 45',
+    adresseLivraison: 'Rufisque — Centre',
     lignes: [
       { produitId: 'p-burger', quantite: 1 },
       { produitId: 'p-cola', quantite: 1 },
@@ -232,6 +268,10 @@ const DEMO_SEED = [
     mode: 'LIVRAISON',
     creeLe: minutesAgo(190),
     livreeLe: minutesAgo(160),
+    clientPrenom: 'Omar',
+    clientNom: 'Seck',
+    clientTelephone: '76 012 34 56',
+    adresseLivraison: 'Pikine — Guinaw Rail',
     lignes: [
       { produitId: 'p-double', quantite: 2 },
       { produitId: 'p-fries-l', quantite: 1 },
@@ -244,6 +284,10 @@ const DEMO_SEED = [
     mode: 'LIVRAISON',
     creeLe: minutesAgo(1485),
     livreeLe: minutesAgo(1450),
+    clientPrenom: 'Astou',
+    clientNom: 'Mbaye',
+    clientTelephone: '70 123 45 67',
+    adresseLivraison: 'Dakar — Plateau',
     lignes: [
       { produitId: 'p-wrap', quantite: 1 },
       { produitId: 'p-jus', quantite: 1 },
@@ -256,6 +300,10 @@ const DEMO_SEED = [
     mode: 'LIVRAISON',
     creeLe: minutesAgo(4340),
     livreeLe: minutesAgo(4320),
+    clientPrenom: 'Lamine',
+    clientNom: 'Faye',
+    clientTelephone: '78 234 56 78',
+    adresseLivraison: 'Guédiawaye — Sam Notaire',
     lignes: [{ produitId: 'p-cheese', quantite: 3 }],
   },
 ]

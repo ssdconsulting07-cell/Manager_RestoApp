@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import {
+  adresseLivraison,
   canalLabel,
+  clientNomComplet,
+  clientTelephone,
   estComptoir,
   estUrgente,
   formatDuree,
@@ -77,6 +80,15 @@ export default function CommandeRow({
   pending,
   onTransition,
   showDuree = false,
+  // Espace Livreur uniquement (Livraisons.jsx) : masque les badges canal
+  // (App/Sur place) et mode (Livraison/Retrait) sur cette page - evident
+  // une fois qu'on EST sur l'espace Livreur, qui ne traite de toute facon
+  // que des commandes en livraison (demande du 24/10/2026). Reste a true
+  // par defaut (Cuisine, qui traite les deux canaux/modes a la fois).
+  showCanalEtMode = true,
+  // Coordonnees client (Nom/Prenom/Tel/Adresse) - espace Livreur
+  // uniquement, meme raison que showCanalEtMode (demande du 24/10/2026).
+  showClient = false,
   emptyActionLabel = null,
   emptyActionIcon = 'fa-circle-check',
   // Espace Livreur uniquement (Livraisons.jsx) : appele au lieu de
@@ -87,6 +99,10 @@ export default function CommandeRow({
   // transition, voir allowedTransitions/transitions.js, donc cette prop
   // reste simplement inutilisee cote Cuisine).
   onScanLivraison = null,
+  // Espace Livreur uniquement (Livraisons.jsx) : impression du recu a
+  // rendre au client (demande du 24/10/2026, voir recuCommande.js). Non
+  // fourni => pas de bouton (Cuisine n'imprime rien depuis cet ecran).
+  onImprimer = null,
 }) {
   const [deplie, setDeplie] = useState(false)
   const [confirmation, setConfirmation] = useState(null)
@@ -105,6 +121,9 @@ export default function CommandeRow({
   // c'est ce deuxieme chiffre qui compte en cuisine.
   const totalPlats = lignes.reduce((total, ligne) => total + (ligne.quantite || 0), 0)
   const idTicket = ticketId(commande)
+  const nomClient = showClient ? clientNomComplet(commande) : null
+  const telClient = showClient ? clientTelephone(commande) : null
+  const adresseClient = showClient ? adresseLivraison(commande) : null
   const detailsId = `commande-detail-${idTicket}`
   // PRETE -> EN_LIVRAISON peut etre declenchee par la Cuisine (« Envoyer
   // au livreur ») ou par le Livreur (« Récupéré », voir transitions.js) —
@@ -120,11 +139,13 @@ export default function CommandeRow({
         <div className="cuisine-row-top">
           <div className="cuisine-row-info">
             <span className="cuisine-row-id">#{idTicket}</span>
-            <span className={`cuisine-row-pill is-canal${comptoir ? ' is-comptoir' : ''}`}>
-              <i className={`fa-solid ${comptoir ? 'fa-store' : 'fa-mobile-screen-button'}`} aria-hidden="true" />
-              {canalLabel(commande)}
-            </span>
-            {!comptoir && (
+            {showCanalEtMode && (
+              <span className={`cuisine-row-pill is-canal${comptoir ? ' is-comptoir' : ''}`}>
+                <i className={`fa-solid ${comptoir ? 'fa-store' : 'fa-mobile-screen-button'}`} aria-hidden="true" />
+                {canalLabel(commande)}
+              </span>
+            )}
+            {showCanalEtMode && !comptoir && (
               <span className="cuisine-row-pill">
                 <i
                   className={`fa-solid ${commande.mode === 'LIVRAISON' ? 'fa-motorcycle' : 'fa-bag-shopping'}`}
@@ -179,6 +200,20 @@ export default function CommandeRow({
               reste neanmoins la cible accessible au clavier (focus +
               Entree/Espace), avec son propre libelle et son etat
               aria-expanded. */}
+          {onImprimer && (
+            <button
+              type="button"
+              className="cuisine-row-print"
+              aria-label={`Imprimer le reçu de la commande ${idTicket}`}
+              onClick={(event) => {
+                event.stopPropagation()
+                onImprimer(commande)
+              }}
+            >
+              <i className="fa-solid fa-print" aria-hidden="true" />
+            </button>
+          )}
+
           <button
             type="button"
             className={`cuisine-row-toggle${deplie ? ' is-expanded' : ''}`}
@@ -196,6 +231,20 @@ export default function CommandeRow({
         <p className="cuisine-row-summary">
           {formatHeure(commande.creeLe)} · {resumePlats(lignes, produits)}
         </p>
+
+        {showClient && (nomClient || telClient || adresseClient) && (
+          <p className="cuisine-row-client">
+            {nomClient && (
+              <span className="cuisine-row-client-item"><i className="fa-solid fa-user" aria-hidden="true" /> {nomClient}</span>
+            )}
+            {telClient && (
+              <span className="cuisine-row-client-item"><i className="fa-solid fa-phone" aria-hidden="true" /> {telClient}</span>
+            )}
+            {adresseClient && (
+              <span className="cuisine-row-client-item"><i className="fa-solid fa-location-dot" aria-hidden="true" /> {adresseClient}</span>
+            )}
+          </p>
+        )}
       </div>
 
       {deplie && (

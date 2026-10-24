@@ -27,7 +27,12 @@ const NAV_ITEMS = [
       { path: '/journal-audit/vendeur', label: 'Vendeur' },
     ],
   },
+  // Gestion des comptes Gerant + vue lecture seule sur les autres employes
+  // (24/10/2026) : page separee de /personnel (Gerant), qui ne gere plus
+  // que Cuisine/Livreur/Vendeur.
+  { path: '/equipe', label: 'Personnel', icon: 'fa-users', roles: ['MANAGER'] },
   { path: '/personnel', label: 'Utilisateurs', icon: 'fa-users', roles: ['GERANT'] },
+  { path: '/zones-livraison', label: 'Zones de livraison', icon: 'fa-map-location-dot', roles: ['GERANT'] },
   { path: '/livraisons', label: 'Livraisons', icon: 'fa-truck-fast', roles: ['LIVREUR'] },
   { path: '/historique-livraisons', label: 'Historique des livraisons', icon: 'fa-clipboard-list', roles: ['LIVREUR'] },
   { path: '/vente', label: 'Nouvelle vente', icon: 'fa-cash-register', roles: ['VENDEUR'] },

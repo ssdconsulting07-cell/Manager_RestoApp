@@ -26,7 +26,14 @@ export const ROLE_HOME = {
 export const ROUTE_ROLES = {
   '/dashboard': ROLES,
   '/commandes': ['CUISINE'],
+  // Meme principe que journal-audit ci-dessous : deux entrees necessaires
+  // (meme liste de roles) pour le lien nu /produits (App.jsx, redirection
+  // vers Produit actuel) et pour chacune des 3 sous-pages du dropdown
+  // (voir Layout.jsx).
   '/produits': ['GERANT'],
+  '/produits/actuels': ['GERANT'],
+  '/produits/plat-du-jour': ['GERANT'],
+  '/produits/accompagnements-condiments': ['GERANT'],
   '/categories': ['GERANT'],
   '/annonces': ['GERANT'],
   // Une sous-page par role (voir Layout.jsx : dropdown sidebar) - le

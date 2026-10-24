@@ -665,6 +665,10 @@
 .crud-product-highlight.is-trending i { color: #141414; }
 .crud-product-highlight.is-daily { color: #141414; background: #ff69b4; }
 .crud-product-highlight.is-daily i { color: #141414; }
+.crud-product-highlight.is-accompagnement { color: #141414; background: #9fd6c4; }
+.crud-product-highlight.is-accompagnement i { color: #141414; }
+.crud-product-highlight.is-condiment { color: #fff; background: #a6192e; }
+.crud-product-highlight.is-condiment i { color: #fff; }
 
 .crud-preview-modal { width: min(100%, 420px); }
 .client-product-card { overflow: hidden; border: 1px solid #e5e5e3; border-radius: 14px; }

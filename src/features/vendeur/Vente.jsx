@@ -6,7 +6,7 @@ import Pagination from '../../components/crud/Pagination.jsx'
 import PanierPage from './PanierPage.jsx'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { useMenuData } from '../gerant/MenuDataContext.jsx'
-import { CATEGORIE_PLATS_DU_JOUR_ID } from '../gerant/menuData.js'
+import { useAccompagnementsCondiments } from '../gerant/AccompagnementsCondimentsContext.jsx'
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
 import { creerCommandeComptoir } from './commandeComptoir.js'
 import RetraitsComptoir from './RetraitsComptoir.jsx'
@@ -37,14 +37,6 @@ const CATEGORIE_FILTRES = [
     accent: '#a6192e',
     accentBg: '#fbeaec',
     match: (produit, ids) => produit.categorieId === ids.burgers,
-  },
-  {
-    key: 'plat-du-jour',
-    label: 'Plat du jour',
-    icon: 'fa-calendar-day',
-    accent: '#9c6b0c',
-    accentBg: '#f6ecd9',
-    match: (produit, ids) => produit.categorieId === ids.platDuJour || Boolean(produit.platDuJour),
   },
   {
     key: 'dessert',
@@ -79,6 +71,7 @@ function idParNom(categories, nom) {
 export default function Vente() {
   const { username } = useAuth()
   const { categories, produits, categorieNomParId } = useMenuData()
+  const { itemsActifs: accompagnementsDisponibles } = useAccompagnementsCondiments()
 
   const [categorieActive, setCategorieActive] = useState('plats')
   const [recherche, setRecherche] = useState('')
@@ -101,22 +94,21 @@ export default function Vente() {
 
   // Resolution par NOM (pas par id en dur) : robuste si les donnees mock
   // changent, meme logique que categorieNomParId cote Gerant.
+  // 'Accompagnements' (categorieIds) reste la categorie du CATALOGUE Produits
+  // (ex: un burger-accompagnement vendu comme produit a part) ; les choix
+  // proposes a la caisse pour UN produit commande (frites, salade...) sont
+  // maintenant des fiches independantes (accompagnementsDisponibles,
+  // ci-dessus) - voir AccompagnementsCondimentsContext.jsx et
+  // brainstorming-chez-ketchup.md (24/10/2026).
   const categorieIds = useMemo(() => ({
     burgers: idParNom(categories, 'Burgers'),
-    accompagnements: idParNom(categories, 'Accompagnements'),
     dessert: idParNom(categories, 'Desserts'),
     boisson: idParNom(categories, 'Boissons'),
-    platDuJour: CATEGORIE_PLATS_DU_JOUR_ID,
   }), [categories])
 
   const produitsDisponibles = useMemo(
     () => produits.filter((p) => p.statut === 'ACTIF' && p.disponibilite === 'EN_STOCK'),
     [produits],
-  )
-
-  const accompagnementsDisponibles = useMemo(
-    () => produitsDisponibles.filter((p) => p.categorieId === categorieIds.accompagnements),
-    [produitsDisponibles, categorieIds],
   )
 
   const comptesParFiltre = useMemo(() => {
@@ -165,8 +157,6 @@ export default function Vente() {
         return current.map((l) => (l.ligneId === existant.ligneId ? { ...l, quantite: l.quantite + 1 } : l))
       }
       const accompagnementEligible = produit.categorieId === categorieIds.burgers
-        || produit.categorieId === categorieIds.platDuJour
-        || Boolean(produit.platDuJour)
       return [...current, {
         ligneId: nextLigneId(),
         produitId: produit.id,

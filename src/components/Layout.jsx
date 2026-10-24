@@ -9,7 +9,21 @@ import '../styles/manager.css'
 const NAV_ITEMS = [
   { path: '/dashboard', label: 'Tableau de bord', icon: 'fa-gauge-high', roles: ['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR', 'VENDEUR'] },
   { path: '/commandes', label: 'Commandes', icon: 'fa-receipt', roles: ['CUISINE'] },
-  { path: '/produits', label: 'Produits', icon: 'fa-utensils', roles: ['GERANT'] },
+  {
+    path: '/produits',
+    label: 'Produits',
+    icon: 'fa-utensils',
+    roles: ['GERANT'],
+    // Dropdown (demande du 24/10/2026, meme pattern que Journal d'audit
+    // ci-dessous) : Plat du jour et Accompagnement & condiment sont
+    // desormais des fiches independantes du catalogue, pas des onglets
+    // de Produits actuel - voir brainstorming-chez-ketchup.md.
+    children: [
+      { path: '/produits/actuels', label: 'Produit actuel' },
+      { path: '/produits/plat-du-jour', label: 'Plat du jour' },
+      { path: '/produits/accompagnements-condiments', label: 'Accompagnement & condiment' },
+    ],
+  },
   { path: '/categories', label: 'Catégories', icon: 'fa-tags', roles: ['GERANT'] },
   { path: '/annonces', label: 'Annonces', icon: 'fa-bullhorn', roles: ['GERANT'] },
   {

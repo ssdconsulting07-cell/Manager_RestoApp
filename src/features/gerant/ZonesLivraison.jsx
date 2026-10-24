@@ -1,10 +1,19 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Layout from '../../components/Layout.jsx'
 import Toast from '../../components/Toast.jsx'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import CarteSenegal from './CarteSenegal.jsx'
-import { ARRONDISSEMENTS_PAR_REGION, regionLabel } from './senegalZones.js'
-import { activerRegion, definirPrix, desactiverRegion, regionsActives, zonesLivraison } from './zonesLivraisonData.js'
+import { regionLabel } from './senegalZones.js'
+import {
+  activerRegion,
+  ajouterZone,
+  arrondissementsDe,
+  definirPrix,
+  desactiverRegion,
+  regionsActives,
+  supprimerZone,
+  zonesLivraison,
+} from './zonesLivraisonData.js'
 
 // Page "Zones de livraison" (Gerant, 24/10/2026) - carte des 14 regions,
 // activables une a la fois (plusieurs regions actives en parallele sont
@@ -21,6 +30,46 @@ export default function ZonesLivraison() {
   const [confirmation, setConfirmation] = useState(null)
   const [toast, setToast] = useState(null)
   const [version, setVersion] = useState(0)
+  const [departementsOuverts, setDepartementsOuverts] = useState(() => new Set())
+  const [zoneEnSaisie, setZoneEnSaisie] = useState({})
+
+  useEffect(() => {
+    setDepartementsOuverts(new Set())
+    setZoneEnSaisie({})
+  }, [regionOuverte])
+
+  function toggleDepartement(nomDepartement) {
+    setDepartementsOuverts((precedent) => {
+      const suivant = new Set(precedent)
+      if (suivant.has(nomDepartement)) suivant.delete(nomDepartement)
+      else suivant.add(nomDepartement)
+      return suivant
+    })
+  }
+
+  function changerSaisieZone(departement, valeur) {
+    setZoneEnSaisie((precedent) => ({ ...precedent, [departement]: valeur }))
+  }
+
+  function soumettreNouvelleZone(departement, arrondissementsExistants) {
+    const nom = (zoneEnSaisie[departement] || '').trim()
+    if (!nom) return
+    const dejaPresente = arrondissementsExistants.some((a) => a.nom.toLowerCase() === nom.toLowerCase())
+    if (dejaPresente) {
+      notify('error', `« ${nom} » existe déjà dans ${departement}.`)
+      return
+    }
+    ajouterZone(regionOuverte, departement, nom)
+    setZoneEnSaisie((precedent) => ({ ...precedent, [departement]: '' }))
+    setVersion((v) => v + 1)
+    notify('success', `Zone « ${nom} » ajoutée à ${departement}.`)
+  }
+
+  function retirerZone(nomZone) {
+    supprimerZone(regionOuverte, nomZone)
+    setVersion((v) => v + 1)
+    notify('success', `Zone « ${nomZone} » retirée.`)
+  }
 
   function notify(type, message) {
     setToast({ id: Date.now(), type, message })
@@ -62,7 +111,7 @@ export default function ZonesLivraison() {
     setVersion((v) => v + 1)
   }
 
-  const regionDetail = regionOuverte ? ARRONDISSEMENTS_PAR_REGION[regionOuverte] : null
+  const regionDetail = regionOuverte ? arrondissementsDe(regionOuverte) : null
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const prixRegion = useMemo(() => (regionOuverte ? zonesLivraison[regionOuverte] || {} : {}), [regionOuverte, version])
 
@@ -111,7 +160,7 @@ export default function ZonesLivraison() {
                 <li key={code} className="zones-actives-item">
                   <div>
                     <strong>{regionLabel(code)}</strong>
-                    <span>{(ARRONDISSEMENTS_PAR_REGION[code] || []).length} arrondissements · {formatPrix(min)}{min !== max ? ` – ${formatPrix(max)}` : ''}</span>
+                    <span>{arrondissementsDe(code).length} arrondissements · {formatPrix(min)}{min !== max ? ` – ${formatPrix(max)}` : ''}</span>
                   </div>
                   <div className="zones-actives-actions">
                     <button className="crud-action" type="button" onClick={() => setRegionOuverte(code)}>
@@ -135,30 +184,85 @@ export default function ZonesLivraison() {
             <h2 id="zones-detail-titre">{regionLabel(regionOuverte)} — prix par arrondissement</h2>
           </div>
 
-          {departementsRegroupes.map(([departement, arrondissements]) => (
-            <div key={departement} className="zones-departement-groupe">
-              <h3 className="zones-departement-titre">{departement}</h3>
-              <div className="zones-arrondissements-grille">
-                {arrondissements.map((arrondissement) => (
-                  <label key={arrondissement.nom} className="zones-arrondissement-ligne">
-                    <span>{arrondissement.nom}</span>
-                    <span className="zones-prix-champ">
+          {departementsRegroupes.map(([departement, arrondissements]) => {
+            const estOuvert = departementsOuverts.has(departement)
+            const valeurs = arrondissements.map((arrondissement) => prixRegion[arrondissement.nom] ?? 0)
+            const minDepartement = valeurs.length ? Math.min(...valeurs) : 0
+            const maxDepartement = valeurs.length ? Math.max(...valeurs) : 0
+            return (
+              <div key={departement} className="zones-departement-groupe">
+                <button
+                  type="button"
+                  className="zones-departement-toggle"
+                  aria-expanded={estOuvert}
+                  onClick={() => toggleDepartement(departement)}
+                >
+                  <i
+                    className={`fa-solid fa-chevron-right zones-departement-chevron ${estOuvert ? 'is-ouvert' : ''}`}
+                    aria-hidden="true"
+                  />
+                  <span className="zones-departement-nom">{departement}</span>
+                  <span className="zones-departement-resume">
+                    {arrondissements.length} arrondissement{arrondissements.length > 1 ? 's' : ''} · {formatPrix(minDepartement)}{minDepartement !== maxDepartement ? ` – ${formatPrix(maxDepartement)}` : ''}
+                  </span>
+                </button>
+                {estOuvert && (
+                  <>
+                    <div className="zones-arrondissements-grille">
+                      {arrondissements.map((arrondissement) => (
+                        <div key={arrondissement.nom} className="zones-arrondissement-ligne">
+                          <span>{arrondissement.nom}</span>
+                          <span className="zones-prix-champ">
+                            <input
+                              type="number"
+                              min={0}
+                              step={100}
+                              inputMode="numeric"
+                              value={prixRegion[arrondissement.nom] ?? 0}
+                              onChange={(event) => changerPrix(regionOuverte, arrondissement.nom, event.target.value)}
+                              aria-label={`Prix de livraison pour ${arrondissement.nom}`}
+                            />
+                            <span className="zones-prix-unite">F CFA</span>
+                          </span>
+                          <button
+                            type="button"
+                            className="zones-zone-supprimer"
+                            onClick={() => retirerZone(arrondissement.nom)}
+                            aria-label={`Supprimer la zone ${arrondissement.nom}`}
+                            title="Supprimer cette zone"
+                          >
+                            <i className="fa-solid fa-trash" aria-hidden="true" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="zones-arrondissement-ajout">
                       <input
-                        type="number"
-                        min={0}
-                        step={100}
-                        inputMode="numeric"
-                        value={prixRegion[arrondissement.nom] ?? 0}
-                        onChange={(event) => changerPrix(regionOuverte, arrondissement.nom, event.target.value)}
-                        aria-label={`Prix de livraison pour ${arrondissement.nom}`}
+                        type="text"
+                        value={zoneEnSaisie[departement] || ''}
+                        onChange={(event) => changerSaisieZone(departement, event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') {
+                            event.preventDefault()
+                            soumettreNouvelleZone(departement, arrondissements)
+                          }
+                        }}
+                        placeholder="Nouvelle zone…"
+                        aria-label={`Nom de la nouvelle zone pour ${departement}`}
                       />
-                      <span className="zones-prix-unite">F CFA</span>
-                    </span>
-                  </label>
-                ))}
+                      <button
+                        type="button"
+                        className="crud-action"
+                        onClick={() => soumettreNouvelleZone(departement, arrondissements)}
+                      >
+                        <i className="fa-solid fa-plus" aria-hidden="true" /> Ajouter une zone
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
-          ))}
+            )
+          })}
 
           <div className="manager-modal-actions zones-detail-actions">
             <button className="manager-button manager-button-quiet" type="button" onClick={() => setRegionOuverte(null)}>
@@ -174,7 +278,7 @@ export default function ZonesLivraison() {
       {confirmation?.kind === 'activer' && (
         <ConfirmModal
           title="Activer cette zone de livraison ?"
-          message={`Les ${(ARRONDISSEMENTS_PAR_REGION[confirmation.code] || []).length} arrondissements de la région de ${regionLabel(confirmation.code)} seront ajoutés avec un prix par défaut de ${formatPrix(1000)}, modifiable ensuite arrondissement par arrondissement.`}
+          message={`Les ${arrondissementsDe(confirmation.code).length} arrondissements de la région de ${regionLabel(confirmation.code)} seront ajoutés avec un prix par défaut de ${formatPrix(1000)}, modifiable ensuite arrondissement par arrondissement.`}
           confirmLabel="Activer"
           tone="info"
           icon="fa-map-location-dot"

@@ -6,6 +6,11 @@
 // restaurant Chez Ketchup) ; les autres regions sont activables depuis la
 // carte (voir CarteSenegal.jsx / ZonesLivraison.jsx) - plusieurs regions
 // actives en parallele sont possibles (cadrage du 24/10/2026).
+// Le Gerant peut aussi ajouter/supprimer des zones personnalisees dans un
+// departement, en plus des arrondissements officiels (retour utilisateur
+// du 24/10/2026) - zonesPersonnalisees{} pour les ajouts, zonesSupprimees{}
+// pour masquer un arrondissement officiel sans alterer la liste de
+// reference (senegalZones.js reste la source officielle, inchangee).
 import { ARRONDISSEMENTS_PAR_REGION } from './senegalZones.js'
 
 export const PRIX_PAR_DEFAUT = 1000
@@ -47,6 +52,8 @@ const DAKAR_PAR_DEFAUT = { ...zonesLivraison.DAKAR }
 export function reinitialiserPourTests() {
   for (const code of Object.keys(zonesLivraison)) delete zonesLivraison[code]
   zonesLivraison.DAKAR = { ...DAKAR_PAR_DEFAUT }
+  for (const code of Object.keys(zonesPersonnalisees)) delete zonesPersonnalisees[code]
+  for (const code of Object.keys(zonesSupprimees)) delete zonesSupprimees[code]
 }
 
 export function regionsActives() {
@@ -71,4 +78,37 @@ export function definirPrix(codeRegion, nomArrondissement, prix) {
 
 export function prixDe(codeRegion) {
   return zonesLivraison[codeRegion] || {}
+}
+
+// Zones personnalisees ajoutees par le Gerant, en plus des arrondissements
+// officiels (senegalZones.js) - cle = code region, valeur = liste de
+// { departement, nom }.
+const zonesPersonnalisees = {}
+
+// Arrondissements officiels masques (supprimes) par le Gerant pour une
+// region donnee - cle = code region, valeur = Set de noms masques. La
+// liste de reference (senegalZones.js) n'est jamais modifiee.
+const zonesSupprimees = {}
+
+export function arrondissementsDe(codeRegion) {
+  const officiels = (ARRONDISSEMENTS_PAR_REGION[codeRegion] || [])
+    .filter((arrondissement) => !zonesSupprimees[codeRegion]?.has(arrondissement.nom))
+  const personnalises = zonesPersonnalisees[codeRegion] || []
+  return [...officiels, ...personnalises]
+}
+
+export function ajouterZone(codeRegion, departement, nom) {
+  const nomNettoye = nom.trim()
+  if (!zonesPersonnalisees[codeRegion]) zonesPersonnalisees[codeRegion] = []
+  zonesPersonnalisees[codeRegion].push({ departement, nom: nomNettoye })
+  definirPrix(codeRegion, nomNettoye, PRIX_PAR_DEFAUT)
+}
+
+export function supprimerZone(codeRegion, nom) {
+  if (zonesPersonnalisees[codeRegion]) {
+    zonesPersonnalisees[codeRegion] = zonesPersonnalisees[codeRegion].filter((zone) => zone.nom !== nom)
+  }
+  if (!zonesSupprimees[codeRegion]) zonesSupprimees[codeRegion] = new Set()
+  zonesSupprimees[codeRegion].add(nom)
+  if (zonesLivraison[codeRegion]) delete zonesLivraison[codeRegion][nom]
 }

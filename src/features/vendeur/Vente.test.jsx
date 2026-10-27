@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import Vente from './Vente.jsx'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { MenuDataProvider } from '../gerant/MenuDataContext.jsx'
+import { AccompagnementsCondimentsProvider } from '../gerant/AccompagnementsCondimentsContext.jsx'
 import { formatFCFA as rawFormatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
 
 // Testing Library normalise les espaces du DOM (y compris l'espace fine
@@ -35,7 +36,9 @@ function renderVente() {
   return render(
     <MemoryRouter>
       <MenuDataProvider>
-        <Vente />
+        <AccompagnementsCondimentsProvider>
+          <Vente />
+        </AccompagnementsCondimentsProvider>
       </MenuDataProvider>
     </MemoryRouter>,
   )

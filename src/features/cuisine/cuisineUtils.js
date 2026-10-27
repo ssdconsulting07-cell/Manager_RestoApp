@@ -214,6 +214,30 @@ export function noteCommande(commande) {
   return typeof note === 'string' && note.trim() ? note.trim() : null
 }
 
+// Coordonnees client (espace Livreur, voir Livraisons.jsx) : contrat API
+// non finalise (meme situation que canal/mode/note ci-dessus) - plusieurs
+// noms de champ plausibles tentes, repli sur null (rien affiche) si le
+// backend n'envoie encore rien. Adresse = le nom de la ZONE choisie par le
+// client au moment de la commande (voir ZonesLivraison.jsx, cote Gerant),
+// pas une adresse postale complete - le livreur appelle le client pour le
+// reste du trajet jusqu'a la porte (demande du 24/10/2026).
+export function clientNomComplet(commande) {
+  const prenom = commande?.clientPrenom ?? commande?.client?.prenom
+  const nom = commande?.clientNom ?? commande?.client?.nom
+  const complet = [prenom, nom].filter(Boolean).join(' ').trim()
+  return complet || null
+}
+
+export function clientTelephone(commande) {
+  const tel = commande?.clientTelephone ?? commande?.client?.telephone ?? commande?.telephone
+  return typeof tel === 'string' && tel.trim() ? tel.trim() : null
+}
+
+export function adresseLivraison(commande) {
+  const adresse = commande?.adresseLivraison ?? commande?.zoneNom ?? commande?.adresse
+  return typeof adresse === 'string' && adresse.trim() ? adresse.trim() : null
+}
+
 /** Normalise la liste API vers { [id]: { nom, photo } }. */
 // Numero de ticket affiche (sans le prefixe demo-) — centralise ici (plutot
 // que duplique dans CommandeRow.jsx, Livraisons.jsx, etc.) car utilise par

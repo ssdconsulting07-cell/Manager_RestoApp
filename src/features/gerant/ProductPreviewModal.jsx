@@ -1,4 +1,4 @@
-export default function ProductPreviewModal({ produit, categorieNom, isPlatDuJour, onClose }) {
+export default function ProductPreviewModal({ produit, categorieNom, onClose }) {
   const isRupture = produit.disponibilite === 'RUPTURE'
 
   return (
@@ -19,10 +19,9 @@ export default function ProductPreviewModal({ produit, categorieNom, isPlatDuJou
             {isRupture && <span className="client-product-rupture">Indisponible</span>}
           </div>
           <div className="client-product-body">
-            {(produit.tendance || isPlatDuJour || produit.platDuJour) && (
+            {produit.tendance && (
               <div className="crud-product-highlight-badges is-preview">
-                {produit.tendance && <span className="crud-product-highlight is-trending"><i className="fa-solid fa-fire" aria-hidden="true" /> Tendance</span>}
-                {(isPlatDuJour || produit.platDuJour) && <span className="crud-product-highlight is-daily"><i className="fa-solid fa-calendar-day" aria-hidden="true" /> Plat du jour</span>}
+                <span className="crud-product-highlight is-trending"><i className="fa-solid fa-fire" aria-hidden="true" /> Tendance</span>
               </div>
             )}
             <span className="client-product-category">{categorieNom}</span>

@@ -116,15 +116,15 @@ export default function GerantDashboard() {
       <section className="dashboard-kpi-grid" aria-label="Indicateurs clés du menu">
         <KpiCard
           icon="fa-circle-check" accent="green" label="Produits actifs"
-          value={produitsCounts.ACTIF} detail={`${produits.length} au total`} to="/produits"
+          value={produitsCounts.ACTIF} detail={`${produits.length} au total`} to="/produits/actuels"
         />
         <KpiCard
           icon="fa-ban" accent="red" label="Produits en rupture"
-          value={produitsRupture.length} detail="parmi les actifs" to="/produits"
+          value={produitsRupture.length} detail="parmi les actifs" to="/produits/actuels"
         />
         <KpiCard
           icon="fa-pen-to-square" accent="brand" label="Brouillons produits"
-          value={produitsCounts.BROUILLON} detail="à publier" to="/produits"
+          value={produitsCounts.BROUILLON} detail="à publier" to="/produits/actuels"
         />
         <KpiCard
           icon="fa-tags" accent="green" label="Catégories actives"
@@ -138,7 +138,7 @@ export default function GerantDashboard() {
         />
         <KpiCard
           icon="fa-sack-dollar" accent="amber" label="Valeur du catalogue"
-          value={formatFCFA(valeurCatalogue)} detail="produits actifs" to="/produits"
+          value={formatFCFA(valeurCatalogue)} detail="produits actifs" to="/produits/actuels"
         />
       </section>
 

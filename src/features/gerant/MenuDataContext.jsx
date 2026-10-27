@@ -42,7 +42,7 @@ export function MenuDataProvider({ children }) {
   }
 
   function toggleMiseEnAvantProduit(id, miseEnAvant) {
-    if (!['tendance', 'platDuJour'].includes(miseEnAvant)) return
+    if (!['tendance'].includes(miseEnAvant)) return
     setProduits((prev) => prev.map((produit) => (
       produit.id === id
         ? { ...produit, [miseEnAvant]: !produit[miseEnAvant], updatedAt: new Date().toISOString() }

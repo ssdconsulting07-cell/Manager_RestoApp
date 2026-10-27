@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Connexion from './auth/Connexion.jsx'
 import { AuthProvider, useAuth } from './auth/AuthContext.jsx'
 import { MenuDataProvider } from './features/gerant/MenuDataContext.jsx'
+import { AccompagnementsCondimentsProvider } from './features/gerant/AccompagnementsCondimentsContext.jsx'
 import { AnnoncesProvider } from './features/gerant/AnnoncesContext.jsx'
 import { ROLE_HOME, ROUTE_ROLES } from './auth/roles.js'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
@@ -22,7 +23,9 @@ const PAGES = {
   '/commandes': lazy(() => import('./features/cuisine/Commandes.jsx')),
   '/livraisons': lazy(() => import('./features/livreur/Livraisons.jsx')),
   '/historique-livraisons': lazy(() => import('./features/livreur/HistoriqueLivraisons.jsx')),
-  '/produits': lazy(() => import('./features/gerant/Produits.jsx')),
+  '/produits/actuels': lazy(() => import('./features/gerant/Produits.jsx')),
+  '/produits/plat-du-jour': lazy(() => import('./features/gerant/PlatsDuJour.jsx')),
+  '/produits/accompagnements-condiments': lazy(() => import('./features/gerant/AccompagnementsCondiments.jsx')),
   '/categories': lazy(() => import('./features/gerant/Categories.jsx')),
   '/annonces': lazy(() => import('./features/gerant/Annonces.jsx')),
   '/personnel': lazy(() => import('./features/gerant/Personnel.jsx')),
@@ -42,6 +45,7 @@ export default function App() {
   return (
     <AuthProvider>
       <MenuDataProvider>
+        <AccompagnementsCondimentsProvider>
         <AnnoncesProvider>
           <BrowserRouter>
             <NetworkStatus />
@@ -58,6 +62,18 @@ export default function App() {
                 element={
                   <ProtectedRoute roles={ROUTE_ROLES['/journal-audit']}>
                     <Navigate to="/journal-audit/cuisine" replace />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Meme raison que /journal-audit ci-dessus : le lien nu
+                  "Produits" (dropdown Gerant) redirige sur Produit actuel,
+                  protege ici pour que le "from" capture par ProtectedRoute
+                  reste /produits (voir roles.js). */}
+              <Route
+                path="/produits"
+                element={
+                  <ProtectedRoute roles={ROUTE_ROLES['/produits']}>
+                    <Navigate to="/produits/actuels" replace />
                   </ProtectedRoute>
                 }
               />
@@ -78,6 +94,7 @@ export default function App() {
             </Routes>
           </BrowserRouter>
         </AnnoncesProvider>
+        </AccompagnementsCondimentsProvider>
       </MenuDataProvider>
     </AuthProvider>
   )

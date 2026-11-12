@@ -114,9 +114,11 @@ const BOTTOM_TAB_LABELS = {
   '/historique-livraisons': 'Historique',
   '/historique-ventes': 'Historique',
   '/journal-audit': 'Journal',
+  '/zones-livraison': 'Zones',
 }
 
 const SIDEBAR_COLLAPSED_KEY = 'senyummies_manager_sidebar_collapsed'
+const TABLETTE_QUERY = '(min-width: 761px) and (max-width: 1199px)'
 const NOTIFICATIONS_PER_PAGE = 3
 
 function ChangePasswordModal({ onClose, onNotice }) {
@@ -215,7 +217,14 @@ function ChangePasswordModal({ onClose, onNotice }) {
 
 export default function Layout({ children }) {
   const { role, username, lastLoginAt, logout } = useAuth()
-  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true')
+  // Sans choix explicite de l'utilisateur, la barre laterale est reduite en
+  // rail d'icones sur tablette (761-1199 px) pour laisser la place au
+  // contenu, et depliee sur ordinateur. Le choix fait avec le bouton
+  // "Reduire la navigation" est memorise et prime ensuite.
+  const [collapsed, setCollapsed] = useState(() => {
+    const stocke = localStorage.getItem(SIDEBAR_COLLAPSED_KEY)
+    return stocke === null ? window.matchMedia(TABLETTE_QUERY).matches : stocke === 'true'
+  })
   const [mobileOpen, setMobileOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
@@ -252,16 +261,26 @@ export default function Layout({ children }) {
       setMobileOpen((current) => !current)
       return
     }
-    setCollapsed((current) => !current)
+    setCollapsed((current) => {
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(!current))
+      return !current
+    })
   }
 
   useEffect(() => {
     localStorage.setItem('senyummies_manager_theme', darkMode ? 'dark' : 'light')
   }, [darkMode])
 
+  // Rotation tablette / redimensionnement : tant que l'utilisateur n'a rien
+  // choisi, le rail suit la taille d'ecran.
   useEffect(() => {
-    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(collapsed))
-  }, [collapsed])
+    const mq = window.matchMedia(TABLETTE_QUERY)
+    const suivre = () => {
+      if (localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === null) setCollapsed(mq.matches)
+    }
+    mq.addEventListener?.('change', suivre)
+    return () => mq.removeEventListener?.('change', suivre)
+  }, [])
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 30000)

@@ -1023,3 +1023,43 @@
   .zones-departement-toggle { flex-wrap: wrap; }
   .zones-departement-resume { flex-basis: 100%; text-align: left; }
 }
+
+/* === Adaptation par type d'ecran (smartphone / tablette / ordinateur) ===
+   Regles transverses, ajoutees en fin de fichier pour primer sur les
+   valeurs par defaut ci-dessus. */
+
+/* Barres d'outils (recherche + filtres + bouton) : passent a la ligne au lieu
+   d'ecraser le champ de recherche (il tombait a ~75 px sur smartphone). */
+.crud-toolbar { flex-wrap: wrap; }
+.crud-search { min-width: min(100%, 220px); }
+
+/* Smartphone */
+@media (max-width: 760px) {
+  .crud-toolbar .crud-search { flex: 1 1 100%; max-width: none; }
+  .crud-toolbar .crud-toolbar-spacer { display: none; }
+  .crud-toolbar .crud-add-button { flex: 1 1 auto; justify-content: center; }
+  /* Tiroir ferme : vraiment masque (un libelle long depassait sur le bord
+     gauche de l'ecran, et les liens restaient atteignables au clavier). */
+  .manager-sidebar { visibility: hidden; transition: transform .22s ease, visibility .22s; }
+  .manager-shell.is-mobile-open .manager-sidebar { visibility: visible; }
+  .manager-bottom-tabbar-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .crud-pagination { justify-content: center; }
+  .crud-pagination-summary { flex: 1 1 100%; text-align: center; }
+}
+
+/* Ecrans tactiles (smartphone, tablette) : cibles d'au moins 40 px. */
+@media (pointer: coarse) {
+  .crud-pagination-nav { width: 40px; height: 40px; }
+  .crud-pagination-pagebtn { min-width: 40px; height: 40px; }
+  .crud-rows-option { width: 40px; padding: 10px 0; }
+  .crud-rows-thumb { width: 40px; transform: translateX(calc(var(--active-index, 0) * 42px)); }
+  .crud-action { min-height: 40px; padding: 9px 14px; }
+  .crud-search input, .crud-select, .audit-select { min-height: 44px; font-size: 16px; }
+  .manager-collapse-button { width: 36px; height: 36px; right: -18px; }
+}
+@media (pointer: coarse) {
+  .audit-row-view { width: 40px; height: 40px; }
+}
+@media (pointer: coarse) {
+  .toast > button { min-width: 40px; min-height: 40px; }
+}

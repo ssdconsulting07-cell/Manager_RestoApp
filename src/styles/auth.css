@@ -723,3 +723,11 @@ body,
 .auth-shell.is-dark .toast > button {
   color: #b9b9b9;
 }
+/* Ecrans tactiles : cibles d'au moins 40 px sans changer le dessin. */
+@media (pointer: coarse) {
+  .auth-password-toggle { min-width: 40px; min-height: 40px; display: grid; place-items: center; right: 6px; }
+  .auth-secondary-row button { min-height: 40px; padding: 0 4px; }
+  /* Les tirets du carrousel gardent leur aspect mais la zone de tap fait 40 px. */
+  .auth-carousel-dots button { width: 40px; height: 40px; background: linear-gradient(rgb(255 255 255 / 42%), rgb(255 255 255 / 42%)) center / 28px 3px no-repeat transparent; }
+  .auth-carousel-dots button.is-active { background: linear-gradient(#fff, #fff) center / 28px 3px no-repeat transparent; }
+}

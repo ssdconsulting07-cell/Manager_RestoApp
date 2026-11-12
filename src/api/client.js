@@ -25,6 +25,19 @@ function authHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+
+// Reseau coupe / serveur injoignable : fetch rejette un TypeError au message
+// brut ("Failed to fetch") qui s'affichait tel quel dans les ecrans.
+async function appeler(url, options) {
+  try {
+    return await fetch(url, options)
+  } catch {
+    const error = new Error('Connexion au serveur impossible. Vérifiez le réseau puis réessayez.')
+    error.code = 'RESEAU'
+    throw error
+  }
+}
+
 async function handleResponse(res) {
   const token = getAuthToken()
   if (res.status === 401 && token) {
@@ -44,12 +57,12 @@ async function handleResponse(res) {
 }
 
 export async function apiGet(path) {
-  const res = await fetch(`${API_BASE_URL}${path}`, { headers: { ...authHeaders() } })
+  const res = await appeler(`${API_BASE_URL}${path}`, { headers: { ...authHeaders() } })
   return handleResponse(res)
 }
 
 export async function apiPost(path, body) {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await appeler(`${API_BASE_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify(body),
@@ -58,7 +71,7 @@ export async function apiPost(path, body) {
 }
 
 export async function apiPatch(path, body) {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await appeler(`${API_BASE_URL}${path}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify(body),
@@ -67,7 +80,7 @@ export async function apiPatch(path, body) {
 }
 
 export async function apiDelete(path) {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await appeler(`${API_BASE_URL}${path}`, {
     method: 'DELETE',
     headers: { ...authHeaders() },
   })

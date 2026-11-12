@@ -37,11 +37,12 @@ describe('creerCommandeComptoir', () => {
     expect(getDemoCommandes().some((c) => c.id === commande.id)).toBe(true)
 
     // Une fois la Cuisine passee a PRETE : seul VENDEUR peut la remettre au
-    // client (RETIREE), jamais CUISINE ni LIVREUR — et CUISINE garde la
-    // possibilite d'annuler jusque-la (transitions.js, meme decision).
+    // client (RETIREE), jamais CUISINE ni LIVREUR. Plus d'annulation possible
+    // a ce stade : depuis le 24/10/2026, la Cuisine n'annule qu'une commande
+    // PAYEE, pas encore commencee (transitions.js).
     const prete = patchDemoStatut(commande.id, 'PRETE')
     expect(allowedTransitions(prete, 'VENDEUR').map((t) => t.to)).toEqual(['RETIREE'])
-    expect(allowedTransitions(prete, 'CUISINE').map((t) => t.to)).toEqual(['ANNULEE'])
+    expect(allowedTransitions(prete, 'CUISINE')).toEqual([])
     expect(allowedTransitions(prete, 'LIVREUR')).toEqual([])
   })
 })

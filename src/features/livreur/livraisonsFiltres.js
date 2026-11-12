@@ -19,7 +19,7 @@ export function filtrerLivraisons(livrees, produits, { recherche = '' }) {
       canalLabel(commande),
       modeLabel(commande.mode),
       noteCommande(commande) || '',
-      ...(commande.lignes || []).map((ligne) => nomProduit(produits, ligne.produitId)),
+      ...(commande.lignes || []).map((ligne) => nomProduit(produits, ligne)),
     ].join(' '))
     return termes.every((terme) => texte.includes(terme))
   })
@@ -119,7 +119,7 @@ export function lignesExport(livrees, produits) {
   return livrees.map((commande) => ({
     date: new Date(commande.livreeLe || commande.creeLe),
     ticket: ticketId(commande),
-    produits: (commande.lignes || []).map((ligne) => `${ligne.quantite}× ${nomProduit(produits, ligne.produitId)}`).join(', '),
+    produits: (commande.lignes || []).map((ligne) => `${ligne.quantite}× ${nomProduit(produits, ligne)}`).join(', '),
     canal: canalLabel(commande),
     mode: modeLabel(commande.mode),
     note: noteCommande(commande) || '',

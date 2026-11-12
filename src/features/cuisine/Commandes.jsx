@@ -59,7 +59,7 @@ function correspondRecherche(commande, produits, query) {
   if (idTexte.includes(query)) return true
   const note = noteCommande(commande)
   if (note && note.toLowerCase().includes(query)) return true
-  return (commande.lignes || []).some((ligne) => nomProduit(produits, ligne.produitId).toLowerCase().includes(query))
+  return (commande.lignes || []).some((ligne) => nomProduit(produits, ligne).toLowerCase().includes(query))
 }
 
 export default function Commandes() {

@@ -39,7 +39,7 @@ function construireHtmlRecuCommande(commande, produits) {
       const perso = textePersonnalisation(ligne)
       return `
     <li>
-      <strong>${ligne.quantite}&times; ${echapperHtml(nomProduit(produits, ligne.produitId))}</strong>
+      <strong>${ligne.quantite}&times; ${echapperHtml(nomProduit(produits, ligne))}</strong>
       ${accompagnement ? `<span class="detail">+ ${echapperHtml(accompagnement)}</span>` : ''}
       ${perso ? `<span class="detail">${echapperHtml(perso)}</span>` : ''}
     </li>`

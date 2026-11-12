@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { comparerPriorite, estUrgente } from './cuisineUtils.js'
+import { comparerPriorite, estUrgente, mapProduitsParId, nomProduit, photoProduit, resumePlats } from './cuisineUtils.js'
 
 // Horloge figee : l'urgence depend de Date.now() (seuil de 20 min).
 const MAINTENANT = new Date('2026-10-15T12:00:00Z').getTime()
@@ -45,5 +45,31 @@ describe('comparerPriorite', () => {
       'egalite-app',
       'recente-app',
     ])
+  })
+})
+
+// Lignes envoyees par l App Client (Client_RestoApp) : nom fige sur la
+// ligne, plats du jour absents du catalogue /produits, photo en photoUrl.
+describe("lignes de commande de l App Client", () => {
+  const produits = mapProduitsParId([
+    { id: "produit-1", nom: "Ketchup Burger Classique", photoUrl: "https://exemple/burger.jpg" },
+  ])
+
+  it("utilise le nom fige sur la ligne en priorite", () => {
+    expect(nomProduit(produits, { produitId: "produit-1", nom: "Burger (nom a la commande)" })).toBe("Burger (nom a la commande)")
+  })
+
+  it("affiche un plat du jour absent du catalogue grace au nom de la ligne", () => {
+    expect(nomProduit(produits, { produitId: "plat-jour-1", type: "PLAT_DU_JOUR", nom: "Thiéboudienne" })).toBe("Thiéboudienne")
+    expect(resumePlats([{ produitId: "plat-jour-1", quantite: 2, nom: "Thiéboudienne" }], produits)).toBe("2× Thiéboudienne")
+  })
+
+  it("garde le repli catalogue pour une ligne sans nom (comptoir, demo)", () => {
+    expect(nomProduit(produits, { produitId: "produit-1" })).toBe("Ketchup Burger Classique")
+    expect(nomProduit(produits, "produit-1")).toBe("Ketchup Burger Classique")
+  })
+
+  it("lit la photo du Gerant (photoUrl)", () => {
+    expect(photoProduit(produits, { produitId: "produit-1" })).toBe("https://exemple/burger.jpg")
   })
 })

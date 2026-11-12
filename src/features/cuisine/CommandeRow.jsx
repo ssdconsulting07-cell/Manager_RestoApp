@@ -258,11 +258,11 @@ export default function CommandeRow({
                 return (
                   <li key={i} className="cuisine-row-line">
                     <span className="cuisine-row-line-photo">
-                      <CoverPhoto src={photoProduit(produits, ligne.produitId)} />
+                      <CoverPhoto src={photoProduit(produits, ligne)} />
                       <span className="cuisine-row-line-qty">{ligne.quantite}×</span>
                     </span>
                     <div className="cuisine-row-line-copy">
-                      <strong>{ligne.quantite}× {nomProduit(produits, ligne.produitId)}</strong>
+                      <strong>{ligne.quantite}× {nomProduit(produits, ligne)}</strong>
                       {accompagnement && (
                         <span className="cuisine-row-line-accomp">
                           <i className="fa-solid fa-utensils" aria-hidden="true" /> Avec {accompagnement}

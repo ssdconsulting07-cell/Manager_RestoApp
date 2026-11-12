@@ -154,8 +154,20 @@ function ficheProduit(produits, produitId) {
   return p
 }
 
-export function nomProduit(produits, produitId) {
-  return ficheProduit(produits, produitId)?.nom || `Produit ${produitId}`
+// Accepte un produitId OU une ligne de commande. Une ligne venant de l'App
+// Client porte le nom fige au moment de la commande (ligne.nom, decision
+// "prix/nom snapshotes" de contrat-api/notes-audit-frontend.md) : il est
+// prioritaire, et c'est le seul nom disponible pour un plat du jour (fiche
+// independante, absente de /produits). Repli sur le catalogue sinon.
+function lireLigne(produitIdOuLigne) {
+  return produitIdOuLigne !== null && typeof produitIdOuLigne === 'object'
+    ? { ligne: produitIdOuLigne, produitId: produitIdOuLigne.produitId }
+    : { ligne: null, produitId: produitIdOuLigne }
+}
+
+export function nomProduit(produits, produitIdOuLigne) {
+  const { ligne, produitId } = lireLigne(produitIdOuLigne)
+  return ligne?.nom || ficheProduit(produits, produitId)?.nom || `Produit ${produitId}`
 }
 
 /** Resume compact des plats d'une commande, ex. "2× Burger, 1× Frites +1" —
@@ -168,14 +180,15 @@ export function nomProduit(produits, produitId) {
 export function resumePlats(lignes, produits, max = 2) {
   const liste = lignes || []
   if (liste.length === 0) return 'Sans lignes'
-  const nommes = liste.slice(0, max).map((l) => `${l.quantite}× ${nomProduit(produits, l.produitId)}`)
+  const nommes = liste.slice(0, max).map((l) => `${l.quantite}× ${nomProduit(produits, l)}`)
   const reste = liste.length - nommes.length
   return reste > 0 ? `${nommes.join(', ')} +${reste}` : nommes.join(', ')
 }
 
-export function photoProduit(produits, produitId) {
+export function photoProduit(produits, produitIdOuLigne) {
+  const { produitId } = lireLigne(produitIdOuLigne)
   const fiche = ficheProduit(produits, produitId)
-  return fiche?.photo || fiche?.image || fiche?.imageUrl || PHOTO_FALLBACK
+  return fiche?.photo || fiche?.image || fiche?.imageUrl || fiche?.photoUrl || PHOTO_FALLBACK
 }
 
 export function textePersonnalisation(ligne) {
@@ -266,7 +279,7 @@ export function mapProduitsParId(liste) {
       p.id,
       {
         nom: p.nom,
-        photo: p.photo || p.image || p.imageUrl || null,
+        photo: p.photo || p.image || p.imageUrl || p.photoUrl || null,
       },
     ]),
   )

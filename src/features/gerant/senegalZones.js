@@ -203,6 +203,34 @@ export const ARRONDISSEMENTS_PAR_REGION = {
   ],
 }
 
+// Centre approximatif de chaque arrondissement (latitude, longitude),
+// utilise par l'App Client pour deduire la zone de livraison a partir de
+// la position GPS du client (zone la plus proche, dans un rayon de 8 km).
+// Valeurs approximatives, au niveau du quartier central de l'arrondissement,
+// pas des contours officiels : a remplacer par de vrais polygones si le
+// Gerant doit un jour dessiner ses zones sur une carte. Les zones ajoutees a
+// la main par le Gerant n'ont pas de centre : elles restent choisissables
+// dans la liste mais ne sont jamais deduites d'une position.
+export const CENTRES_ARRONDISSEMENTS = {
+  DAKAR: {
+    Almadies: { latitude: 14.735, longitude: -17.49 },
+    'Grand Dakar': { latitude: 14.712, longitude: -17.452 },
+    'Parcelles Assainies': { latitude: 14.763, longitude: -17.443 },
+    'Plateau/Gorée': { latitude: 14.683, longitude: -17.448 },
+    Guédiawaye: { latitude: 14.776, longitude: -17.398 },
+    'Keur Massar': { latitude: 14.783, longitude: -17.317 },
+    Dagoudane: { latitude: 14.752, longitude: -17.398 },
+    Niayes: { latitude: 14.775, longitude: -17.345 },
+    Thiaroye: { latitude: 14.745, longitude: -17.335 },
+    Rufisque: { latitude: 14.716, longitude: -17.274 },
+    Sébikotane: { latitude: 14.746, longitude: -17.136 },
+  },
+}
+
+export function centreArrondissement(codeRegion, nom) {
+  return CENTRES_ARRONDISSEMENTS[codeRegion]?.[nom] || null
+}
+
 export function regionLabel(code) {
   return REGIONS.find((region) => region.code === code)?.nom || code
 }

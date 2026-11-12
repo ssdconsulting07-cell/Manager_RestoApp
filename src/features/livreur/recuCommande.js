@@ -7,6 +7,7 @@
 // style de ticket 80mm imprimable (nouvel onglet dedie, CSS isole).
 import {
   adresseLivraison,
+  positionLivraison,
   clientNomComplet,
   clientTelephone,
   nomProduit,
@@ -49,15 +50,17 @@ function construireHtmlRecuCommande(commande, produits) {
   const nom = clientNomComplet(commande)
   const tel = clientTelephone(commande)
   const adresse = adresseLivraison(commande)
+  const position = positionLivraison(commande)
   const note = noteCommande(commande)
   const idTicket = ticketId(commande)
 
-  const clientHtml = (nom || tel || adresse)
+  const clientHtml = (nom || tel || adresse || position)
     ? `
   <div class="client">
     ${nom ? `<div class="row"><span>Client</span><span>${echapperHtml(nom)}</span></div>` : ''}
     ${tel ? `<div class="row"><span>Téléphone</span><span>${echapperHtml(tel)}</span></div>` : ''}
     ${adresse ? `<div class="row"><span>Adresse</span><span>${echapperHtml(adresse)}</span></div>` : ''}
+    ${position ? `<div class="row"><span>GPS</span><span>${position.latitude.toFixed(5)}, ${position.longitude.toFixed(5)}</span></div>` : ''}
   </div>`
     : ''
 

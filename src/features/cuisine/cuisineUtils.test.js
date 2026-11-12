@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { comparerPriorite, estUrgente, mapProduitsParId, nomProduit, photoProduit, resumePlats } from './cuisineUtils.js'
+import { comparerPriorite, estUrgente, lienItineraire, mapProduitsParId, nomProduit, photoProduit, positionLivraison, resumePlats } from './cuisineUtils.js'
 
 // Horloge figee : l'urgence depend de Date.now() (seuil de 20 min).
 const MAINTENANT = new Date('2026-10-15T12:00:00Z').getTime()
@@ -71,5 +71,19 @@ describe("lignes de commande de l App Client", () => {
 
   it("lit la photo du Gerant (photoUrl)", () => {
     expect(photoProduit(produits, { produitId: "produit-1" })).toBe("https://exemple/burger.jpg")
+  })
+})
+
+describe("position GPS de livraison", () => {
+  it("lit la position envoyee par l App Client et construit l itineraire", () => {
+    const pos = positionLivraison({ positionLivraison: { latitude: 14.7167, longitude: -17.4677, precision: 24.6 } })
+    expect(pos).toEqual({ latitude: 14.7167, longitude: -17.4677, precision: 25 })
+    expect(lienItineraire(pos)).toBe("https://www.google.com/maps/dir/?api=1&destination=14.7167,-17.4677")
+  })
+  it("ignore une position absente ou invalide", () => {
+    expect(positionLivraison({})).toBeNull()
+    expect(positionLivraison({ positionLivraison: { latitude: "abc", longitude: 2 } })).toBeNull()
+    expect(positionLivraison({ positionLivraison: { latitude: 120, longitude: 2 } })).toBeNull()
+    expect(lienItineraire(null)).toBeNull()
   })
 })

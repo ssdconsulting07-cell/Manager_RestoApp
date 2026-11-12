@@ -2,6 +2,8 @@ import { useState } from 'react'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import {
   adresseLivraison,
+  lienItineraire,
+  positionLivraison,
   canalLabel,
   clientNomComplet,
   clientTelephone,
@@ -124,6 +126,7 @@ export default function CommandeRow({
   const nomClient = showClient ? clientNomComplet(commande) : null
   const telClient = showClient ? clientTelephone(commande) : null
   const adresseClient = showClient ? adresseLivraison(commande) : null
+  const itineraire = showClient ? lienItineraire(positionLivraison(commande)) : null
   const detailsId = `commande-detail-${idTicket}`
   // PRETE -> EN_LIVRAISON peut etre declenchee par la Cuisine (« Envoyer
   // au livreur ») ou par le Livreur (« Récupéré », voir transitions.js) —
@@ -232,16 +235,29 @@ export default function CommandeRow({
           {formatHeure(commande.creeLe)} · {resumePlats(lignes, produits)}
         </p>
 
-        {showClient && (nomClient || telClient || adresseClient) && (
+        {showClient && (nomClient || telClient || adresseClient || itineraire) && (
           <p className="cuisine-row-client">
             {nomClient && (
               <span className="cuisine-row-client-item"><i className="fa-solid fa-user" aria-hidden="true" /> {nomClient}</span>
             )}
             {telClient && (
-              <span className="cuisine-row-client-item"><i className="fa-solid fa-phone" aria-hidden="true" /> {telClient}</span>
+              <a className="cuisine-row-client-item is-link" href={`tel:${telClient.replace(/[^d+]/g, '')}`} onClick={(event) => event.stopPropagation()}>
+                <i className="fa-solid fa-phone" aria-hidden="true" /> {telClient}
+              </a>
             )}
             {adresseClient && (
               <span className="cuisine-row-client-item"><i className="fa-solid fa-location-dot" aria-hidden="true" /> {adresseClient}</span>
+            )}
+            {itineraire && (
+              <a
+                className="cuisine-row-client-item is-link is-itineraire"
+                href={itineraire}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <i className="fa-solid fa-route" aria-hidden="true" /> Itinéraire GPS
+              </a>
             )}
           </p>
         )}

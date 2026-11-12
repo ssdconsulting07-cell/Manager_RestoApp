@@ -639,3 +639,12 @@
 .manager-shell.is-dark .cuisine-row-note-title {
   color: #d69a2d;
 }
+
+/* Liens d'action sur les coordonnees client (appel, itineraire GPS). */
+.cuisine-row-client-item.is-link { color: inherit; text-decoration: none; cursor: pointer; }
+.cuisine-row-client-item.is-link:hover { text-decoration: underline; }
+.cuisine-row-client-item.is-itineraire { padding: 4px 12px; border-radius: 999px; color: #fff; background: #2f6fed; font-weight: 700; }
+.cuisine-row-client-item.is-itineraire i { color: #fff; }
+@media (pointer: coarse) {
+  .cuisine-row-client-item.is-link { min-height: 40px; display: inline-flex; align-items: center; }
+}

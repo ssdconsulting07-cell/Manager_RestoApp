@@ -246,6 +246,25 @@ export function clientTelephone(commande) {
   return typeof tel === 'string' && tel.trim() ? tel.trim() : null
 }
 
+// Position GPS partagee par le client a la commande (App Client, bouton
+// "Utiliser ma position") : complete le nom de zone (adresseLivraison) pour
+// guider le livreur jusqu'a la porte. Null si absente ou invalide.
+export function positionLivraison(commande) {
+  const p = commande?.positionLivraison
+  const lat = Number(p?.latitude)
+  const lng = Number(p?.longitude)
+  if (!p || !Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null
+  const precision = Number(p.precision)
+  return { latitude: lat, longitude: lng, precision: Number.isFinite(precision) ? Math.round(precision) : null }
+}
+
+// Lien d'itineraire : ouvre l'appli de cartes du telephone (Google Maps,
+// ou le navigateur a defaut) en navigation vers la position du client.
+export function lienItineraire(position) {
+  if (!position) return null
+  return `https://www.google.com/maps/dir/?api=1&destination=${position.latitude},${position.longitude}`
+}
+
 export function adresseLivraison(commande) {
   const adresse = commande?.adresseLivraison ?? commande?.zoneNom ?? commande?.adresse
   return typeof adresse === 'string' && adresse.trim() ? adresse.trim() : null

@@ -74,7 +74,8 @@ export const PRODUITS_INITIAUX = [
     description: "Bissap frais à la menthe, peu sucré.",
     prix: 1000,
     categorieId: 'categorie-3',
-    photoUrl: 'https://images.unsplash.com/photo-1587049479964-c5618ddf1e9c?auto=format&fit=crop&w=800&q=80',
+    // Photo hebergee par l'app (public/images/produits), fournie par Chez Ketchup.
+    photoUrl: '/images/produits/jus-de-bissap.jpg',
     statut: STATUTS.ACTIF,
     disponibilite: DISPONIBILITE.EN_STOCK,
     tendance: true,

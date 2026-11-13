@@ -23,7 +23,7 @@ export const DEMO_PRODUITS = {
   'p-fries-l': { nom: 'Grande frite', photo: img('photo-1630384060421-f6e72a5eab7b') },
   'p-cola': { nom: 'Coca-Cola', photo: img('photo-1622483767028-3f66f32aef97') },
   'p-sprite': { nom: 'Sprite', photo: img('photo-1625772299848-391b6a87d7b3') },
-  'p-jus': { nom: 'Jus de bissap', photo: img('photo-1546173159-315724a31696') },
+  'p-jus': { nom: 'Jus de bissap', photo: '/images/produits/jus-de-bissap.jpg' },
   'p-nuggets': { nom: 'Nuggets x6', photo: img('photo-1562967914-608f82629710') },
   'p-nuggets12': { nom: 'Nuggets x12', photo: img('photo-1615367437471-65d8f4f1f023') },
   'p-wrap': { nom: 'Wrap poulet', photo: img('photo-1626700051175-6818013e1d4f') },

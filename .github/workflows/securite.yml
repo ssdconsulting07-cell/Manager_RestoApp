@@ -1,0 +1,51 @@
+name: Securite (SAST)
+on:
+  push:
+    branches: [main, preprod, staging, develop]
+  pull_request:
+    branches: [main, preprod, staging, develop]
+  schedule:
+    # Chaque lundi : nouvelles failles publiees depuis le dernier passage.
+    - cron: "0 5 * * 1"
+permissions:
+  contents: read
+jobs:
+  codeql:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: github/codeql-action/init@9418214df1f2c4b8128c770156c409013b07d6b9 # v3.39.3
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+      - uses: github/codeql-action/analyze@9418214df1f2c4b8128c770156c409013b07d6b9 # v3.39.3
+
+  semgrep:
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep:1.140.0
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      # Regle exclue : request-host-used (nginx transmet Host au backend, qui ne
+      # construit aucune URL a partir de cet en-tete : non exploitable).
+      - name: Semgrep (OWASP Top 10, secrets)
+        run: >
+          semgrep scan --error --metrics=off
+          --config p/default --config p/secrets --config p/owasp-top-ten
+          --exclude node_modules --exclude dist --exclude package-lock.json
+          --exclude-rule generic.nginx.security.request-host-used.request-host-used
+
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      # Image Docker a version figee plutot que l'action GitHub (tags de
+      # l'action compromis en mars 2026).
+      - name: Trivy (dependances, secrets, Dockerfile)
+        run: >
+          docker run --rm -v "$PWD:/src" aquasec/trivy:0.67.2 fs
+          --scanners vuln,secret,misconfig --severity HIGH,CRITICAL --ignore-unfixed
+          --skip-dirs node_modules --skip-dirs dist --exit-code 1 /src

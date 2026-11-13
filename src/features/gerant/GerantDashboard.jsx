@@ -35,9 +35,11 @@ const DISPONIBILITE_TEXT_COLORS = {
   RUPTURE: 'var(--chart-red)',
 }
 function legendTextFormatter(textColors) {
-  return (value, entry) => (
+  return function LegendeTexte(value, entry) {
+    return (
     <span style={{ color: textColors[entry.payload?.key] }}>{value}</span>
-  )
+    )
+  }
 }
 
 export default function GerantDashboard() {
@@ -46,7 +48,6 @@ export default function GerantDashboard() {
 
   const produitsCounts = useMemo(() => countByStatut(produits), [produits])
   const categoriesCounts = useMemo(() => countByStatut(categories), [categories])
-  const annoncesCounts = useMemo(() => countByStatut(chaines), [chaines])
 
   const produitsActifs = useMemo(() => produits.filter((p) => p.statut === 'ACTIF'), [produits])
   const produitsRupture = useMemo(
@@ -81,12 +82,6 @@ export default function GerantDashboard() {
       }))
       .sort((a, b) => b.produits - a.produits)
   ), [categories, produits])
-
-  const annoncesChartData = useMemo(() => ([
-    { key: 'ACTIF', name: 'Actives', value: annoncesCounts.ACTIF },
-    { key: 'BROUILLON', name: 'Brouillons', value: annoncesCounts.BROUILLON },
-    { key: 'ARCHIVE', name: 'Archivées', value: annoncesCounts.ARCHIVE },
-  ].filter((d) => d.value > 0)), [annoncesCounts])
 
   const activiteRecente = useMemo(() => {
     const items = [

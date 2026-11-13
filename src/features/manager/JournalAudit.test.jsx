@@ -103,6 +103,7 @@ describe('Journal d’audit page', () => {
     const tabs = screen.getAllByRole('tab')
     expect(tabs).toHaveLength(4)
     ;['Commandes', 'Produits', 'Annonces', 'Personnel'].forEach((label) => {
+      // nosemgrep: detect-non-literal-regexp -- libelles fixes du test, pas une saisie
       expect(screen.getByRole('tab', { name: new RegExp(label) })).toBeInTheDocument()
     })
     expect(screen.queryByRole('tab', { name: /Toutes/ })).not.toBeInTheDocument()

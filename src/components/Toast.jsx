@@ -14,7 +14,7 @@ const TOAST_DURATION = {
 export default function Toast({ toast, onClose }) {
   const timerRef = useRef(null)
   const startedAtRef = useRef(0)
-  const [remaining, setRemaining] = useState(0)
+  const [, setRemaining] = useState(0)
   const [paused, setPaused] = useState(false)
 
   useEffect(() => {

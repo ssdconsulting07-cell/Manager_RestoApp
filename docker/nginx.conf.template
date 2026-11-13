@@ -4,7 +4,7 @@
 # sont remplacees.
 
 server {
-    listen 80;
+    listen 8080;
     server_name _;
     root /usr/share/nginx/html;
 
@@ -16,8 +16,9 @@ server {
     gzip_types text/css application/javascript application/json image/svg+xml application/manifest+json;
     gzip_min_length 1024;
 
-    add_header X-Content-Type-Options nosniff always;
-    add_header Referrer-Policy strict-origin-when-cross-origin always;
+    # Version de nginx masquee ; en-tetes de securite (docker/entetes-securite.conf).
+    server_tokens off;
+    include /etc/nginx/entetes-securite.conf;
 
     # Sonde de sante du conteneur (HEALTHCHECK).
     location = /healthz {
@@ -69,21 +70,21 @@ server {
     location /assets/ {
         expires 1y;
         add_header Cache-Control "public, immutable";
-        add_header X-Content-Type-Options nosniff always;
+        include /etc/nginx/entetes-securite.conf;
         try_files $uri =404;
     }
 
     # Jamais en cache : configuration et page.
     location ~ ^/(config\.js|index\.html)$ {
         add_header Cache-Control "no-cache";
-        add_header X-Content-Type-Options nosniff always;
+        include /etc/nginx/entetes-securite.conf;
         try_files $uri =404;
     }
 
     # Application monopage : toute route inconnue sert index.html.
     location / {
         add_header Cache-Control "no-cache";
-        add_header X-Content-Type-Options nosniff always;
+        include /etc/nginx/entetes-securite.conf;
         try_files $uri $uri/ /index.html;
     }
 }

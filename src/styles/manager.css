@@ -1063,3 +1063,8 @@
 @media (pointer: coarse) {
   .toast > button { min-width: 40px; min-height: 40px; }
 }
+
+/* Sous-menu de la barre laterale : un libelle long ("Accompagnement &
+   condiment") passait a la ligne au lieu de deborder sur le contenu. */
+.manager-nav-child { height: auto; padding-top: 8px; padding-bottom: 8px; }
+.manager-nav-child .manager-nav-label { white-space: normal; line-height: 1.3; }

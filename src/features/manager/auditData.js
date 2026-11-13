@@ -43,7 +43,7 @@ const ACTEURS = {
 const ENTREES_DU_JOUR = [
   [3, 'moussa', 'COMMANDE', 'a passé la commande #482 en préparation'],
   [7, 'ibrahima', 'COMMANDE', 'a marqué la commande #476 comme livrée'],
-  [12, 'awa', 'PRODUIT', 'a publié le produit « Thiebou Dieune »'],
+  [12, 'awa', 'PRODUIT', 'a publié le plat du jour « Thiéboudienne »'],
   [18, 'moussa', 'COMMANDE', 'a marqué la commande #479 comme prête'],
   [26, 'awa', 'PRODUIT', 'a mis le produit « Frites maison » en rupture'],
   [41, 'awa', 'PERSONNEL', 'a créé le compte livreur de Cheikh Ba'],
@@ -68,7 +68,7 @@ const ENTREES_ANTERIEURES = [
   [1, '11:10', 'awa', 'PRODUIT', 'a remis le produit « Jus de bissap » en stock'],
   [2, '22:15', 'ibrahima', 'COMMANDE', 'a marqué la commande #389 comme livrée'],
   [2, '20:32', 'moussa', 'COMMANDE', 'a marqué la commande #380 comme prête'],
-  [2, '18:04', 'awa', 'PRODUIT', 'a créé le brouillon du produit « Thiebou Dieune »'],
+  [2, '18:04', 'awa', 'PRODUIT', 'a créé le brouillon du plat du jour « Thiéboudienne »'],
   [2, '15:26', 'ousmane', 'PERSONNEL', 'a régénéré le mot de passe temporaire de Pape Gueye'],
   [2, '13:12', 'mariamaCuisine', 'COMMANDE', 'a passé la commande #358 en préparation'],
   [3, '21:47', 'pape', 'COMMANDE', 'a marqué la commande #343 comme livrée'],

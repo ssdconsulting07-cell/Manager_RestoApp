@@ -14,6 +14,29 @@ L'app tourne sur `http://localhost:5174` par défaut (voir `vite.config.js`) —
 
 Autres scripts : `npm run build` (build de prod), `npm run preview` (prévisualiser le build).
 
+## Docker
+
+L'image compile l'app puis la sert avec **nginx** (environ 75 Mo, sans Node en production).
+
+```bash
+docker compose up -d --build     # http://localhost:8082
+docker compose down              # arrêt
+```
+
+Prérequis : le backend tourne (`Backend_RestoApp` : `docker compose up`, port 8080).
+
+- **Configuration lue au démarrage** (et non figée à la compilation) : `/config.js` est régénéré à chaque lancement depuis les variables d'environnement. La même image sert donc tous les environnements.
+
+| Variable | Rôle | Défaut |
+|---|---|---|
+| `API_BASE_URL` | Adresse de l'API vue par le navigateur | `/api/v1` |
+| `API_UPSTREAM` | Où nginx relaie `/api/` (le backend) | `http://host.docker.internal:8080` |
+| `SUPPORT_TELEPHONE`, `SUPPORT_EMAIL` | Contact « Besoin d'aide ? » | coordonnées de démonstration |
+
+- **L'API passe par la même adresse que l'app** (`/api/` relayé par nginx) : pas de CORS à configurer côté backend pour cette adresse, un seul certificat HTTPS.
+- Les données de démonstration Cuisine / Livreur n'existent qu'en développement : en conteneur, ces écrans lisent le vrai backend.
+- Pour le développement, on garde `npm run dev`. Docker sert au déploiement et aux démos.
+
 ## Organisation — par rôle
 
 Le code est organisé par rôle dans `src/features/<role>/`, pas par type de fichier :

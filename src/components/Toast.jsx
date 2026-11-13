@@ -7,6 +7,8 @@ const TOAST_DURATION = {
   // erreur, visible un peu plus longtemps qu'un succes pour laisser le temps
   // de la remarquer sans avoir a interrompre une tâche en cours.
   info: 4500,
+  // 'warning' : avertissement (ex. connexion instable), entre info et erreur.
+  warning: 5200,
 }
 
 export default function Toast({ toast, onClose }) {
@@ -31,6 +33,7 @@ export default function Toast({ toast, onClose }) {
 
   const isSuccess = toast.type === 'success'
   const isInfo = toast.type === 'info'
+  const isWarning = toast.type === 'warning'
   const duration = TOAST_DURATION[toast.type]
 
   function pauseToast() {
@@ -59,7 +62,7 @@ export default function Toast({ toast, onClose }) {
       <div
         className={`toast toast-${toast.type} ${paused ? 'is-paused' : ''}`}
         key={toast.id}
-        role={isSuccess || isInfo ? 'status' : 'alert'}
+        role={isSuccess || isInfo || isWarning ? 'status' : 'alert'}
         style={{ '--toast-duration': `${duration}ms` }}
         onMouseEnter={pauseToast}
         onMouseLeave={resumeToast}

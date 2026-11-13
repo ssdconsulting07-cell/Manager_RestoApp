@@ -26,6 +26,29 @@ server {
         return 200 "ok\n";
     }
 
+    # Temps reel (Server-Sent Events) : flux ouvert pendant de longues minutes.
+    # Bloc dedie, avant /api/ (le prefixe le plus long l'emporte) :
+    # - proxy_buffering off : chaque evenement part tout de suite (sinon nginx
+    #   le garde en memoire tampon et la cuisine le recoit en retard) ;
+    # - proxy_read_timeout 1h : le relais general coupe a 30 s ; le backend
+    #   envoie un signal de vie toutes les 25 s et ferme lui-meme le flux
+    #   apres 30 min (le navigateur se reconnecte, Last-Event-ID) ;
+    # - Connection "" : connexion HTTP/1.1 maintenue vers le backend.
+    location /api/v1/temps-reel/ {
+        set $api_upstream ${API_UPSTREAM};
+        proxy_pass $api_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $http_host;
+        proxy_set_header Origin "";
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 1h;
+    }
+
     # API du backend sur la meme adresse que l'app (pas de CORS, HTTPS unique,
     # fonctionne derriere un tunnel). Origin retire : pour le navigateur la
     # requete est deja "meme origine" ; l'API s'authentifie par jeton, pas par

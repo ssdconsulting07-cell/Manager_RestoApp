@@ -1,0 +1,62 @@
+/* Ticket affiche a l'ecran — modele commun au recu de vente (Vendeur) et
+   au bon de livraison (Cuisine / Livreur). Le ticket imprime reprend les
+   memes regles (voir impressionTicket.js). */
+.ticket {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 360px;
+  border: 1px solid #ead9dd;
+  border-radius: 16px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 14px 32px rgb(20 20 20 / 6%);
+}
+.ticket-head { margin-bottom: 14px; text-align: center; }
+.ticket-head h2 { margin: 4px 0; font-size: 18px; }
+.ticket-meta { margin: 0; color: #6b6b6b; font-size: 12px; }
+.ticket-bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 12px;
+  padding: 12px 0 0;
+  border-top: 1px dashed #e5e5e3;
+}
+.ticket-bloc-titre { margin: 0 0 2px; color: #a6192e; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.ticket-info { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+.ticket-info > span:first-child { color: #6b6b6b; }
+.ticket-info > span:last-child { text-align: right; font-weight: 600; overflow-wrap: anywhere; }
+.ticket-note { margin: 4px 0 0; padding: 8px 10px; border-radius: 8px; background: #f6ecd9; color: #6b4a0c; font-size: 12px; }
+.ticket-lignes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 14px;
+  padding: 12px 0;
+  list-style: none;
+  border-top: 1px dashed #e5e5e3;
+  border-bottom: 1px dashed #e5e5e3;
+}
+.ticket-lignes li { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+.ticket-ligne-detail { display: block; color: #6b6b6b; font-size: 11px; }
+.ticket-totaux { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.ticket-total-row { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: #6b6b6b; }
+.ticket-total-row.is-total { color: #141414; font-size: 16px; font-weight: 700; }
+.ticket-paye { color: #1f6f57; font-weight: 700; }
+.ticket-qr { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 4px 0 12px; }
+.ticket-qr svg { width: 128px; height: 128px; }
+.ticket-qr p { margin: 0; color: #6b6b6b; font-size: 11px; text-align: center; }
+.ticket-merci { margin: 0 0 16px; color: #6b6b6b; font-size: 11px; font-style: italic; text-align: center; }
+.ticket-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+/* Fenetre d'apercu du ticket (bon de livraison) */
+.ticket-modal { width: min(100%, 400px); padding: 18px; background: transparent; box-shadow: none; }
+.ticket-modal .ticket { max-width: none; }
+
+.manager-shell.is-dark .ticket { border-color: #2a2a2e; background: #1a1a1e; color: #f2f2f2; }
+.manager-shell.is-dark .ticket-total-row.is-total { color: #e14b64; }
+.manager-shell.is-dark .ticket-note { background: #2b2414; color: #e8c98a; }
+
+@media print {
+  .ticket-actions { display: none !important; }
+}

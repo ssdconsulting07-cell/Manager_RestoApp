@@ -6,6 +6,7 @@ import Toast from '../../components/Toast.jsx'
 import Pagination from '../../components/crud/Pagination.jsx'
 import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
 import CommandeRow from './CommandeRow.jsx'
+import BonLivraison from './BonLivraison.jsx'
 import { STATUT_META, comparerPriorite, nomProduit, noteCommande } from './cuisineUtils.js'
 import { useAlerteNouvelleCommande } from './useAlerteNouvelleCommande.js'
 import { useCuisineBoard } from './useCuisineBoard.js'
@@ -94,6 +95,8 @@ export default function Commandes() {
   // agent local) — un gestionnaire de clic n'a pas ce probleme, il ne
   // s'execute que sur une vraie interaction.
   const [switching, setSwitching] = useState(false)
+  // Bon de livraison (a agrafer sur le sac) : commandes en livraison uniquement.
+  const [bonOuvert, setBonOuvert] = useState(null)
   const switchTimeoutRef = useRef(null)
 
   // Nettoyage si le composant est demonte pendant le squelette de
@@ -261,6 +264,7 @@ export default function Commandes() {
                 onTransition={(statut) => changerStatut(commande, statut)}
                 emptyActionLabel={EMPTY_ACTION[commande.statut]?.label ?? null}
                 emptyActionIcon={EMPTY_ACTION[commande.statut]?.icon}
+                onImprimer={commande.mode === 'LIVRAISON' ? (cmd) => setBonOuvert(cmd) : null}
               />
             ))}
           </div>
@@ -276,6 +280,8 @@ export default function Commandes() {
           rowsOptions={ROWS_OPTIONS}
         />
       </section>
+
+      {bonOuvert && <BonLivraison commande={bonOuvert} produits={produits} onFermer={() => setBonOuvert(null)} />}
 
       <Toast toast={toast} onClose={clearAlerte} />
     </Layout>

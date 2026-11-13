@@ -28,8 +28,20 @@ function totalLignes(lignes) {
 // existait avant l'ajout des modes mobile money / carte.
 const SEED_VENDEUR = 'vendeur'
 
+// Ventes seedees "il y a N minutes", mais toujours AUJOURD'HUI : juste
+// apres minuit, "il y a 240 min" tombait la veille et l'historique du jour
+// (et ses tests) se retrouvait vide entre 0 h et 4 h. Si la journee a
+// commence depuis moins longtemps, les ventes sont resserrees
+// proportionnellement depuis minuit, dans le meme ordre.
+const PLUS_ANCIENNE_MIN = 240
+
 function ilYA(minutes) {
-  return new Date(Date.now() - minutes * 60000).toISOString()
+  const maintenant = Date.now()
+  const minuit = new Date(maintenant).setHours(0, 0, 0, 0)
+  const ecoule = maintenant - minuit
+  const voulu = minutes * 60000
+  const ecart = ecoule > PLUS_ANCIENNE_MIN * 60000 ? voulu : (ecoule * minutes) / (PLUS_ANCIENNE_MIN + 1)
+  return new Date(maintenant - ecart).toISOString()
 }
 
 const VENTES_INITIALES = [

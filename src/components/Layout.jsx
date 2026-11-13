@@ -548,7 +548,7 @@ export default function Layout({ children }) {
           </div>
         </header>
         <main className="manager-workarea has-bottom-tabbar">{children}</main>
-        <footer className="manager-workarea-footer">© SSD Consulting</footer>
+        <footer className="manager-workarea-footer">SenYummies Manager · v{__APP_VERSION__} · © SSD Consulting</footer>
       </div>
       <nav className="manager-bottom-tabbar" aria-label={`Navigation ${ROLE_LABELS[role]}`}>
         {visibleItems.map((item) => {

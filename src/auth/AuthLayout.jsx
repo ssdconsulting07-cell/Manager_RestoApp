@@ -20,7 +20,7 @@ export default function AuthLayout({ children }) {
     <main className={`auth-shell ${isDark ? 'is-dark' : ''}`}>
       <section className="auth-form-panel" aria-label="Connexion au personnel">
         <div className="auth-form-content">{children}</div>
-        <p className="auth-copyright">© SSD Consulting</p>
+        <p className="auth-copyright">SenYummies Manager · v{__APP_VERSION__} · © SSD Consulting</p>
       </section>
       <AuthCarousel />
     </main>

@@ -658,90 +658,6 @@
   padding: 10px 0 20px;
 }
 
-.vendeur-recu {
-  width: 100%;
-  max-width: 360px;
-  border: 1px solid #ead9dd;
-  border-radius: 16px;
-  padding: 20px;
-  background: #fff;
-  box-shadow: 0 14px 32px rgb(20 20 20 / 6%);
-}
-
-.vendeur-recu-head {
-  margin-bottom: 14px;
-  text-align: center;
-}
-
-.vendeur-recu-head h2 {
-  margin: 4px 0;
-  font-size: 18px;
-}
-
-.vendeur-recu-meta {
-  margin: 0;
-  color: #6b6b6b;
-  font-size: 12px;
-}
-
-.vendeur-recu-lignes {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 0 0 14px;
-  padding: 12px 0;
-  list-style: none;
-  border-top: 1px dashed #e5e5e3;
-  border-bottom: 1px dashed #e5e5e3;
-}
-
-.vendeur-recu-lignes li {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 13px;
-}
-
-.vendeur-recu-ligne-accomp {
-  color: #6b6b6b;
-  font-size: 11px;
-}
-
-.vendeur-recu-totaux {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-
-.vendeur-recu-total-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  color: #6b6b6b;
-}
-
-.vendeur-recu-total-row.is-total {
-  color: #141414;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.vendeur-recu-merci {
-  margin: 0 0 16px;
-  color: #6b6b6b;
-  font-size: 11px;
-  font-style: italic;
-  text-align: center;
-}
-
-.vendeur-recu-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-}
-
 /* Historique des ventes */
 
 .vendeur-historique-head {
@@ -853,7 +769,6 @@
 
 .manager-shell.is-dark .vendeur-pos-card,
 .manager-shell.is-dark .vendeur-panier-ligne-riche,
-.manager-shell.is-dark .vendeur-recu,
 .manager-shell.is-dark .vendeur-historique-head,
 .manager-shell.is-dark .vendeur-historique-stat,
 .manager-shell.is-dark .vendeur-historique-ligne {
@@ -1000,7 +915,6 @@
 }
 
 .manager-shell.is-dark .vendeur-pos-card-prix,
-.manager-shell.is-dark .vendeur-recu-total-row.is-total,
 .manager-shell.is-dark .vendeur-historique-numero,
 .manager-shell.is-dark .vendeur-historique-total {
   color: #e14b64;
@@ -1055,8 +969,7 @@
 @media print {
   .manager-shell > .manager-sidebar,
   .manager-header,
-  .manager-workarea-footer,
-  .vendeur-recu-actions {
+  .manager-workarea-footer {
     display: none !important;
   }
 }

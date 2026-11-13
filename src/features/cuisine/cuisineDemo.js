@@ -37,7 +37,7 @@ function minutesAgo(n) {
   return new Date(Date.now() - n * 60_000).toISOString()
 }
 
-const DEMO_VERSION = 10
+const DEMO_VERSION = 11
 
 const DEMO_SEED = [
   // --- File d'attente (PAYEE) ---
@@ -45,6 +45,8 @@ const DEMO_SEED = [
     id: 'demo-1051',
     statut: 'PAYEE',
     canal: 'APP',
+    moyenPaiement: 'wave',
+    statutPaiement: 'paye',
     mode: 'RETRAIT',
     creeLe: minutesAgo(2),
     note: 'Sans oignon s’il vous plaît',
@@ -66,6 +68,8 @@ const DEMO_SEED = [
     id: 'demo-1052',
     statut: 'PAYEE',
     canal: 'APP',
+    moyenPaiement: 'orange-money',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(5),
     clientPrenom: 'Awa',
@@ -84,6 +88,8 @@ const DEMO_SEED = [
     id: 'demo-1056',
     statut: 'PAYEE',
     canal: 'APP',
+    moyenPaiement: 'carte',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(7),
     clientPrenom: 'Moussa',
@@ -97,6 +103,8 @@ const DEMO_SEED = [
     id: 'demo-1053',
     statut: 'PAYEE',
     canal: 'APP',
+    moyenPaiement: 'mixx-yas',
+    statutPaiement: 'paye',
     mode: 'RETRAIT',
     creeLe: minutesAgo(9),
     lignes: [
@@ -110,6 +118,8 @@ const DEMO_SEED = [
     id: 'demo-1054',
     statut: 'PAYEE',
     canal: 'APP',
+    moyenPaiement: 'wave',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(11),
     clientPrenom: 'Fatou',
@@ -128,6 +138,8 @@ const DEMO_SEED = [
     id: 'demo-1046',
     statut: 'EN_PREPARATION',
     canal: 'APP',
+    moyenPaiement: 'orange-money',
+    statutPaiement: 'paye',
     mode: 'RETRAIT',
     creeLe: minutesAgo(14),
     note: 'Retour client — bien cuit',
@@ -148,6 +160,8 @@ const DEMO_SEED = [
     id: 'demo-1047',
     statut: 'EN_PREPARATION',
     canal: 'APP',
+    moyenPaiement: 'carte',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(17),
     clientPrenom: 'Ibrahima',
@@ -165,6 +179,8 @@ const DEMO_SEED = [
     id: 'demo-1058',
     statut: 'EN_PREPARATION',
     canal: 'APP',
+    moyenPaiement: 'mixx-yas',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(19),
     clientPrenom: 'Sokhna',
@@ -177,6 +193,8 @@ const DEMO_SEED = [
     id: 'demo-1048',
     statut: 'EN_PREPARATION',
     canal: 'APP',
+    moyenPaiement: 'wave',
+    statutPaiement: 'paye',
     mode: 'RETRAIT',
     creeLe: minutesAgo(21),
     note: 'Allergie sésame',
@@ -190,6 +208,8 @@ const DEMO_SEED = [
     id: 'demo-1049',
     statut: 'EN_PREPARATION',
     canal: 'APP',
+    moyenPaiement: 'orange-money',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(25),
     clientPrenom: 'Cheikh',
@@ -216,6 +236,8 @@ const DEMO_SEED = [
     id: 'demo-1045',
     statut: 'PRETE',
     canal: 'APP',
+    moyenPaiement: 'carte',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(38),
     clientPrenom: 'Mariama',
@@ -234,6 +256,8 @@ const DEMO_SEED = [
     id: 'demo-1042',
     statut: 'EN_LIVRAISON',
     canal: 'APP',
+    moyenPaiement: 'mixx-yas',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(44),
     clientPrenom: 'Abdou',
@@ -256,6 +280,8 @@ const DEMO_SEED = [
     id: 'demo-1040',
     statut: 'LIVREE',
     canal: 'APP',
+    moyenPaiement: 'wave',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(130),
     livreeLe: minutesAgo(95),
@@ -272,6 +298,8 @@ const DEMO_SEED = [
     id: 'demo-1038',
     statut: 'LIVREE',
     canal: 'APP',
+    moyenPaiement: 'orange-money',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(190),
     livreeLe: minutesAgo(160),
@@ -289,6 +317,8 @@ const DEMO_SEED = [
     id: 'demo-1021',
     statut: 'LIVREE',
     canal: 'APP',
+    moyenPaiement: 'carte',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(1485),
     livreeLe: minutesAgo(1450),
@@ -306,6 +336,8 @@ const DEMO_SEED = [
     id: 'demo-1005',
     statut: 'LIVREE',
     canal: 'APP',
+    moyenPaiement: 'mixx-yas',
+    statutPaiement: 'paye',
     mode: 'LIVRAISON',
     creeLe: minutesAgo(4340),
     livreeLe: minutesAgo(4320),
@@ -415,7 +447,7 @@ export function avecDemoSiVide(commandesApi) {
 // de l'audit de coherence des flux : un seul dictionnaire produits pour
 // l'affichage, partage par la Cuisine, le Livreur ET le Vendeur).
 const PRODUITS_GERANT = Object.fromEntries(
-  PRODUITS_INITIAUX.map((p) => [p.id, { nom: p.nom, photo: p.photoUrl }]),
+  PRODUITS_INITIAUX.map((p) => [p.id, { nom: p.nom, photo: p.photoUrl, prix: p.prix }]),
 )
 
 export function mergeProduitsDemo(produitsApi) {
@@ -425,6 +457,7 @@ export function mergeProduitsDemo(produitsApi) {
     out[id] = {
       nom: p?.nom || base?.nom || id,
       photo: p?.photo || base?.photo || null,
+      prix: Number.isFinite(p?.prix) ? p.prix : base?.prix ?? null,
     }
   }
   return out

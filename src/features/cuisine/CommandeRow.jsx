@@ -102,7 +102,7 @@ export default function CommandeRow({
   // reste simplement inutilisee cote Cuisine).
   onScanLivraison = null,
   // Espace Livreur uniquement (Livraisons.jsx) : impression du recu a
-  // rendre au client (demande du 24/10/2026, voir recuCommande.js). Non
+  // rendre au client (demande du 24/10/2026, voir BonLivraison.jsx). Non
   // fourni => pas de bouton (Cuisine n'imprime rien depuis cet ecran).
   onImprimer = null,
 }) {
@@ -207,7 +207,7 @@ export default function CommandeRow({
             <button
               type="button"
               className="cuisine-row-print"
-              aria-label={`Imprimer le reçu de la commande ${idTicket}`}
+              aria-label={`Imprimer le ticket de la commande ${idTicket}`}
               onClick={(event) => {
                 event.stopPropagation()
                 onImprimer(commande)

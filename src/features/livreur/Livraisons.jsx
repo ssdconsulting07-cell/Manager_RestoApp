@@ -11,7 +11,7 @@ import '../cuisine/cuisine-board.css'
 import ScanLivraisonModal from './ScanLivraisonModal.jsx'
 import { useAlerteNouvelleLivraison } from './useAlerteNouvelleLivraison.js'
 import { useLivreurBoard } from './useLivreurBoard.js'
-import { imprimerRecuCommande } from './recuCommande.js'
+import BonLivraison from '../cuisine/BonLivraison.jsx'
 
 // Ecran principal du livreur, sur le meme patron que Commandes.jsx cote
 // Cuisine (cartes-filtres qui servent aussi de compteurs, recherche,
@@ -71,6 +71,7 @@ export default function Livraisons() {
   const [switching, setSwitching] = useState(false)
   const switchTimeoutRef = useRef(null)
   const [scanCible, setScanCible] = useState(null)
+  const [bonOuvert, setBonOuvert] = useState(null)
 
   useEffect(() => () => clearTimeout(switchTimeoutRef.current), [])
 
@@ -211,7 +212,7 @@ export default function Livraisons() {
                 // Adresse affiches a la place - demande du 24/10/2026.
                 showCanalEtMode={false}
                 showClient
-                onImprimer={(cmd) => imprimerRecuCommande(cmd, produits)}
+                onImprimer={(cmd) => setBonOuvert(cmd)}
                 transitions={allowedTransitions(commande, role)}
                 pending={pendingId === commande.id}
                 onTransition={(statut) => changerStatut(commande, statut)}
@@ -237,6 +238,8 @@ export default function Livraisons() {
           rowsOptions={ROWS_OPTIONS}
         />
       </section>
+
+      {bonOuvert && <BonLivraison commande={bonOuvert} produits={produits} onFermer={() => setBonOuvert(null)} />}
 
       {scanCible && (
         <ScanLivraisonModal

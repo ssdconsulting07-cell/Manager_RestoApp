@@ -302,6 +302,7 @@ export function mapProduitsParId(liste) {
       {
         nom: p.nom,
         photo: p.photo || p.image || p.imageUrl || p.photoUrl || null,
+        prix: Number.isFinite(p.prix) ? p.prix : null,
       },
     ]),
   )

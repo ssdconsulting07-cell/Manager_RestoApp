@@ -243,7 +243,10 @@ export function clientNomComplet(commande) {
 
 export function clientTelephone(commande) {
   const tel = commande?.clientTelephone ?? commande?.client?.telephone ?? commande?.telephone
-  return typeof tel === 'string' && tel.trim() ? tel.trim() : null
+  if (typeof tel !== 'string' || !tel.trim()) return null
+  // Format envoye par l'App Client : "+221771234567" -> "+221 77 123 45 67".
+  const m = tel.trim().match(/^\+221(\d{2})(\d{3})(\d{2})(\d{2})$/)
+  return m ? `+221 ${m[1]} ${m[2]} ${m[3]} ${m[4]}` : tel.trim()
 }
 
 // Position GPS partagee par le client a la commande (App Client, bouton

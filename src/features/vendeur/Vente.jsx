@@ -36,7 +36,9 @@ const CATEGORIE_FILTRES = [
     icon: 'fa-burger',
     accent: '#a6192e',
     accentBg: '#fbeaec',
-    match: (produit, ids) => produit.categorieId === ids.burgers,
+    // Plats chauds : burgers ET wraps / chawarmas (categorie ajoutee le
+    // 12/11/2026) - sinon ces produits n'apparaissaient dans aucun filtre.
+    match: (produit, ids) => produit.categorieId === ids.burgers || produit.categorieId === ids.wraps,
   },
   {
     key: 'dessert',
@@ -102,6 +104,7 @@ export default function Vente() {
   // brainstorming-chez-ketchup.md (24/10/2026).
   const categorieIds = useMemo(() => ({
     burgers: idParNom(categories, 'Burgers'),
+    wraps: idParNom(categories, 'Wraps & Chawarmas'),
     dessert: idParNom(categories, 'Desserts'),
     boisson: idParNom(categories, 'Boissons'),
   }), [categories])

@@ -3,6 +3,8 @@
 // Contrairement a l'App Client, le staff est authentifie : une fois le token
 // stocke via setAuthToken() (apres /auth/login), il est attache automatiquement
 // a chaque appel.
+import { signalerRequete } from '../utils/reseau.js'
+
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1'
 const TOKEN_KEY = 'senyummies_manager_token'
 // Emis quand l'API repond 401 alors qu'un token etait envoye (token expire ou revoque).
@@ -28,10 +30,16 @@ function authHeaders() {
 
 // Reseau coupe / serveur injoignable : fetch rejette un TypeError au message
 // brut ("Failed to fetch") qui s'affichait tel quel dans les ecrans.
+// Chaque appel alimente aussi la surveillance reseau (utils/reseau.js) :
+// duree de la reponse, ou echec reseau.
 async function appeler(url, options) {
+  const debut = performance.now()
   try {
-    return await fetch(url, options)
+    const res = await fetch(url, options)
+    signalerRequete({ ok: true, duree: performance.now() - debut })
+    return res
   } catch {
+    signalerRequete({ ok: false, duree: performance.now() - debut })
     const error = new Error('Connexion au serveur impossible. Vérifiez le réseau puis réessayez.')
     error.code = 'RESEAU'
     throw error

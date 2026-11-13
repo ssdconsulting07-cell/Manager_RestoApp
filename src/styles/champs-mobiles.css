@@ -1,0 +1,18 @@
+/* Pas de zoom involontaire a la saisie sur smartphone.
+   Safari iOS agrandit automatiquement la page au focus de tout champ dont le
+   texte fait moins de 16 px (connexion, formulaires, recherches, filtres du
+   Manager : 13-14 px). On passe les champs a 16 px sur smartphone et ecran
+   tactile uniquement ; l'ordinateur garde ses tailles.
+   On ne bloque PAS le zoom (maximum-scale=1 / user-scalable=no) : il doit
+   rester possible pour les personnes malvoyantes.
+   Specificite (:root body ...) et !important : passent devant les regles
+   de champ existantes, y compris celles deja en !important
+   (.staff-phone-country-search input). Charge pour toutes les pages
+   (main.jsx), connexion comprise. Meme regle que l'app Client (index.css). */
+@media (max-width: 760px), (pointer: coarse) {
+  :root body input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
+  :root body select,
+  :root body textarea {
+    font-size: 16px !important;
+  }
+}

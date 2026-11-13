@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
+import AideFormulaire from '../../components/crud/AideFormulaire.jsx'
 import { TYPES, TYPE_LABELS } from './accompagnementsCondimentsData.js'
 
 // Formulaire volontairement plus simple que ProductFormModal/PlatDuJourFormModal
@@ -46,6 +47,11 @@ export default function AccompagnementCondimentFormModal({ item, onSave, onClose
 
   const prixNombre = Number(prix)
   const canSubmit = Boolean(nom.trim()) && prix !== '' && !Number.isNaN(prixNombre) && prixNombre >= 0 && Boolean(type)
+  const manquants = [
+    !nom.trim() && 'le nom',
+    (prix === '' || Number.isNaN(prixNombre) || prixNombre < 0) && 'un prix (0 si offert)',
+    !type && 'le type',
+  ]
 
   return (
     <>
@@ -98,6 +104,7 @@ export default function AccompagnementCondimentFormModal({ item, onSave, onClose
               </div>
             </div>
 
+            <AideFormulaire manquants={manquants} />
             <div className="manager-modal-actions">
               <button className="manager-button manager-button-quiet" type="button" onClick={requestClose}>Annuler</button>
               {isEdit ? (

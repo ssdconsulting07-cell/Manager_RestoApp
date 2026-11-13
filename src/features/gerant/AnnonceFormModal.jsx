@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import ImageCropModal from './ImageCropModal.jsx'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
+import AideFormulaire from '../../components/crud/AideFormulaire.jsx'
 import { createSlideId } from './annonceData.js'
 
 let nextTemporarySlideId = 1
@@ -126,6 +127,10 @@ export default function AnnonceFormModal({ annonce, onSave, onClose }) {
   }
 
   const canSubmit = Boolean(titre.trim()) && slides.every((slide) => slide.titre.trim())
+  const manquants = [
+    !titre.trim() && 'le titre de la chaîne',
+    !slides.every((slide) => slide.titre.trim()) && 'le titre de chaque slide',
+  ]
 
   return (
     <>
@@ -209,6 +214,7 @@ export default function AnnonceFormModal({ annonce, onSave, onClose }) {
               ))}
             </div>
 
+            <AideFormulaire manquants={manquants} />
             <div className="manager-modal-actions">
               <button className="manager-button manager-button-quiet" type="button" onClick={requestClose}>Annuler</button>
               {isEdit ? (

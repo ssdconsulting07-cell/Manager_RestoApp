@@ -4,6 +4,7 @@ import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import AccompagnementModal from './AccompagnementModal.jsx'
 import { MODES_PAIEMENT } from './modesPaiement.jsx'
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
+import AideFormulaire from '../../components/crud/AideFormulaire.jsx'
 
 const ETAPE_LABELS = {
   panier: 'Panier',
@@ -225,6 +226,13 @@ export default function PanierPage({
                 </>
               )}
 
+              <AideFormulaire
+                action="confirmer"
+                manquants={[
+                  !modePaiement && 'le mode de paiement',
+                  modePaiement === 'especes' && montantRecuNombre < total && `un montant reçu d’au moins ${formatFCFA(total)}`,
+                ]}
+              />
               <div className="manager-modal-actions">
                 <button className="manager-button manager-button-quiet" type="button" onClick={revenirAuPanier}>
                   ← Retour

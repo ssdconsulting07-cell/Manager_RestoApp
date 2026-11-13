@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Toast from '../Toast.jsx'
 import ConfirmModal from '../crud/ConfirmModal.jsx'
+import AideFormulaire from '../crud/AideFormulaire.jsx'
+import { TableRowsSkeleton } from '../PageSkeleton.jsx'
 import Pagination from '../crud/Pagination.jsx'
 import StatFilterCards from '../crud/StatFilterCards.jsx'
 import StatusBadge from '../crud/StatusBadge.jsx'
@@ -158,9 +160,19 @@ function StaffUserFormModal({ user, currentUsername, assignableRoles, formTitle,
   const [username, setUsername] = useState(user?.username || '')
   const [role, setRole] = useState(user?.role || assignableRoles[0])
   const [active, setActive] = useState(user?.active ?? true)
+  const chiffresTel = phone.replace(/\D/g, '')
+  const manquants = [
+    !firstName.trim() && 'le prénom',
+    !lastName.trim() && 'le nom',
+    !address.trim() && 'l’adresse',
+    cni.length !== 14 && 'la CNI (14 chiffres)',
+    chiffresTel.length < 9 && 'le téléphone',
+    username.trim().length < 3 && 'l’identifiant (3 caractères min.)',
+  ].filter(Boolean)
 
   function submit(event) {
     event.preventDefault()
+    if (manquants.length) return
     onSave({
       firstName: firstName.trim(),
       lastName: lastName.trim(),
@@ -233,9 +245,12 @@ function StaffUserFormModal({ user, currentUsername, assignableRoles, formTitle,
               Compte actif
             </label>
           )}
+          <div className="staff-user-form-wide">
+            <AideFormulaire manquants={manquants} />
+          </div>
           <div className="manager-modal-actions staff-user-form-wide">
             <button className="manager-button manager-button-quiet" type="button" onClick={onClose}>Annuler</button>
-            <button className="manager-button manager-button-primary" type="submit">{user ? 'Enregistrer' : 'Créer le compte'}</button>
+            <button className="manager-button manager-button-primary" type="submit" disabled={manquants.length > 0}>{user ? 'Enregistrer' : 'Créer le compte'}</button>
           </div>
         </form>
       </section>
@@ -511,7 +526,7 @@ export default function StaffUserSection({
 
       {error && <p className="staff-users-error" role="alert">{error}</p>}
       {loading ? (
-        <p className="crud-empty">Chargement des comptes…</p>
+        <TableRowsSkeleton />
       ) : filteredUsers.length === 0 ? (
         <p className="crud-empty">{emptyLabel}</p>
       ) : (

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import ImageCropModal from './ImageCropModal.jsx'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
+import AideFormulaire from '../../components/crud/AideFormulaire.jsx'
 
 export default function ProductFormModal({ produit, categories, onSave, onClose }) {
   const isEdit = Boolean(produit)
@@ -104,6 +105,7 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
   }
 
   const canSubmit = Boolean(nom.trim()) && Number(prix) > 0 && Boolean(categorieId)
+  const manquants = [!nom.trim() && 'le nom', !(Number(prix) > 0) && 'un prix', !categorieId && 'la catégorie']
 
   return (
     <>
@@ -242,6 +244,7 @@ export default function ProductFormModal({ produit, categories, onSave, onClose 
             </div>
           </div>
 
+          <AideFormulaire manquants={manquants} />
           <div className="manager-modal-actions">
             <button className="manager-button manager-button-quiet" type="button" onClick={requestClose}>Annuler</button>
             {isEdit ? (

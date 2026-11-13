@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import ImageCropModal from './ImageCropModal.jsx'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
+import AideFormulaire from '../../components/crud/AideFormulaire.jsx'
 import { JOURS_SEMAINE } from './platsDuJourData.js'
 
 export default function PlatDuJourFormModal({ plat, onSave, onClose }) {
@@ -93,6 +94,7 @@ export default function PlatDuJourFormModal({ plat, onSave, onClose }) {
   }
 
   const canSubmit = Boolean(nom.trim()) && Number(prix) > 0 && Boolean(jour)
+  const manquants = [!nom.trim() && 'le nom', !(Number(prix) > 0) && 'un prix', !jour && 'le jour']
 
   return (
     <>
@@ -205,6 +207,7 @@ export default function PlatDuJourFormModal({ plat, onSave, onClose }) {
             </div>
           </div>
 
+          <AideFormulaire manquants={manquants} />
           <div className="manager-modal-actions">
             <button className="manager-button manager-button-quiet" type="button" onClick={requestClose}>Annuler</button>
             {isEdit ? (

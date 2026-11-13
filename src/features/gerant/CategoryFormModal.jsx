@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
+import AideFormulaire from '../../components/crud/AideFormulaire.jsx'
 
 export default function CategoryFormModal({ categorie, onSave, onClose }) {
   const isEdit = Boolean(categorie)
@@ -39,6 +40,7 @@ export default function CategoryFormModal({ categorie, onSave, onClose }) {
             Nom de la catégorie
             <input type="text" value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Ex : Burgers" required autoFocus />
           </label>
+          <AideFormulaire manquants={[!nom.trim() && 'le nom de la catégorie']} />
           <div className="manager-modal-actions">
             <button className="manager-button manager-button-quiet" type="button" onClick={requestClose}>Annuler</button>
             <button className="manager-button manager-button-primary" type="submit" disabled={!nom.trim()}>

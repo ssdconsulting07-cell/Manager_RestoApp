@@ -5,6 +5,7 @@ import { KpiCard, formatRelativeTime } from '../../components/dashboard/Dashboar
 import { comparerPriorite, estComptoir, resumePlats } from './cuisineUtils.js'
 import { useAlerteNouvelleCommande } from './useAlerteNouvelleCommande.js'
 import { useCuisineBoard } from './useCuisineBoard.js'
+import { ActivityListSkeleton, KpiValueSkeleton } from '../../components/PageSkeleton.jsx'
 
 // Tableau de bord Cuisine — meme structure et memes briques que les
 // tableaux de bord Gerant/Manager/Vendeur (cartes KPI, flux d'activite
@@ -65,28 +66,28 @@ export default function CuisineDashboard() {
       <section className="dashboard-kpi-grid" aria-label="Résumé cuisine">
         <KpiCard
           icon="fa-layer-group" accent="brand" label="Commandes actives"
-          value={loading ? '—' : counts.PAYEE + counts.EN_PREPARATION + counts.PRETE}
+          value={loading ? <KpiValueSkeleton /> : counts.PAYEE + counts.EN_PREPARATION + counts.PRETE}
           detail="reçue → prête" to="/commandes"
         />
         <KpiCard
           icon="fa-receipt" accent="red" label="Reçues"
-          value={loading ? '—' : counts.PAYEE} detail="à démarrer" to="/commandes"
+          value={loading ? <KpiValueSkeleton /> : counts.PAYEE} detail="à démarrer" to="/commandes"
         />
         <KpiCard
           icon="fa-fire-burner" accent="amber" label="En préparation"
-          value={loading ? '—' : counts.EN_PREPARATION} detail="au poste" to="/commandes"
+          value={loading ? <KpiValueSkeleton /> : counts.EN_PREPARATION} detail="au poste" to="/commandes"
         />
         <KpiCard
           icon="fa-circle-check" accent="green" label="Prêtes"
-          value={loading ? '—' : counts.PRETE} detail="en attente de retrait" to="/commandes"
+          value={loading ? <KpiValueSkeleton /> : counts.PRETE} detail="en attente de retrait" to="/commandes"
         />
         <KpiCard
           icon="fa-mobile-screen-button" accent="blue" label="App"
-          value={loading ? '—' : canalCounts.app} detail="commandes à distance" to="/commandes"
+          value={loading ? <KpiValueSkeleton /> : canalCounts.app} detail="commandes à distance" to="/commandes"
         />
         <KpiCard
           icon="fa-store" accent="gray" label="Sur place"
-          value={loading ? '—' : canalCounts.comptoir} detail="au comptoir" to="/commandes"
+          value={loading ? <KpiValueSkeleton /> : canalCounts.comptoir} detail="au comptoir" to="/commandes"
         />
       </section>
 
@@ -98,9 +99,11 @@ export default function CuisineDashboard() {
           </div>
         </div>
 
-        {apercu.length === 0 ? (
+        {loading && apercu.length === 0 ? (
+          <ActivityListSkeleton />
+        ) : apercu.length === 0 ? (
           <p className="dashboard-chart-empty">
-            {loading ? 'Chargement…' : 'Aucune commande à préparer pour le moment.'}
+            Aucune commande à préparer pour le moment.
           </p>
         ) : (
           <ul className="dashboard-activity-list">

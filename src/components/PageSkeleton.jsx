@@ -56,6 +56,49 @@ function SkeletonBlock({ className = '' }) {
 // carte-filtre et le rafraichissement manuel (retour utilisateur : "je veux
 // des squelettes" sur ces trois cas), pas seulement le tout premier
 // chargement.
+// Valeur d'une carte KPI en attente de donnees (tableaux de bord Cuisine,
+// Livreur) : un bloc a la place du tiret "—".
+export function KpiValueSkeleton() {
+  return <SkeletonBlock className="is-kpi-value" />
+}
+
+// Liste "Prochains tickets / Prochaines livraisons" des tableaux de bord.
+export function ActivityListSkeleton({ count = 3 }) {
+  return (
+    <ul className="dashboard-activity-list" aria-hidden="true">
+      {Array.from({ length: count }, (_, index) => (
+        <li key={index} className="page-skeleton-activity-row">
+          <SkeletonBlock className="is-activity-icon" />
+          <span className="page-skeleton-activity-text">
+            <SkeletonBlock className="is-activity-title" />
+            <SkeletonBlock className="is-activity-detail" />
+          </span>
+          <SkeletonBlock className="is-activity-meta" />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+// Tableau des comptes du personnel.
+export function TableRowsSkeleton({ columns = 6, rows = 5 }) {
+  return (
+    <div className="staff-users-table-wrap" aria-hidden="true">
+      <table className="staff-users-table">
+        <tbody>
+          {Array.from({ length: rows }, (_, r) => (
+            <tr key={r}>
+              {Array.from({ length: columns }, (_, c) => (
+                <td key={c}><SkeletonBlock className={c === 0 ? 'is-cell-wide' : 'is-cell'} /></td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 export function CommandeRowsSkeleton({ count = 4 }) {
   return (
     <div className="crud-list" aria-hidden="true">

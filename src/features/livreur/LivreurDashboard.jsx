@@ -5,6 +5,7 @@ import { KpiCard, formatRelativeTime } from '../../components/dashboard/Dashboar
 import { estAujourdhui, resumePlats, ticketId } from '../cuisine/cuisineUtils.js'
 import { useAlerteNouvelleLivraison } from './useAlerteNouvelleLivraison.js'
 import { useLivreurBoard } from './useLivreurBoard.js'
+import { ActivityListSkeleton, KpiValueSkeleton } from '../../components/PageSkeleton.jsx'
 
 // Tableau de bord Livreur — meme structure et memes briques que les
 // tableaux de bord Cuisine/Gerant/Manager/Vendeur (cartes KPI, flux
@@ -55,15 +56,15 @@ export default function LivreurDashboard() {
       <section className="dashboard-kpi-grid" aria-label="Résumé livraison">
         <KpiCard
           icon="fa-box-open" accent="amber" label="À récupérer"
-          value={loading ? '—' : counts.PRETE} detail="commandes prêtes" to="/livraisons"
+          value={loading ? <KpiValueSkeleton /> : counts.PRETE} detail="commandes prêtes" to="/livraisons"
         />
         <KpiCard
           icon="fa-truck-fast" accent="brand" label="En livraison"
-          value={loading ? '—' : counts.EN_LIVRAISON} detail="tournées en cours" to="/livraisons"
+          value={loading ? <KpiValueSkeleton /> : counts.EN_LIVRAISON} detail="tournées en cours" to="/livraisons"
         />
         <KpiCard
           icon="fa-flag-checkered" accent="green" label="Livrées aujourd’hui"
-          value={loading ? '—' : livreesAujourdhui} detail="courses terminées" to="/historique-livraisons"
+          value={loading ? <KpiValueSkeleton /> : livreesAujourdhui} detail="courses terminées" to="/historique-livraisons"
         />
       </section>
 
@@ -75,9 +76,11 @@ export default function LivreurDashboard() {
           </div>
         </div>
 
-        {apercu.length === 0 ? (
+        {loading && apercu.length === 0 ? (
+          <ActivityListSkeleton />
+        ) : apercu.length === 0 ? (
           <p className="dashboard-chart-empty">
-            {loading ? 'Chargement…' : 'Aucune livraison à prendre en charge pour le moment.'}
+            Aucune livraison à prendre en charge pour le moment.
           </p>
         ) : (
           <ul className="dashboard-activity-list">

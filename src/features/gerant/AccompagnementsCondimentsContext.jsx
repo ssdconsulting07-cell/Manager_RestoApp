@@ -1,45 +1,50 @@
-import { createContext, useContext, useMemo, useState } from 'react'
-import {
-  ACCOMPAGNEMENTS_CONDIMENTS_INITIAUX,
-  createAccompagnementCondimentId,
-} from './accompagnementsCondimentsData.js'
+import { createContext, useContext, useMemo } from 'react'
+import { ACCOMPAGNEMENTS_CONDIMENTS_INITIAUX } from './accompagnementsCondimentsData.js'
+import { useAuth } from '../../auth/AuthContext.jsx'
+import useRessourceApi from '../../hooks/useRessourceApi.js'
 
-// Partage les fiches Accompagnements & condiments entre la page de gestion
-// (Gerant, AccompagnementsCondiments.jsx) et la caisse (Vendeur, Vente.jsx) :
-// sans ce contexte, un accompagnement cree/publie cote Gerant ne serait
-// jamais visible a la caisse (meme raison que MenuDataContext.jsx).
+// Fiches Accompagnements & condiments partagees entre la page de gestion
+// (Gerant, AccompagnementsCondiments.jsx) et la caisse (Vendeur, Vente.jsx).
+// Donnees servies par l'API /accompagnements-condiments.
+//
+// source="memoire" : donnees de demonstration locales (tests).
 const AccompagnementsCondimentsContext = createContext(null)
 
-export function AccompagnementsCondimentsProvider({ children }) {
-  const [items, setItems] = useState(ACCOMPAGNEMENTS_CONDIMENTS_INITIAUX)
+const ROLES = ['GERANT', 'MANAGER', 'VENDEUR']
+
+export function AccompagnementsCondimentsProvider({ children, source = 'api' }) {
+  const { role } = useAuth()
+  const ressource = useRessourceApi({
+    chemin: '/accompagnements-condiments',
+    initial: ACCOMPAGNEMENTS_CONDIMENTS_INITIAUX,
+    source,
+    actif: ROLES.includes(role),
+    libelle: 'L’enregistrement de la fiche',
+  })
+  const { items } = ressource
 
   // Seules les fiches publiees (ACTIF) sont proposables a la caisse.
   const itemsActifs = useMemo(() => items.filter((i) => i.statut === 'ACTIF'), [items])
 
-  function majStatut(id, statut) {
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, statut, updatedAt: new Date().toISOString() } : i)))
-  }
-
-  function creerItem(data) {
-    const nouveau = { id: createAccompagnementCondimentId(), statut: 'BROUILLON', ...data, updatedAt: new Date().toISOString() }
-    setItems((prev) => [nouveau, ...prev])
-    return nouveau
-  }
-
-  function modifierItem(id, data) {
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...data, updatedAt: new Date().toISOString() } : i)))
-  }
-
+  // Le serveur ne supprime jamais une fiche : "supprimer" = archiver.
   function supprimerItem(id) {
-    setItems((prev) => prev.filter((i) => i.id !== id))
+    if (ressource.enMemoire) {
+      ressource.setItems((prev) => prev.filter((i) => i.id !== id))
+      return undefined
+    }
+    const item = items.find((i) => i.id === id)
+    return item?.statut === 'ARCHIVE' ? undefined : ressource.majStatut(id, 'ARCHIVE')
   }
 
   const value = {
     items,
     itemsActifs,
-    majStatut,
-    creerItem,
-    modifierItem,
+    chargement: ressource.chargement,
+    erreur: ressource.erreur,
+    recharger: ressource.recharger,
+    majStatut: ressource.majStatut,
+    creerItem: ressource.creer,
+    modifierItem: ressource.modifier,
     supprimerItem,
   }
 

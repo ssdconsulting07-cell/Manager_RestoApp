@@ -6,12 +6,12 @@ import Pagination from '../../components/crud/Pagination.jsx'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import StatusBadge from '../../components/crud/StatusBadge.jsx'
 import PlatDuJourFormModal from './PlatDuJourFormModal.jsx'
+import useRessourceApi from '../../hooks/useRessourceApi.js'
 import {
   JOURS_SEMAINE,
   PLATS_DU_JOUR_INITIAUX,
   STATUT_LABELS,
   countByStatut,
-  createPlatDuJourId,
   jourLabel,
 } from './platsDuJourData.js'
 
@@ -29,8 +29,10 @@ const FILTER_DEFS = [
 
 const ROWS_OPTIONS = [5, 10, 25]
 
-export default function PlatsDuJour() {
-  const [plats, setPlats] = useState(PLATS_DU_JOUR_INITIAUX)
+export default function PlatsDuJour({ source = 'api' }) {
+  // Plats du jour servis par l'API /plats-du-jour (source="memoire" : demonstration locale).
+  const ressource = useRessourceApi({ chemin: '/plats-du-jour', initial: PLATS_DU_JOUR_INITIAUX, source, libelle: 'L’enregistrement du plat' })
+  const plats = ressource.items
   const [toast, setToast] = useState(null)
   const [modal, setModal] = useState(null)
 
@@ -60,7 +62,7 @@ export default function PlatsDuJour() {
   const visibles = filtres.slice((page - 1) * rows, page * rows)
 
   function majStatut(id, statut) {
-    setPlats((prev) => prev.map((p) => (p.id === id ? { ...p, statut, updatedAt: new Date().toISOString() } : p)))
+    ressource.majStatut(id, statut)
   }
 
   function handlePublier(plat) {
@@ -88,18 +90,19 @@ export default function PlatsDuJour() {
 
   function handleSave(data) {
     if (modal?.kind === 'plat-form' && modal.plat) {
-      setPlats((prev) => prev.map((p) => (p.id === modal.plat.id ? { ...p, ...data, updatedAt: new Date().toISOString() } : p)))
+      ressource.modifier(modal.plat.id, data)
       notify('success', `« ${data.nom} » mis à jour.`)
     } else {
-      const nouveau = { id: createPlatDuJourId(), statut: 'BROUILLON', ...data, updatedAt: new Date().toISOString() }
-      setPlats((prev) => [nouveau, ...prev])
+      ressource.creer(data)
       notify('success', data.statut === 'ACTIF' ? `« ${data.nom} » créé et publié.` : `« ${data.nom} » créé en brouillon.`)
     }
     setModal(null)
   }
 
+  // Le serveur ne supprime jamais une fiche : "supprimer" = archiver (restaurable).
   function handleSupprimer(plat) {
-    setPlats((prev) => prev.filter((p) => p.id !== plat.id))
+    if (ressource.enMemoire) ressource.setItems((prev) => prev.filter((p) => p.id !== plat.id))
+    else if (plat.statut !== 'ARCHIVE') ressource.majStatut(plat.id, 'ARCHIVE')
     notify('success', `« ${plat.nom} » supprimé.`)
     setModal(null)
   }
@@ -181,9 +184,6 @@ export default function PlatsDuJour() {
                     <>
                       <button className="crud-action is-archive" type="button" onClick={() => setModal({ kind: 'confirm-restaurer', plat })}>
                         <i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Restaurer
-                      </button>
-                      <button className="crud-action is-danger" type="button" onClick={() => setModal({ kind: 'confirm-delete', plat })}>
-                        <i className="fa-solid fa-trash" aria-hidden="true" /> Supprimer
                       </button>
                     </>
                   )}

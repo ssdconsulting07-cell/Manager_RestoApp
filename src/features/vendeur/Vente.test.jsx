@@ -35,8 +35,8 @@ function renderVente() {
   useAuth.mockReturnValue({ username: 'vendeur-test' })
   return render(
     <MemoryRouter>
-      <MenuDataProvider>
-        <AccompagnementsCondimentsProvider>
+      <MenuDataProvider source="memoire">
+        <AccompagnementsCondimentsProvider source="memoire">
           <Vente />
         </AccompagnementsCondimentsProvider>
       </MenuDataProvider>

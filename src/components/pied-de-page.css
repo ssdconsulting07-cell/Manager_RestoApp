@@ -1,0 +1,44 @@
+/* Pied de page (version + "Besoin d'aide ?") et feuille de contact support.
+   Charge par PiedDePage.jsx : utilise aussi sur la page de connexion, ou
+   manager.css n'est pas forcement charge. */
+
+.pied-de-page { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; }
+.pied-de-page-aide { margin: -8px -4px; border: 0; padding: 8px 4px; color: inherit; background: none; font: inherit; cursor: pointer; text-underline-offset: 2px; }
+.pied-de-page-aide:hover, .pied-de-page-aide:focus-visible { text-decoration: underline; }
+
+.aide-backdrop { position: fixed; z-index: 40; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(20 20 20 / 45%); font-family: 'Poppins', Helvetica, Arial, sans-serif; animation: aide-fondu 160ms ease both; }
+.aide-feuille { box-sizing: border-box; width: min(100%, 400px); border-radius: 16px; padding: 22px; background: #fff; color: #141414; box-shadow: 0 22px 60px rgb(20 20 20 / 25%); animation: aide-entree 220ms ease both; }
+.aide-poignee { display: none; }
+.aide-entete { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.aide-entete h2 { margin: 0; font-size: 18px; }
+.aide-entete p { margin: 4px 0 0; color: #6b6b6b; font-size: 12.5px; }
+.aide-fermer { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; border: 0; border-radius: 50%; color: #141414; background: #f2f1ef; cursor: pointer; font-size: 16px; }
+.aide-lignes { margin: 0; padding: 0; overflow: hidden; border: 1px solid #e7e4e1; border-radius: 12px; list-style: none; }
+.aide-lignes li + li { border-top: 1px solid #e7e4e1; }
+.aide-lignes a { display: flex; min-height: 64px; align-items: center; gap: 12px; padding: 10px 14px; color: inherit; text-decoration: none; transition: background 140ms ease; }
+.aide-lignes a:hover, .aide-lignes a:focus-visible { background: #f7f6f4; }
+.aide-icone { display: grid; width: 40px; height: 40px; flex: 0 0 40px; place-items: center; border-radius: 10px; color: #a6192e; background: #f8e9ec; }
+.aide-texte { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+.aide-texte strong { font-size: 14px; }
+.aide-texte span { overflow: hidden; color: #6b6b6b; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.aide-chevron { color: #9a9a9a; font-size: 13px; }
+
+/* Smartphone : feuille du bas */
+@media (max-width: 760px) {
+  .aide-backdrop { place-items: end center; padding: 0; }
+  .aide-feuille { width: 100%; border-radius: 22px 22px 0 0; padding: 10px 20px calc(20px + env(safe-area-inset-bottom, 0px)); animation-name: aide-montee; }
+  .aide-poignee { display: block; width: 48px; height: 5px; margin: 0 auto 12px; border-radius: 999px; background: rgb(20 20 20 / 15%); }
+}
+
+/* Theme sombre (shell Manager ou page de connexion) */
+.is-dark .aide-feuille { color: #f2f2f2; background: #1c1c20; }
+.is-dark .aide-entete p, .is-dark .aide-texte span { color: #a3a3a8; }
+.is-dark .aide-fermer { color: #f2f2f2; background: #2a2a2e; }
+.is-dark .aide-lignes, .is-dark .aide-lignes li + li { border-color: #2a2a2e; }
+.is-dark .aide-lignes a:hover { background: #24242a; }
+.is-dark .aide-icone { color: #ff9aa8; background: rgb(166 25 46 / 25%); }
+
+@keyframes aide-fondu { from { opacity: 0; } }
+@keyframes aide-entree { from { opacity: 0; transform: translateY(12px); } }
+@keyframes aide-montee { from { transform: translateY(100%); } }
+@media (prefers-reduced-motion: reduce) { .aide-backdrop, .aide-feuille { animation: none; } }

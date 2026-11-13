@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext.jsx'
 import Toast from './Toast.jsx'
 import ConfirmModal from './crud/ConfirmModal.jsx'
 import '../styles/manager.css'
+import PiedDePage from './PiedDePage.jsx'
 
 const NAV_ITEMS = [
   { path: '/dashboard', label: 'Tableau de bord', icon: 'fa-gauge-high', roles: ['CUISINE', 'GERANT', 'MANAGER', 'LIVREUR', 'VENDEUR'] },
@@ -548,7 +549,7 @@ export default function Layout({ children }) {
           </div>
         </header>
         <main className="manager-workarea has-bottom-tabbar">{children}</main>
-        <footer className="manager-workarea-footer">SenYummies Manager · v{__APP_VERSION__} · © SSD Consulting</footer>
+        <PiedDePage className="manager-workarea-footer" />
       </div>
       <nav className="manager-bottom-tabbar" aria-label={`Navigation ${ROLE_LABELS[role]}`}>
         {visibleItems.map((item) => {

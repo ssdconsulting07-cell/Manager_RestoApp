@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ticketId } from '../cuisine/cuisineUtils.js'
 
 // Modale de confirmation de livraison par scan QR — retour utilisateur :

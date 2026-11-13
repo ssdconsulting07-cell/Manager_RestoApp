@@ -55,7 +55,6 @@ export default function PlatsDuJour() {
       .filter((p) => p.statut === filter)
       .filter((p) => !query || p.nom.toLowerCase().includes(query) || jourLabel(p.jour).toLowerCase().includes(query))
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plats, filter, search])
   const pageCount = Math.max(1, Math.ceil(filtres.length / rows))
   const visibles = filtres.slice((page - 1) * rows, page * rows)

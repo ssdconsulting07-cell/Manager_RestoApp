@@ -55,6 +55,8 @@ function getPhoneCountryAndNationalNumber(value) {
 }
 
 function StaffPhoneFields({ value, onChange }) {
+  // Valeur initiale seulement : la saisie prend ensuite le relais.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const initialPhone = useMemo(() => getPhoneCountryAndNationalNumber(value), [])
   const [countryIso2, setCountryIso2] = useState(initialPhone.countryIso2)
   const [countrySearch, setCountrySearch] = useState('')

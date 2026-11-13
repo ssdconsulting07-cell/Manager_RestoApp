@@ -52,7 +52,6 @@ export default function AccompagnementsCondiments() {
       .filter((i) => i.statut === filter)
       .filter((i) => !query || i.nom.toLowerCase().includes(query) || TYPE_LABELS[i.type].toLowerCase().includes(query))
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, filter, search])
   const pageCount = Math.max(1, Math.ceil(filtres.length / rows))
   const visibles = filtres.slice((page - 1) * rows, page * rows)

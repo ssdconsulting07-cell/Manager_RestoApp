@@ -134,7 +134,6 @@ export default function Vente() {
     else if (tri === 'prix-desc') tries.sort((a, b) => b.prix - a.prix)
     else tries.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
     return tries
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [produitsDisponibles, filtreActif, categorieIds, recherche, tri])
 
   const pageCount = Math.max(1, Math.ceil(produitsFiltres.length / rows))

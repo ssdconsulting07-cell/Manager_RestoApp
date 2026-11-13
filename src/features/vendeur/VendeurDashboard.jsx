@@ -6,9 +6,8 @@ import { useAuth } from '../../auth/AuthContext.jsx'
 import {
   ChartTooltip, KpiCard, formatFCFA, formatRelativeTime,
 } from '../../components/dashboard/DashboardWidgets.jsx'
-import {
-  nombreArticles, totalEncaisseDuJourDe, ventesDe, ventesDuJourDe,
-} from './ventesData.js'
+import { nombreArticles } from './ventesData.js'
+import useVentesVendeur from './useVentesVendeur.js'
 
 // Tableau de bord Vendeur/Caissier — meme structure et memes briques que les
 // tableaux de bord Gerant et Manager (cartes KPI, panneau graphique, flux
@@ -26,8 +25,8 @@ function heureTicket(iso) {
 export default function VendeurDashboard() {
   const { username } = useAuth()
 
-  const ventesDuJour = useMemo(() => ventesDuJourDe(username), [username])
-  const totalDuJour = useMemo(() => totalEncaisseDuJourDe(username), [username])
+  // Ventes enregistrees par le serveur pour ce vendeur.
+  const { ventes, ventesDuJour, totalDuJour } = useVentesVendeur(username)
   const dernierTicket = ventesDuJour[0]
   const panierMoyen = ventesDuJour.length ? Math.round(totalDuJour / ventesDuJour.length) : 0
 
@@ -38,7 +37,7 @@ export default function VendeurDashboard() {
     [ventesDuJour],
   )
 
-  const derniersTickets = useMemo(() => ventesDe(username).slice(0, APERCU_TICKETS), [username])
+  const derniersTickets = useMemo(() => ventes.slice(0, APERCU_TICKETS), [ventes])
 
   return (
     <>

@@ -9,6 +9,37 @@ import {
   TOUS, erreurPeriode, filtrerJournal, filtrerParPeriode, libellePeriode, lignesExport, nomFichierExport,
 } from './journalAuditFiltres.js'
 
+vi.mock('./useDonneesManager.js', async () => {
+  const { journalAudit } = await import('./auditData.js')
+  const cmd = await import('./commandesData.js')
+  const fin = await import('./financeData.js')
+  const maintenant = new Date()
+  const encaissees = cmd.commandesEncaissees(cmd.commandesDuJour)
+  const total = encaissees.reduce((s, c) => s + c.montant, 0)
+  return {
+    useJournalAudit: () => ({ entrees: journalAudit, chargement: false, erreur: null }),
+    useTableauDeBord: () => ({
+      finances: {
+        jour: fin.caDuJour(),
+        semaine: fin.caDeLaSemaine(maintenant),
+        mois: fin.caDuMois(maintenant),
+        septJours: fin.caSeptDerniersJours(maintenant).map(({ date, estAujourdhui, montant }) => ({
+          jour: `${estAujourdhui ? 'auj' : date.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '')} ${date.getDate()}`,
+          montant,
+        })),
+      },
+      commandes: {
+        total: cmd.commandesDuJour.length,
+        encaissees: encaissees.length,
+        counts: cmd.countByStatutCommande(cmd.commandesDuJour),
+        panierMoyen: encaissees.length ? Math.round(total / encaissees.length) : 0,
+      },
+      chargement: false,
+      erreur: null,
+    }),
+  }
+})
+
 vi.mock('../../components/Layout.jsx', () => ({
   default: ({ children }) => <>{children}</>,
 }))

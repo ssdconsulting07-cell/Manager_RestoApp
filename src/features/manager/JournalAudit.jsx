@@ -5,7 +5,8 @@ import Toast from '../../components/Toast.jsx'
 import Pagination from '../../components/crud/Pagination.jsx'
 import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
 import { ROLE_LABELS } from '../../auth/roles.js'
-import { DOMAINES_AUDIT, journalAudit } from './auditData.js'
+import { DOMAINES_AUDIT } from './auditData.js'
+import { useJournalAudit } from './useDonneesManager.js'
 import {
   erreurPeriode, filtrerJournal, filtrerParPeriode, libellePeriode, libellesFiltres, nomFichierExport,
 } from './journalAuditFiltres.js'
@@ -211,9 +212,11 @@ export default function JournalAudit() {
   // a chaque rendu. On ne redirige qu’a la toute fin, dans le JSX.
   const role = roleResolu ?? ROLES_AUDIT[0]
 
+  // Journal reel du serveur (GET /audit, 92 derniers jours).
+  const { entrees: journalAudit } = useJournalAudit()
   const entreesDuRole = useMemo(
     () => journalAudit.filter((entree) => entree.acteur.role === role),
-    [role],
+    [role, journalAudit],
   )
 
   const [recherche, setRecherche] = useState('')

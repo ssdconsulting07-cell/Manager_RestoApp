@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import {
   ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from 'recharts'
@@ -6,13 +5,9 @@ import { ROLE_LABELS } from '../../auth/roles.js'
 import {
   ChartTooltip, KpiCard, formatFCFA, formatRelativeTime,
 } from '../../components/dashboard/DashboardWidgets.jsx'
-import {
-  STATUTS_COMMANDE, commandesDuJour, commandesEncaissees, countByStatutCommande,
-} from './commandesData.js'
-import {
-  caDeLaSemaine, caDuJour, caDuMois, caSeptDerniersJours,
-} from './financeData.js'
-import { DOMAINES_AUDIT, journalAudit } from './auditData.js'
+import { STATUTS_COMMANDE } from './commandesData.js'
+import { DOMAINES_AUDIT } from './auditData.js'
+import { useJournalAudit, useTableauDeBord } from './useDonneesManager.js'
 
 // Tableau de bord Manager — meme structure et memes briques que le tableau de
 // bord Gerant (cartes KPI, panneaux, graphiques recharts, flux d'activite).
@@ -50,27 +45,10 @@ function JourTick({ x, y, payload }) {
 export default function ManagerDashboard() {
   const maintenant = new Date()
 
-  const finances = useMemo(() => ({
-    jour: caDuJour(),
-    semaine: caDeLaSemaine(maintenant),
-    mois: caDuMois(maintenant),
-    septJours: caSeptDerniersJours(maintenant).map(({ date, estAujourdhui, montant }) => ({
-      jour: `${estAujourdhui ? 'auj' : date.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '')} ${date.getDate()}`,
-      montant,
-    })),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [])
-
-  const commandes = useMemo(() => {
-    const encaissees = commandesEncaissees(commandesDuJour)
-    const total = encaissees.reduce((somme, c) => somme + c.montant, 0)
-    return {
-      total: commandesDuJour.length,
-      encaissees: encaissees.length,
-      counts: countByStatutCommande(commandesDuJour),
-      panierMoyen: encaissees.length ? Math.round(total / encaissees.length) : 0,
-    }
-  }, [])
+  // Chiffres du serveur (GET /statistiques/tableau-de-bord) : CA = commandes
+  // payees et non annulees ; journal reel (GET /audit).
+  const { finances, commandes } = useTableauDeBord()
+  const { entrees: journalAudit } = useJournalAudit()
 
   const { counts } = commandes
 

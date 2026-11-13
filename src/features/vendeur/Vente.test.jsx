@@ -21,6 +21,13 @@ vi.mock('../../auth/AuthContext.jsx', () => ({
   useAuth: vi.fn(),
 }))
 
+// Le serveur enregistre la vente et attribue le numero de ticket (les
+// montants restent ceux du panier quand il ne les renvoie pas).
+vi.mock('../../api/client.js', async (original) => ({
+  ...(await original()),
+  apiPostAvecEntetes: vi.fn(() => Promise.resolve({ id: '1042' })),
+}))
+
 // Le Layout (sidebar, en-tete) n'est pas l'objet de ces tests.
 vi.mock('../../components/Layout.jsx', () => ({
   default: ({ children }) => <>{children}</>,
@@ -218,7 +225,7 @@ describe('Vente (caisse Vendeur)', () => {
     expect(screen.getByRole('button', { name: 'Confirmer le paiement' })).not.toBeDisabled()
   })
 
-  it('encaisse la vente, affiche le reçu détaillé (mode de paiement), et n’imprime le ticket que sur clic manuel, dans un nouvel onglet', () => {
+  it('encaisse la vente, affiche le reçu détaillé (mode de paiement), et n’imprime le ticket que sur clic manuel, dans un nouvel onglet', async () => {
     renderVente()
 
     cliquerProduit('Ketchup Burger Classique')
@@ -230,7 +237,8 @@ describe('Vente (caisse Vendeur)', () => {
     fireEvent.change(screen.getByLabelText(/Montant reçu/), { target: { value: '5000' } })
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer le paiement' }))
 
-    expect(screen.getAllByText(/Ticket n°/).length).toBeGreaterThan(0)
+    expect((await screen.findAllByText(/Ticket n°/)).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/1042/).length).toBeGreaterThan(0)
     // 3500 (burger) + 1500 (frites) = 5000, le total de la vente.
     expect(screen.getAllByText(formatFCFA(5000)).length).toBeGreaterThan(0)
     expect(screen.getByText('Espèces')).toBeInTheDocument()
@@ -254,7 +262,7 @@ describe('Vente (caisse Vendeur)', () => {
     expect(screen.getByText('Ketchup Burger Classique')).toBeInTheDocument()
   })
 
-  it('n’affiche pas les lignes Montant reçu / Monnaie rendue sur le reçu pour un paiement non-espèces', () => {
+  it('n’affiche pas les lignes Montant reçu / Monnaie rendue sur le reçu pour un paiement non-espèces', async () => {
     renderVente()
 
     cliquerProduit('Ketchup Burger Classique')
@@ -262,6 +270,7 @@ describe('Vente (caisse Vendeur)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Continuer →' }))
     fireEvent.click(screen.getByRole('radio', { name: 'Orange Money' }))
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer le paiement' }))
+    await screen.findAllByText(/Ticket n°/)
 
     expect(screen.getByText('Orange Money')).toBeInTheDocument()
     expect(screen.queryByText('Montant reçu (espèces)')).not.toBeInTheDocument()

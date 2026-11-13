@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { apiGet, apiPatch } from '../../api/client.js'
 import { avecDemoSiVide, isDemoId, mergeProduitsDemo, patchDemoStatut } from '../cuisine/cuisineDemo.js'
-import { mapProduitsParId, REFRESH_MS } from '../cuisine/cuisineUtils.js'
+import { mapProduitsParId, REFRESH_MS, REFRESH_SECOURS_MS } from '../cuisine/cuisineUtils.js'
+import useFluxCommandes from '../../hooks/useFluxCommandes.js'
 
 /** Commandes comptoir (canal COMPTOIR, mode RETRAIT — voir
  * commandeComptoir.js) cote caisse : memes donnees que le tableau Cuisine
@@ -29,11 +30,16 @@ export function useRetraitsComptoir() {
     }
   }, [appliquer])
 
+  // Temps reel : chaque evenement (nouvelle commande payee, changement de
+  // statut par un collegue) recharge le tableau. Rafraichissement de secours
+  // espace tant que le flux est ouvert, normal sinon.
+  const fluxOuvert = useFluxCommandes(() => charger())
+
   useEffect(() => {
     charger()
-    const timer = setInterval(charger, REFRESH_MS)
+    const timer = setInterval(charger, fluxOuvert ? REFRESH_SECOURS_MS : REFRESH_MS)
     return () => clearInterval(timer)
-  }, [charger])
+  }, [charger, fluxOuvert])
 
   useEffect(() => {
     apiGet('/produits')
@@ -48,11 +54,12 @@ export function useRetraitsComptoir() {
       if (isDemoId(commande.id)) {
         patchDemoStatut(commande.id, 'RETIREE')
       } else {
-        await apiPatch(`/commandes/${commande.id}/statut`, { statut: 'RETIREE' })
+        await apiPatch(`/commandes/${commande.id}/statut`, { statut: 'RETIREE', version: commande.version })
       }
       await charger()
     } catch (err) {
-      setError(err.message)
+      if (err.status === 409) charger()
+      setError(err.code === 'STATUT_DEJA_APPLIQUE' ? 'Déjà remise par un collègue.' : err.message)
     } finally {
       setPendingId(null)
     }

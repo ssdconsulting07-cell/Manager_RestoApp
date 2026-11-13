@@ -14,6 +14,19 @@ function formatFCFA(montant) {
   return rawFormatFCFA(montant).replace(/\s/g, ' ')
 }
 
+vi.mock('./useVentesVendeur.js', async () => {
+  const v = await import('./ventesData.js')
+  return {
+    default: (username) => ({
+      ventes: v.ventesDe(username),
+      ventesDuJour: v.ventesDuJourDe(username),
+      totalDuJour: v.totalEncaisseDuJourDe(username),
+      chargement: false,
+      erreur: null,
+    }),
+  }
+})
+
 vi.mock('../../auth/AuthContext.jsx', () => ({
   useAuth: vi.fn(),
 }))

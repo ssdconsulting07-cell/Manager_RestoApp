@@ -3,6 +3,8 @@
 // arrivent du backend — le contrat MVP ne les expose pas encore tous.
 
 export const REFRESH_MS = 15000
+// Avec le flux temps reel ouvert : simple filet de securite.
+export const REFRESH_SECOURS_MS = 60000
 
 // Habillage partage entre les cartes-filtres (Commandes.jsx) et le badge de
 // statut sur chaque carte commande (CommandeRow.jsx) — meme libelle, meme

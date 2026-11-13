@@ -1,20 +1,25 @@
-import { createContext, useContext, useMemo, useState } from 'react'
-import {
-  CATEGORIES_INITIALES,
-  PRODUITS_INITIAUX,
-  createProduitId,
-  createCategorieId,
-} from './menuData.js'
+import { createContext, useContext, useMemo } from 'react'
+import { CATEGORIES_INITIALES, PRODUITS_INITIAUX } from './menuData.js'
+import { useAuth } from '../../auth/AuthContext.jsx'
+import useRessourceApi from '../../hooks/useRessourceApi.js'
 
-// Partage les donnees mock du menu (produits/categories) entre les pages
-// Produits, Categories et Apercu client, qui sont desormais des routes
-// independantes et non plus des onglets d'une seule page : sans ce contexte,
-// chaque page perdrait les donnees des autres en changeant de route.
+// Menu (categories et produits) partage entre les pages Produits, Categories,
+// Apercu client et la caisse (Vente). Donnees servies par l'API :
+// GET /categories et /produits (tout pour le Gerant et le Manager, seulement
+// le publie pour les autres roles), ecriture reservee au Gerant.
+//
+// source="memoire" : donnees de demonstration locales (tests).
 const MenuDataContext = createContext(null)
 
-export function MenuDataProvider({ children }) {
-  const [categories, setCategories] = useState(CATEGORIES_INITIALES)
-  const [produits, setProduits] = useState(PRODUITS_INITIAUX)
+const ROLES_MENU = ['GERANT', 'MANAGER', 'VENDEUR']
+
+export function MenuDataProvider({ children, source = 'api' }) {
+  const { role } = useAuth()
+  const actif = ROLES_MENU.includes(role)
+  const cats = useRessourceApi({ chemin: '/categories', initial: CATEGORIES_INITIALES, source, actif, libelle: 'L’enregistrement de la catégorie' })
+  const prods = useRessourceApi({ chemin: '/produits', initial: PRODUITS_INITIAUX, source, actif, libelle: 'L’enregistrement du produit' })
+  const categories = cats.items
+  const produits = prods.items
 
   function categorieNomParId(id) {
     return categories.find((c) => c.id === id)?.nom || '—'
@@ -30,66 +35,80 @@ export function MenuDataProvider({ children }) {
   )
 
   function majStatutProduit(id, statut) {
-    setProduits((prev) => prev.map((p) => (p.id === id ? { ...p, statut, updatedAt: new Date().toISOString() } : p)))
+    return prods.majStatut(id, statut)
   }
 
   function toggleDisponibiliteProduit(id) {
-    setProduits((prev) => prev.map((p) => (
-      p.id === id
-        ? { ...p, disponibilite: p.disponibilite === 'EN_STOCK' ? 'RUPTURE' : 'EN_STOCK', updatedAt: new Date().toISOString() }
-        : p
-    )))
+    const produit = produits.find((p) => p.id === id)
+    if (!produit) return undefined
+    return prods.modifier(id, { disponibilite: produit.disponibilite === 'EN_STOCK' ? 'RUPTURE' : 'EN_STOCK' })
   }
 
   function toggleMiseEnAvantProduit(id, miseEnAvant) {
-    if (!['tendance'].includes(miseEnAvant)) return
-    setProduits((prev) => prev.map((produit) => (
-      produit.id === id
-        ? { ...produit, [miseEnAvant]: !produit[miseEnAvant], updatedAt: new Date().toISOString() }
-        : produit
-    )))
+    if (!['tendance'].includes(miseEnAvant)) return undefined
+    const produit = produits.find((p) => p.id === id)
+    if (!produit) return undefined
+    return prods.modifier(id, { [miseEnAvant]: !produit[miseEnAvant] })
   }
 
   function creerProduit(data) {
-    const nouveau = { id: createProduitId(), statut: 'BROUILLON', ...data, updatedAt: new Date().toISOString() }
-    setProduits((prev) => [nouveau, ...prev])
-    return nouveau
+    return prods.creer(data)
   }
 
   function modifierProduit(id, data) {
-    setProduits((prev) => prev.map((p) => (p.id === id ? { ...p, ...data, updatedAt: new Date().toISOString() } : p)))
+    return prods.modifier(id, data)
   }
 
+  // Le serveur ne supprime jamais une fiche (historique des commandes,
+  // journal d'audit) : "supprimer" un produit = l'archiver (restaurable).
   function supprimerProduit(id) {
-    setProduits((prev) => prev.filter((p) => p.id !== id))
+    if (prods.enMemoire) {
+      prods.setItems((prev) => prev.filter((p) => p.id !== id))
+      return undefined
+    }
+    const produit = produits.find((p) => p.id === id)
+    return produit?.statut === 'ARCHIVE' ? undefined : prods.majStatut(id, 'ARCHIVE')
   }
 
   function majStatutCategorie(id, statut) {
-    setCategories((prev) => prev.map((c) => (c.id === id ? { ...c, statut, updatedAt: new Date().toISOString() } : c)))
+    return cats.majStatut(id, statut)
   }
 
   function creerCategorie(data) {
-    const nouvelle = { id: createCategorieId(), statut: 'BROUILLON', ...data, updatedAt: new Date().toISOString() }
-    setCategories((prev) => [nouvelle, ...prev])
-    return nouvelle
+    return cats.creer(data)
   }
 
   function modifierCategorie(id, data) {
-    setCategories((prev) => prev.map((c) => (c.id === id ? { ...c, ...data, updatedAt: new Date().toISOString() } : c)))
+    return cats.modifier(id, data)
   }
 
-  function reaffecterEtSupprimerCategorie(categorieId, targetId) {
-    setProduits((prev) => prev.map((p) => (p.categorieId === categorieId ? { ...p, categorieId: targetId } : p)))
-    setCategories((prev) => prev.filter((c) => c.id !== categorieId))
+  // Categorie non vide : ses produits passent dans la categorie cible, puis
+  // elle est archivee (une seule operation cote serveur, reassignerVers).
+  async function reaffecterEtSupprimerCategorie(categorieId, targetId) {
+    if (cats.enMemoire) {
+      prods.setItems((prev) => prev.map((p) => (p.categorieId === categorieId ? { ...p, categorieId: targetId } : p)))
+      cats.setItems((prev) => prev.filter((c) => c.id !== categorieId))
+      return
+    }
+    prods.setItems((prev) => prev.map((p) => (p.categorieId === categorieId ? { ...p, categorieId: targetId } : p)))
+    await cats.majStatut(categorieId, 'ARCHIVE', { reassignerVers: targetId })
+    await prods.recharger()
   }
 
   function supprimerCategorie(id) {
-    setCategories((prev) => prev.filter((c) => c.id !== id))
+    if (cats.enMemoire) {
+      cats.setItems((prev) => prev.filter((c) => c.id !== id))
+      return undefined
+    }
+    return cats.majStatut(id, 'ARCHIVE')
   }
 
   const value = {
     categories,
     produits,
+    chargement: cats.chargement || prods.chargement,
+    erreur: cats.erreur || prods.erreur,
+    recharger: () => Promise.all([cats.recharger(), prods.recharger()]),
     categorieNomParId,
     produitsParCategorie,
     categoriesSelectionnables,

@@ -3,7 +3,8 @@ import { apiGet, apiPatch } from '../../api/client.js'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { STATUT_LABELS } from '../../auth/transitions.js'
 import { avecDemoSiVide, getDemoCommandes, isDemoId, mergeProduitsDemo, patchDemoStatut } from './cuisineDemo.js'
-import { REFRESH_MS, filtrerParStatuts, mapProduitsParId } from './cuisineUtils.js'
+import { REFRESH_MS, REFRESH_SECOURS_MS, filtrerParStatuts, mapProduitsParId } from './cuisineUtils.js'
+import useFluxCommandes from '../../hooks/useFluxCommandes.js'
 
 // Les 4 statuts geres par le poste cuisine, dans l'ordre du flux.
 const STATUTS_CUISINE = ['PAYEE', 'EN_PREPARATION', 'PRETE', 'EN_LIVRAISON']
@@ -87,11 +88,16 @@ export function useCuisineBoard() {
     }
   }, [apply, detecterNouvelles])
 
+  // Temps reel : chaque evenement (nouvelle commande payee, changement de
+  // statut par un collegue) recharge le tableau. Rafraichissement de secours
+  // espace tant que le flux est ouvert, normal sinon.
+  const fluxOuvert = useFluxCommandes(() => charger())
+
   useEffect(() => {
     charger()
-    const timer = setInterval(charger, REFRESH_MS)
+    const timer = setInterval(charger, fluxOuvert ? REFRESH_SECOURS_MS : REFRESH_MS)
     return () => clearInterval(timer)
-  }, [charger])
+  }, [charger, fluxOuvert])
 
   useEffect(() => {
     apiGet('/produits')
@@ -109,16 +115,23 @@ export function useCuisineBoard() {
         apply(getDemoCommandes(), true)
         return
       }
-      const maj = await apiPatch(`/commandes/${commande.id}/statut`, { statut })
+      const maj = await apiPatch(`/commandes/${commande.id}/statut`, { statut, version: commande.version })
       mutationVersion.current += 1
       setCommandes((prev) =>
         filtrerParStatuts(prev.map((c) => (c.id === commande.id ? maj : c)), STATUTS_CUISINE),
       )
     } catch (err) {
+      // 409 : deja fait par un collegue (STATUT_DEJA_APPLIQUE) ou commande
+      // modifiee entre-temps (VERSION_CONFLICT) : le tableau est recharge.
+      if (err.status === 409) charger()
       setError(
         err.status === 403
           ? `Action refusée pour « ${STATUT_LABELS[statut]} ».`
-          : err.message,
+          : err.code === 'STATUT_DEJA_APPLIQUE'
+            ? 'Déjà fait par un collègue : le tableau a été mis à jour.'
+            : err.status === 409
+              ? 'Cette commande a changé entre-temps : le tableau a été mis à jour.'
+              : err.message,
       )
     } finally {
       setPendingId(null)

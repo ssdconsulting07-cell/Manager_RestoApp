@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './auth/AuthContext.jsx'
 import { MenuDataProvider } from './features/gerant/MenuDataContext.jsx'
 import { AccompagnementsCondimentsProvider } from './features/gerant/AccompagnementsCondimentsContext.jsx'
 import { AnnoncesProvider } from './features/gerant/AnnoncesContext.jsx'
+import AlertesApi from './components/AlertesApi.jsx'
 import { ROLE_HOME, ROUTE_ROLES } from './auth/roles.js'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import NetworkStatus from './components/NetworkStatus.jsx'
@@ -49,6 +50,7 @@ export default function App() {
         <AnnoncesProvider>
           <BrowserRouter>
             <NetworkStatus />
+            <AlertesApi />
             <Routes>
               <Route path="/login" element={<Connexion />} />
               {/* Pas de page "tous roles" (voir JournalAudit.jsx) : le lien

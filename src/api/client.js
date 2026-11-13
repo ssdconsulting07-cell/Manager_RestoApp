@@ -96,3 +96,35 @@ export async function apiDelete(path) {
   })
   return handleResponse(res)
 }
+
+export async function apiPut(path, body) {
+  const res = await appeler(`${API_BASE_URL}${path}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify(body),
+  })
+  return handleResponse(res)
+}
+
+// Envoi d'un fichier (multipart/form-data) : le navigateur pose lui-meme
+// l'en-tete Content-Type avec la frontiere des parties.
+export async function apiEnvoyerFichier(path, champ, fichier, nomFichier) {
+  const formulaire = new FormData()
+  formulaire.append(champ, fichier, nomFichier)
+  const res = await appeler(`${API_BASE_URL}${path}`, {
+    method: 'POST',
+    headers: { ...authHeaders() },
+    body: formulaire,
+  })
+  return handleResponse(res)
+}
+
+// POST avec en-tetes supplementaires (ex. Idempotency-Key).
+export async function apiPostAvecEntetes(path, body, entetes = {}) {
+  const res = await appeler(`${API_BASE_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders(), ...entetes },
+    body: JSON.stringify(body),
+  })
+  return handleResponse(res)
+}

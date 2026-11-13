@@ -12,6 +12,9 @@ vi.mock('../../auth/AuthContext.jsx', () => ({
 vi.mock('../../api/client.js', () => ({
   apiGet: vi.fn(),
   apiPatch: vi.fn(),
+  // Flux temps reel : pas de session dans les tests, il ne s'ouvre pas.
+  API_BASE_URL: '/api/v1',
+  getAuthToken: () => null,
 }))
 
 function commandePayee(id) {

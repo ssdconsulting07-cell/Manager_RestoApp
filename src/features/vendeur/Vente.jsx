@@ -8,7 +8,7 @@ import { useAuth } from '../../auth/AuthContext.jsx'
 import { useMenuData } from '../gerant/MenuDataContext.jsx'
 import { useAccompagnementsCondiments } from '../gerant/AccompagnementsCondimentsContext.jsx'
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
-import { creerCommandeComptoir } from './commandeComptoir.js'
+import { creerCommandeComptoir, nouvelleCleVente } from './commandeComptoir.js'
 import RetraitsComptoir from './RetraitsComptoir.jsx'
 import { enregistrerVente } from './ventesData.js'
 import Recu from './Recu.jsx'
@@ -84,6 +84,8 @@ export default function Vente() {
   const [vue, setVue] = useState('catalogue')
   const [derniereVente, setDerniereVente] = useState(null)
   const [toast, setToast] = useState(null)
+  const cleVente = useRef(null)
+  const encaissementEnCours = useRef(false)
 
   // Identifiant stable par LIGNE de panier (independant du produit) : deux
   // lignes du meme produit peuvent coexister des qu'elles ont des
@@ -221,21 +223,46 @@ export default function Vente() {
     })
   }
 
+  // Encaissement : la vente est d'abord enregistree par le serveur (total
+  // recalcule, monnaie a rendre calculee par lui, numero de ticket), puis le
+  // recu reprend ses chiffres. En cas d'echec, le panier est garde et la
+  // meme cle d'idempotence est reutilisee au nouvel essai : jamais de vente
+  // en double.
   async function confirmerPaiement(modePaiement, montantRecuNombre) {
+    if (encaissementEnCours.current) return
+    encaissementEnCours.current = true
     const lignesVendues = panier
-    const vente = enregistrerVente({ lignes: lignesVendues, montantRecu: montantRecuNombre, modePaiement, vendeur: username })
-    setDerniereVente(vente)
-    setPanier([])
-    setVue('catalogue')
-    setToast({ id: Date.now(), type: 'success', message: `Vente encaissée — Ticket n° ${vente.numero}.` })
-    // Cree la commande cote cuisine en arriere-plan (voir commandeComptoir.js,
-    // decision du 16/10/2026) : le recu de caisse ci-dessus est deja affiche,
-    // cet appel ne doit jamais le retarder ni le faire echouer.
+    if (!cleVente.current) cleVente.current = nouvelleCleVente()
     try {
-      await creerCommandeComptoir(lignesVendues)
-    } catch {
-      // creerCommandeComptoir() ne rejette normalement jamais (repli demo en
-      // cas d'erreur reseau/backend) — filet de securite uniquement.
+      const commande = await creerCommandeComptoir(lignesVendues, {
+        moyenPaiement: modePaiement,
+        montantRecu: montantRecuNombre,
+        cle: cleVente.current,
+      })
+      cleVente.current = null
+      const vente = enregistrerVente({
+        lignes: lignesVendues,
+        montantRecu: commande?.montantRecu ?? montantRecuNombre,
+        modePaiement,
+        vendeur: username,
+        numero: commande?.id,
+        total: commande?.total,
+        monnaieRendue: commande?.monnaieRendue,
+      })
+      setDerniereVente(vente)
+      setPanier([])
+      setVue('catalogue')
+      setToast({ id: Date.now(), type: 'success', message: `Vente encaissée — Ticket n° ${vente.numero}.` })
+    } catch (err) {
+      setToast({
+        id: Date.now(),
+        type: 'error',
+        message: err?.code === 'MONTANT_INSUFFISANT'
+          ? err.message
+          : `Vente non enregistrée : ${err?.message || 'erreur inconnue'}. Le panier est conservé, réessayez.`,
+      })
+    } finally {
+      encaissementEnCours.current = false
     }
   }
 

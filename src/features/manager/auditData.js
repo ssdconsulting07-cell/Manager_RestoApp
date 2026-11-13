@@ -24,6 +24,9 @@ export const DOMAINES_AUDIT = {
   CATEGORIE: { label: 'Catégories', icon: 'fa-tags' },
   ANNONCE: { label: 'Annonces', icon: 'fa-bullhorn' },
   PERSONNEL: { label: 'Personnel', icon: 'fa-user-gear' },
+  // Domaines traces aussi par le serveur (journal reel) :
+  ZONE: { label: 'Zones de livraison', icon: 'fa-map-location-dot' },
+  PAIEMENT: { label: 'Paiements', icon: 'fa-credit-card' },
 }
 
 const ACTEURS = {

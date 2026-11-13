@@ -178,9 +178,6 @@ export default function AccompagnementsCondiments() {
                       <button className="crud-action is-archive" type="button" onClick={() => setModal({ kind: 'confirm-restaurer', item })}>
                         <i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Restaurer
                       </button>
-                      <button className="crud-action is-danger" type="button" onClick={() => setModal({ kind: 'confirm-delete', item })}>
-                        <i className="fa-solid fa-trash" aria-hidden="true" /> Supprimer
-                      </button>
                     </>
                   )}
                 </div>

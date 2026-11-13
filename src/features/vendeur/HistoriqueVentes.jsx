@@ -5,7 +5,8 @@ import Toast from '../../components/Toast.jsx'
 import Pagination from '../../components/crud/Pagination.jsx'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
-import { nombreArticles, totalEncaisseDuJourDe, ventesDuJourDe } from './ventesData.js'
+import { nombreArticles } from './ventesData.js'
+import useVentesVendeur from './useVentesVendeur.js'
 import { exporterVentes } from './exportVentes.js'
 import Recu from './Recu.jsx'
 import './vendeur-pos.css'
@@ -43,8 +44,8 @@ export default function HistoriqueVentes() {
   const [exportEnCours, setExportEnCours] = useState(false)
   const [toast, setToast] = useState(null)
 
-  const toutesLesVentes = ventesDuJourDe(username)
-  const totalDuJour = totalEncaisseDuJourDe(username)
+  // Ventes du jour enregistrees par le serveur pour ce vendeur.
+  const { ventesDuJour: toutesLesVentes, totalDuJour } = useVentesVendeur(username)
 
   const resultats = useMemo(
     () => toutesLesVentes.filter((v) => correspond(v, recherche)),

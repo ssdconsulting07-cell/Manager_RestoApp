@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { apiPost } from '../../api/client.js'
+import { apiPostAvecEntetes } from '../../api/client.js'
 import { allowedTransitions } from '../../auth/transitions.js'
 import { getDemoCommandes, patchDemoStatut } from '../cuisine/cuisineDemo.js'
 import { creerCommandeComptoir } from './commandeComptoir.js'
@@ -10,7 +10,7 @@ import { creerCommandeComptoir } from './commandeComptoir.js'
 // doit alors retomber sur le store demo partage avec la Cuisine/le Livreur
 // (decision du 16/10/2026, audit de coherence des flux, point 1).
 vi.mock('../../api/client.js', () => ({
-  apiPost: vi.fn(() => Promise.reject(new Error('pas de backend en test'))),
+  apiPostAvecEntetes: vi.fn(() => Promise.reject(new Error('pas de backend en test'))),
 }))
 
 describe('creerCommandeComptoir', () => {
@@ -22,7 +22,7 @@ describe('creerCommandeComptoir', () => {
 
     const commande = await creerCommandeComptoir(panier)
 
-    expect(apiPost).toHaveBeenCalledWith('/commandes', expect.objectContaining({ canal: 'COMPTOIR', mode: 'RETRAIT' }))
+    expect(apiPostAvecEntetes).toHaveBeenCalledWith('/commandes', expect.objectContaining({ canal: 'COMPTOIR', mode: 'RETRAIT' }), {})
     expect(commande.statut).toBe('PAYEE')
     expect(commande.canal).toBe('COMPTOIR')
     expect(commande.mode).toBe('RETRAIT')

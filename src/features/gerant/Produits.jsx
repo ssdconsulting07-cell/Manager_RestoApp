@@ -227,9 +227,6 @@ export default function Produits() {
                       <button className="crud-action is-archive" type="button" onClick={() => setModal({ kind: 'confirm-restaurer-produit', produit })}>
                         <i className="fa-solid fa-clock-rotate-left" aria-hidden="true" /> Restaurer
                       </button>
-                      <button className="crud-action is-danger" type="button" onClick={() => setModal({ kind: 'confirm-delete-produit', produit })}>
-                        <i className="fa-solid fa-trash" aria-hidden="true" /> Supprimer
-                      </button>
                     </>
                   )}
                 </div>
@@ -278,7 +275,7 @@ export default function Produits() {
       {modal?.kind === 'confirm-archive-produit' && (
         <ConfirmModal
           title="Archiver ce produit ?"
-          message={`« ${modal.produit.nom} » sera déplacé dans les archives. Vous pourrez le restaurer ou le supprimer définitivement depuis le filtre Archivés.`}
+          message={`« ${modal.produit.nom} » sera déplacé dans les archives. Vous pourrez le restaurer depuis le filtre Archivés. Les fiches archivées sont conservées (historique des commandes).`}
           confirmLabel="Archiver"
           tone="danger"
           icon="fa-box-archive"

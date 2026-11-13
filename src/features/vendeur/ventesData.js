@@ -69,17 +69,19 @@ const ventes = [...VENTES_INITIALES]
 // est l'une des cles de MODES_PAIEMENT (voir modesPaiement.jsx) : 'wave',
 // 'orange-money', 'mixx-yas', 'carte' ou 'especes'. montantRecu vaut le
 // montant total pour un mode non-especes (pas de monnaie a rendre).
-export function enregistrerVente({ lignes, montantRecu, modePaiement, vendeur }) {
-  const total = totalLignes(lignes)
+// numero, total, monnaieRendue : valeurs du serveur quand la vente y est
+// enregistree (ticket = numero de commande) ; calcul local sinon (demonstration).
+export function enregistrerVente({ lignes, montantRecu, modePaiement, vendeur, numero, total: totalServeur, monnaieRendue }) {
+  const total = totalServeur ?? totalLignes(lignes)
   const vente = {
-    id: `vente-${prochainNumero}`,
-    numero: prochainNumero,
+    id: `vente-${numero ?? prochainNumero}`,
+    numero: numero ?? prochainNumero,
     vendeur,
     lignes,
     total,
     modePaiement,
     montantRecu,
-    monnaieRendue: Math.max(0, montantRecu - total),
+    monnaieRendue: monnaieRendue ?? Math.max(0, montantRecu - total),
     createdAt: new Date().toISOString(),
   }
   prochainNumero += 1

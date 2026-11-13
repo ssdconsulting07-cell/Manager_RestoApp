@@ -241,7 +241,7 @@ export default function CommandeRow({
               <span className="cuisine-row-client-item"><i className="fa-solid fa-user" aria-hidden="true" /> {nomClient}</span>
             )}
             {telClient && (
-              <a className="cuisine-row-client-item is-link" href={`tel:${telClient.replace(/[^d+]/g, '')}`} onClick={(event) => event.stopPropagation()}>
+              <a className="cuisine-row-client-item is-link" href={`tel:${telClient.replace(/[^\d+]/g, '')}`} onClick={(event) => event.stopPropagation()}>
                 <i className="fa-solid fa-phone" aria-hidden="true" /> {telClient}
               </a>
             )}

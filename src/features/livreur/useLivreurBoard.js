@@ -41,7 +41,14 @@ export function useLivreurBoard() {
 
   const apply = useCallback((liste, isDemo) => {
     setDemo(isDemo)
-    const livraisons = liste.filter(estLivraison)
+    // Date de livraison : champ livreeLe (donnees de demo) ou, cote serveur,
+    // horodatage de l'etape LIVREE de l'historique (le backend n'envoie pas
+    // de champ dedie). Sans elle, « Livrées aujourd'hui » restait a 0.
+    const livraisons = liste.filter(estLivraison).map((c) => (
+      c.livreeLe || c.statut !== 'LIVREE'
+        ? c
+        : { ...c, livreeLe: (c.historique || []).find((h) => h.statut === 'LIVREE')?.le || null }
+    ))
     setCommandes(
       livraisons
         .filter((c) => STATUTS_LIVREUR.includes(c.statut))

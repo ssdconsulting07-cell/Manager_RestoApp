@@ -6,6 +6,7 @@ import { MenuDataProvider } from './features/gerant/MenuDataContext.jsx'
 import { AccompagnementsCondimentsProvider } from './features/gerant/AccompagnementsCondimentsContext.jsx'
 import { AnnoncesProvider } from './features/gerant/AnnoncesContext.jsx'
 import AlertesApi from './components/AlertesApi.jsx'
+import FiletErreur from './components/FiletErreur.jsx'
 import { ROLE_HOME, ROUTE_ROLES } from './auth/roles.js'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import NetworkStatus from './components/NetworkStatus.jsx'
@@ -51,6 +52,7 @@ export default function App() {
           <BrowserRouter>
             <NetworkStatus />
             <AlertesApi />
+            <FiletErreur>
             <Routes>
               <Route path="/login" element={<Connexion />} />
               {/* Pas de page "tous roles" (voir JournalAudit.jsx) : le lien
@@ -94,6 +96,7 @@ export default function App() {
               ))}
               <Route path="*" element={<RoleHome />} />
             </Routes>
+            </FiletErreur>
           </BrowserRouter>
         </AnnoncesProvider>
         </AccompagnementsCondimentsProvider>

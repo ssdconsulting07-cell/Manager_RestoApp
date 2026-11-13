@@ -648,3 +648,21 @@
 @media (pointer: coarse) {
   .cuisine-row-client-item.is-link { min-height: 40px; display: inline-flex; align-items: center; }
 }
+
+/* Ecran etroit (telephone) : la zone ticket + badges garde au moins 240px
+   avant de partager sa ligne ; sinon les boutons d'action passent a la
+   ligne en dessous (avant : la zone se reduisait a quelques pixels et les
+   boutons recouvraient les badges canal / mode / heure). */
+.cuisine-row-info {
+  flex: 1 1 240px;
+}
+
+@media (max-width: 640px) {
+  .cuisine-row-primary {
+    flex: 1 1 auto;
+  }
+
+  .cuisine-row-primary .manager-button {
+    flex: 1 1 auto;
+  }
+}

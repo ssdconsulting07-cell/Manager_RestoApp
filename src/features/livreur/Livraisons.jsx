@@ -241,8 +241,10 @@ export default function Livraisons() {
       {scanCible && (
         <ScanLivraisonModal
           commande={scanCible}
-          onConfirm={() => {
-            changerStatut(scanCible, 'LIVREE')
+          // La modale reste ouverte (« Validation de la livraison… ») jusqu'a
+          // la reponse du serveur ; une erreur s'affiche ensuite sur la page.
+          onConfirm={async () => {
+            await changerStatut(scanCible, 'LIVREE')
             setScanCible(null)
           }}
           onCancel={() => setScanCible(null)}

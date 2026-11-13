@@ -24,8 +24,8 @@ function totalLignes(lignes) {
 // Historique de demarrage pour le compte vendeur seede (voir StaffUserSeed
 // cote Backend_RestoApp) : quelques ventes deja encaissees aujourd'hui, pour
 // que l'historique et le dashboard Vendeur ne soient pas vides a la
-// premiere connexion. Toutes en especes (modePaiement), seul mode qui
-// existait avant l'ajout des modes mobile money / carte.
+// premiere connexion. Moyens de paiement varies (memes cles que
+// modesPaiement.jsx) ; montantRecu = total hors especes.
 const SEED_VENDEUR = 'vendeur'
 
 function ilYA(minutes) {
@@ -33,20 +33,20 @@ function ilYA(minutes) {
 }
 
 const VENTES_INITIALES = [
-  { numero: 101, lignes: [ligne('produit-1', 1), ligne('produit-3', 1), ligne('produit-4', 1)], montantRecu: 6500, createdAt: ilYA(240) },
-  { numero: 102, lignes: [ligne('produit-3', 2)], montantRecu: 3000, createdAt: ilYA(205) },
-  { numero: 103, lignes: [ligne('produit-2', 1), ligne('produit-4', 2)], montantRecu: 7000, createdAt: ilYA(150) },
-  { numero: 104, lignes: [ligne('produit-1', 2), ligne('produit-3', 1)], montantRecu: 8500, createdAt: ilYA(95) },
-  { numero: 105, lignes: [ligne('produit-4', 1)], montantRecu: 1000, createdAt: ilYA(40) },
+  { numero: 101, lignes: [ligne('produit-1', 1), ligne('produit-3', 1), ligne('produit-4', 1)], modePaiement: 'especes', montantRecu: 6500, createdAt: ilYA(240) },
+  { numero: 102, lignes: [ligne('produit-10', 2), ligne('produit-18', 2)], modePaiement: 'wave', createdAt: ilYA(205) },
+  { numero: 103, lignes: [ligne('produit-7', 1), ligne('produit-14', 1), ligne('produit-20', 1)], modePaiement: 'orange-money', createdAt: ilYA(150) },
+  { numero: 104, lignes: [ligne('produit-1', 2), ligne('produit-3', 1), ligne('produit-19', 2)], modePaiement: 'especes', montantRecu: 12000, createdAt: ilYA(95) },
+  { numero: 105, lignes: [ligne('produit-12', 1), ligne('produit-23', 1)], modePaiement: 'carte', createdAt: ilYA(40) },
 ].map((v) => ({
   id: `vente-${v.numero}`,
   numero: v.numero,
   vendeur: SEED_VENDEUR,
   lignes: v.lignes,
   total: totalLignes(v.lignes),
-  modePaiement: 'especes',
-  montantRecu: v.montantRecu,
-  monnaieRendue: Math.max(0, v.montantRecu - totalLignes(v.lignes)),
+  modePaiement: v.modePaiement,
+  montantRecu: v.montantRecu ?? totalLignes(v.lignes),
+  monnaieRendue: Math.max(0, (v.montantRecu ?? totalLignes(v.lignes)) - totalLignes(v.lignes)),
   createdAt: v.createdAt,
 }))
 

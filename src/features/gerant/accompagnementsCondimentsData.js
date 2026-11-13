@@ -33,13 +33,8 @@ export function typeIcon(type) {
 
 export const ACCOMPAGNEMENTS_CONDIMENTS_INITIAUX = [
   {
-    // Memes nom/prix que l'ancien choix "Frites maison" tire du catalogue
-    // Produits (categorie-2) avant le 24/10/2026 : la caisse (Vente.jsx)
-    // continue de proposer exactement le meme choix au meme prix, seule la
-    // source de donnees change (fiche independante plutot que categorie du
-    // catalogue) - voir brainstorming-chez-ketchup.md.
     id: 'accomp-cond-1',
-    nom: 'Frites maison',
+    nom: "Frites maison",
     prix: 1500,
     type: TYPES.ACCOMPAGNEMENT,
     statut: STATUTS.ACTIF,
@@ -47,7 +42,7 @@ export const ACCOMPAGNEMENTS_CONDIMENTS_INITIAUX = [
   },
   {
     id: 'accomp-cond-2',
-    nom: 'Salade',
+    nom: "Salade",
     prix: 400,
     type: TYPES.ACCOMPAGNEMENT,
     statut: STATUTS.ACTIF,
@@ -55,15 +50,15 @@ export const ACCOMPAGNEMENTS_CONDIMENTS_INITIAUX = [
   },
   {
     id: 'accomp-cond-3',
-    nom: 'Riz',
+    nom: "Riz",
     prix: 500,
     type: TYPES.ACCOMPAGNEMENT,
     statut: STATUTS.BROUILLON,
-    updatedAt: '2026-10-21T09:00:00Z',
+    updatedAt: '2026-10-20T09:00:00Z',
   },
   {
     id: 'accomp-cond-4',
-    nom: 'Mayonnaise',
+    nom: "Mayonnaise",
     prix: 0,
     type: TYPES.CONDIMENT,
     statut: STATUTS.ACTIF,
@@ -71,10 +66,58 @@ export const ACCOMPAGNEMENTS_CONDIMENTS_INITIAUX = [
   },
   {
     id: 'accomp-cond-5',
-    nom: 'Ketchup',
+    nom: "Ketchup",
     prix: 0,
     type: TYPES.CONDIMENT,
     statut: STATUTS.ACTIF,
+    updatedAt: '2026-10-20T09:00:00Z',
+  },
+  {
+    id: 'accomp-cond-6',
+    nom: "Alloco",
+    prix: 1000,
+    type: TYPES.ACCOMPAGNEMENT,
+    statut: STATUTS.ACTIF,
+    updatedAt: '2026-10-20T09:00:00Z',
+  },
+  {
+    id: 'accomp-cond-7',
+    nom: "Attiéké",
+    prix: 800,
+    type: TYPES.ACCOMPAGNEMENT,
+    statut: STATUTS.ACTIF,
+    updatedAt: '2026-10-20T09:00:00Z',
+  },
+  {
+    id: 'accomp-cond-8',
+    nom: "Sauce piquante maison",
+    prix: 0,
+    type: TYPES.CONDIMENT,
+    statut: STATUTS.ACTIF,
+    updatedAt: '2026-10-20T09:00:00Z',
+  },
+  {
+    id: 'accomp-cond-9',
+    nom: "Sauce oignon (yassa)",
+    prix: 200,
+    type: TYPES.CONDIMENT,
+    statut: STATUTS.ACTIF,
+    updatedAt: '2026-10-20T09:00:00Z',
+  },
+  {
+    id: 'accomp-cond-10',
+    nom: "Sauce barbecue",
+    prix: 200,
+    type: TYPES.CONDIMENT,
+    statut: STATUTS.ACTIF,
+    updatedAt: '2026-10-20T09:00:00Z',
+  },
+  {
+    id: 'accomp-cond-11',
+    nom: "Moutarde",
+    prix: 0,
+    type: TYPES.CONDIMENT,
+    statut: STATUTS.ARCHIVE,
     updatedAt: '2026-10-20T09:00:00Z',
   },
 ]

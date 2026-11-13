@@ -37,7 +37,7 @@ function minutesAgo(n) {
   return new Date(Date.now() - n * 60_000).toISOString()
 }
 
-const DEMO_VERSION = 9
+const DEMO_VERSION = 10
 
 const DEMO_SEED = [
   // --- File d'attente (PAYEE) ---
@@ -49,9 +49,9 @@ const DEMO_SEED = [
     creeLe: minutesAgo(2),
     note: 'Sans oignon s’il vous plaît',
     lignes: [
-      { produitId: 'p-burger', quantite: 2, personnalisation: 'Sans oignon', accompagnementNom: 'Frites' },
-      { produitId: 'p-fries', quantite: 1 },
-      { produitId: 'p-cola', quantite: 2 },
+      { produitId: 'produit-1', quantite: 2, personnalisation: 'Sans oignon', accompagnementNom: 'Frites maison' },
+      { produitId: 'produit-3', quantite: 1 },
+      { produitId: 'produit-20', quantite: 2 },
     ],
   },
   {
@@ -60,7 +60,7 @@ const DEMO_SEED = [
     canal: 'COMPTOIR',
     creeLe: minutesAgo(4),
     note: 'Commande express — 1 seul article',
-    lignes: [{ produitId: 'p-burger', quantite: 1, personnalisation: 'Bien cuit' }],
+    lignes: [{ produitId: 'produit-1', quantite: 1, personnalisation: 'Bien cuit' }],
   },
   {
     id: 'demo-1052',
@@ -70,13 +70,14 @@ const DEMO_SEED = [
     creeLe: minutesAgo(5),
     clientPrenom: 'Awa',
     clientNom: 'Ndiaye',
-    clientTelephone: '77 123 45 67',
-    adresseLivraison: 'Dakar — Plateau',
+    clientTelephone: '+221771234567',
+    adresseLivraison: 'Plateau/Gorée',
+    positionLivraison: { latitude: 14.6702, longitude: -17.4378, precision: 15 },
     note: 'Sonner à l’interphone B12',
     lignes: [
-      { produitId: 'p-double', quantite: 1, personnalisation: 'Extra cheddar' },
-      { produitId: 'p-onion', quantite: 1 },
-      { produitId: 'p-sprite', quantite: 1 },
+      { produitId: 'produit-9', quantite: 1, personnalisation: 'Extra cheddar' },
+      { produitId: 'produit-14', quantite: 1 },
+      { produitId: 'produit-18', quantite: 1 },
     ],
   },
   {
@@ -87,9 +88,10 @@ const DEMO_SEED = [
     creeLe: minutesAgo(7),
     clientPrenom: 'Moussa',
     clientNom: 'Fall',
-    clientTelephone: '76 234 56 78',
-    adresseLivraison: 'Pikine — Guinaw Rail',
-    lignes: [{ produitId: 'p-nuggets12', quantite: 1 }],
+    clientTelephone: '+221762345678',
+    adresseLivraison: 'Dagoudane',
+    positionLivraison: { latitude: 14.7488, longitude: -17.4031, precision: 15 },
+    lignes: [{ produitId: 'produit-11', quantite: 1 }],
   },
   {
     id: 'demo-1053',
@@ -98,10 +100,10 @@ const DEMO_SEED = [
     mode: 'RETRAIT',
     creeLe: minutesAgo(9),
     lignes: [
-      { produitId: 'p-chicken', quantite: 2 },
-      { produitId: 'p-fries-l', quantite: 1 },
-      { produitId: 'p-jus', quantite: 2 },
-      { produitId: 'p-dessert', quantite: 1 },
+      { produitId: 'produit-10', quantite: 2 },
+      { produitId: 'produit-13', quantite: 1 },
+      { produitId: 'produit-4', quantite: 2 },
+      { produitId: 'produit-23', quantite: 1 },
     ],
   },
   {
@@ -112,12 +114,13 @@ const DEMO_SEED = [
     creeLe: minutesAgo(11),
     clientPrenom: 'Fatou',
     clientNom: 'Sarr',
-    clientTelephone: '70 345 67 89',
-    adresseLivraison: 'Guédiawaye — Sam Notaire',
+    clientTelephone: '+221703456789',
+    adresseLivraison: 'Guédiawaye',
+    positionLivraison: { latitude: 14.7781, longitude: -17.3934, precision: 15 },
     lignes: [
-      { produitId: 'p-cheese', quantite: 1 },
-      { produitId: 'p-nuggets', quantite: 1 },
-      { produitId: 'p-eau', quantite: 2 },
+      { produitId: 'produit-7', quantite: 1 },
+      { produitId: 'produit-15', quantite: 1 },
+      { produitId: 'produit-21', quantite: 2 },
     ],
   },
   // --- Poste préparation (EN_PREPARATION) ---
@@ -129,8 +132,8 @@ const DEMO_SEED = [
     creeLe: minutesAgo(14),
     note: 'Retour client — bien cuit',
     lignes: [
-      { produitId: 'p-wrap', quantite: 1, personnalisation: 'Sauce à part' },
-      { produitId: 'p-salade', quantite: 1 },
+      { produitId: 'produit-12', quantite: 1, personnalisation: 'Sauce à part' },
+      { produitId: 'produit-17', quantite: 1 },
     ],
   },
   {
@@ -139,7 +142,7 @@ const DEMO_SEED = [
     canal: 'COMPTOIR',
     creeLe: minutesAgo(15),
     note: 'Ticket simple — un seul plat',
-    lignes: [{ produitId: 'p-salade', quantite: 1, personnalisation: 'Sans croûtons' }],
+    lignes: [{ produitId: 'produit-17', quantite: 1, personnalisation: 'Sans croûtons' }],
   },
   {
     id: 'demo-1047',
@@ -149,12 +152,13 @@ const DEMO_SEED = [
     creeLe: minutesAgo(17),
     clientPrenom: 'Ibrahima',
     clientNom: 'Diallo',
-    clientTelephone: '78 456 78 90',
-    adresseLivraison: 'Dakar — Plateau',
+    clientTelephone: '+221784567890',
+    adresseLivraison: 'Plateau/Gorée',
+    positionLivraison: { latitude: 14.6702, longitude: -17.4378, precision: 15 },
     lignes: [
-      { produitId: 'p-burger', quantite: 3, accompagnementNom: 'Onion rings' },
-      { produitId: 'p-fries', quantite: 2 },
-      { produitId: 'p-cola', quantite: 3 },
+      { produitId: 'produit-1', quantite: 3, accompagnementNom: 'Alloco' },
+      { produitId: 'produit-3', quantite: 2 },
+      { produitId: 'produit-20', quantite: 3 },
     ],
   },
   {
@@ -165,9 +169,9 @@ const DEMO_SEED = [
     creeLe: minutesAgo(19),
     clientPrenom: 'Sokhna',
     clientNom: 'Ba',
-    clientTelephone: '77 567 89 01',
-    adresseLivraison: 'Rufisque — Centre',
-    lignes: [{ produitId: 'p-dessert', quantite: 2 }],
+    clientTelephone: '+221775678901',
+    adresseLivraison: 'Rufisque',
+    lignes: [{ produitId: 'produit-23', quantite: 2 }],
   },
   {
     id: 'demo-1048',
@@ -177,9 +181,9 @@ const DEMO_SEED = [
     creeLe: minutesAgo(21),
     note: 'Allergie sésame',
     lignes: [
-      { produitId: 'p-chicken', quantite: 1, personnalisation: 'Sans pain sésame' },
-      { produitId: 'p-nuggets12', quantite: 1 },
-      { produitId: 'p-jus', quantite: 1 },
+      { produitId: 'produit-10', quantite: 1, personnalisation: 'Sans pain sésame' },
+      { produitId: 'produit-11', quantite: 1 },
+      { produitId: 'produit-4', quantite: 1 },
     ],
   },
   {
@@ -190,13 +194,14 @@ const DEMO_SEED = [
     creeLe: minutesAgo(25),
     clientPrenom: 'Cheikh',
     clientNom: 'Gueye',
-    clientTelephone: '76 678 90 12',
-    adresseLivraison: 'Pikine — Guinaw Rail',
+    clientTelephone: '+221766789012',
+    adresseLivraison: 'Dagoudane',
+    positionLivraison: { latitude: 14.7488, longitude: -17.4031, precision: 15 },
     lignes: [
-      { produitId: 'p-double', quantite: 2, personnalisation: 'Bien cuit' },
-      { produitId: 'p-fries-l', quantite: 2 },
-      { produitId: 'p-onion', quantite: 1 },
-      { produitId: 'p-sprite', quantite: 2 },
+      { produitId: 'produit-9', quantite: 2, personnalisation: 'Bien cuit' },
+      { produitId: 'produit-13', quantite: 2 },
+      { produitId: 'produit-14', quantite: 1 },
+      { produitId: 'produit-18', quantite: 2 },
     ],
   },
   // --- Prêtes (compteur dashboard) ---
@@ -205,7 +210,7 @@ const DEMO_SEED = [
     statut: 'PRETE',
     canal: 'COMPTOIR',
     creeLe: minutesAgo(32),
-    lignes: [{ produitId: 'p-cheese', quantite: 1 }],
+    lignes: [{ produitId: 'produit-7', quantite: 1 }],
   },
   {
     id: 'demo-1045',
@@ -215,12 +220,13 @@ const DEMO_SEED = [
     creeLe: minutesAgo(38),
     clientPrenom: 'Mariama',
     clientNom: 'Sow',
-    clientTelephone: '70 789 01 23',
-    adresseLivraison: 'Guédiawaye — Sam Notaire',
+    clientTelephone: '+221707890123',
+    adresseLivraison: 'Guédiawaye',
+    positionLivraison: { latitude: 14.7781, longitude: -17.3934, precision: 15 },
     lignes: [
-      { produitId: 'p-burger', quantite: 2 },
-      { produitId: 'p-fries', quantite: 2 },
-      { produitId: 'p-dessert', quantite: 2 },
+      { produitId: 'produit-1', quantite: 2 },
+      { produitId: 'produit-3', quantite: 2 },
+      { produitId: 'produit-23', quantite: 2 },
     ],
   },
   // --- En livraison (reste visible, ne disparait plus — retour utilisateur) ---
@@ -232,11 +238,12 @@ const DEMO_SEED = [
     creeLe: minutesAgo(44),
     clientPrenom: 'Abdou',
     clientNom: 'Diop',
-    clientTelephone: '78 890 12 34',
-    adresseLivraison: 'Dakar — Plateau',
+    clientTelephone: '+221788901234',
+    adresseLivraison: 'Plateau/Gorée',
+    positionLivraison: { latitude: 14.6702, longitude: -17.4378, precision: 15 },
     lignes: [
-      { produitId: 'p-wrap', quantite: 1 },
-      { produitId: 'p-jus', quantite: 1 },
+      { produitId: 'produit-12', quantite: 1 },
+      { produitId: 'produit-4', quantite: 1 },
     ],
   },
   // --- Livrees (historique Livreur, voir HistoriqueLivraisons.jsx) ---
@@ -254,11 +261,11 @@ const DEMO_SEED = [
     livreeLe: minutesAgo(95),
     clientPrenom: 'Khady',
     clientNom: 'Toure',
-    clientTelephone: '77 901 23 45',
-    adresseLivraison: 'Rufisque — Centre',
+    clientTelephone: '+221779012345',
+    adresseLivraison: 'Rufisque',
     lignes: [
-      { produitId: 'p-burger', quantite: 1 },
-      { produitId: 'p-cola', quantite: 1 },
+      { produitId: 'produit-1', quantite: 1 },
+      { produitId: 'produit-20', quantite: 1 },
     ],
   },
   {
@@ -270,11 +277,12 @@ const DEMO_SEED = [
     livreeLe: minutesAgo(160),
     clientPrenom: 'Omar',
     clientNom: 'Seck',
-    clientTelephone: '76 012 34 56',
-    adresseLivraison: 'Pikine — Guinaw Rail',
+    clientTelephone: '+221760123456',
+    adresseLivraison: 'Dagoudane',
+    positionLivraison: { latitude: 14.7488, longitude: -17.4031, precision: 15 },
     lignes: [
-      { produitId: 'p-double', quantite: 2 },
-      { produitId: 'p-fries-l', quantite: 1 },
+      { produitId: 'produit-9', quantite: 2 },
+      { produitId: 'produit-13', quantite: 1 },
     ],
   },
   {
@@ -286,11 +294,12 @@ const DEMO_SEED = [
     livreeLe: minutesAgo(1450),
     clientPrenom: 'Astou',
     clientNom: 'Mbaye',
-    clientTelephone: '70 123 45 67',
-    adresseLivraison: 'Dakar — Plateau',
+    clientTelephone: '+221701234567',
+    adresseLivraison: 'Plateau/Gorée',
+    positionLivraison: { latitude: 14.6702, longitude: -17.4378, precision: 15 },
     lignes: [
-      { produitId: 'p-wrap', quantite: 1 },
-      { produitId: 'p-jus', quantite: 1 },
+      { produitId: 'produit-12', quantite: 1 },
+      { produitId: 'produit-4', quantite: 1 },
     ],
   },
   {
@@ -302,9 +311,10 @@ const DEMO_SEED = [
     livreeLe: minutesAgo(4320),
     clientPrenom: 'Lamine',
     clientNom: 'Faye',
-    clientTelephone: '78 234 56 78',
-    adresseLivraison: 'Guédiawaye — Sam Notaire',
-    lignes: [{ produitId: 'p-cheese', quantite: 3 }],
+    clientTelephone: '+221782345678',
+    adresseLivraison: 'Guédiawaye',
+    positionLivraison: { latitude: 14.7781, longitude: -17.3934, precision: 15 },
+    lignes: [{ produitId: 'produit-7', quantite: 3 }],
   },
 ]
 

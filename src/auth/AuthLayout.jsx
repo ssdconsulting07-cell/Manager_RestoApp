@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import AuthCarousel from './AuthCarousel.jsx'
 import '../styles/auth.css'
+import PiedDePage from '../components/PiedDePage.jsx'
 
 export default function AuthLayout({ children }) {
   const [isDark, setIsDark] = useState(() => localStorage.getItem('senyummies_manager_theme') === 'dark')
@@ -20,7 +21,7 @@ export default function AuthLayout({ children }) {
     <main className={`auth-shell ${isDark ? 'is-dark' : ''}`}>
       <section className="auth-form-panel" aria-label="Connexion au personnel">
         <div className="auth-form-content">{children}</div>
-        <p className="auth-copyright">SenYummies Manager · v{__APP_VERSION__} · © SSD Consulting</p>
+        <PiedDePage className="auth-copyright" />
       </section>
       <AuthCarousel />
     </main>

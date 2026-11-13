@@ -19,7 +19,15 @@ import { signalerErreurApi } from '../utils/alertes.js'
 //   sur POST /photos, puis son adresse est enregistree dans la fiche.
 //
 // source 'memoire' : donnees locales uniquement (tests, demonstration).
-export default function useRessourceApi({ chemin, initial = [], source = 'api', actif = true, libelle = 'L’enregistrement' }) {
+export default function useRessourceApi({
+  chemin,
+  initial = [],
+  source = 'api',
+  actif = true,
+  libelle = 'L’enregistrement',
+  // Transformation avant envoi (par defaut : envoi de la photo recadree).
+  preparer = avecPhotoEnvoyee,
+}) {
   const enMemoire = source === 'memoire'
   const [items, setItems] = useState(enMemoire ? initial : [])
   const [chargement, setChargement] = useState(!enMemoire && actif)
@@ -81,11 +89,15 @@ export default function useRessourceApi({ chemin, initial = [], source = 'api', 
   const creer = useCallback((data) => {
     const provisoire = `provisoire-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
     const statutVoulu = data.statut
-    appliquer((prev) => [{ statut: 'BROUILLON', ...data, id: provisoire, updatedAt: maintenant() }, ...prev])
-    if (enMemoire) return Promise.resolve()
-    return enFile(provisoire, async () => {
+    const ficheProvisoire = { statut: 'BROUILLON', ...data, id: provisoire, updatedAt: maintenant() }
+    appliquer((prev) => [ficheProvisoire, ...prev])
+    if (enMemoire) return ficheProvisoire
+    // Renvoie tout de suite la fiche provisoire (les ecrans enchainent parfois
+    // "creer puis publier") : une operation demandee sur son identifiant
+    // provisoire attend la fin de la creation, puis vise le vrai identifiant.
+    enFile(provisoire, async () => {
       try {
-        let fiche = await apiPost(chemin, await avecPhotoEnvoyee(data))
+        let fiche = await apiPost(chemin, await preparer(data))
         if (statutVoulu && statutVoulu !== fiche.statut) {
           fiche = await apiPatch(`${chemin}/${fiche.id}/statut`, { statut: statutVoulu, version: fiche.version })
         }
@@ -95,8 +107,9 @@ export default function useRessourceApi({ chemin, initial = [], source = 'api', 
         echec(err)
       }
     })
+    return ficheProvisoire
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enMemoire, chemin, appliquer, echec])
+  }, [enMemoire, chemin, appliquer, echec, preparer])
 
   const modifier = useCallback((id, data) => {
     appliquer((prev) => prev.map((i) => (i.id === idReel(id) ? { ...i, ...data, updatedAt: maintenant() } : i)))
@@ -109,7 +122,7 @@ export default function useRessourceApi({ chemin, initial = [], source = 'api', 
         // reponse d'une operation precedente) + champs modifies.
         const { statut, ...champs } = data
         const { id: _id, statut: _statut, updatedAt: _maj, version, ...connu } = avant || {}
-        let fiche = await apiPut(`${chemin}/${cible}`, { ...(await avecPhotoEnvoyee({ ...connu, ...champs })), version })
+        let fiche = await apiPut(`${chemin}/${cible}`, { ...(await preparer({ ...connu, ...champs })), version })
         if (statut && statut !== fiche.statut) {
           fiche = await apiPatch(`${chemin}/${cible}/statut`, { statut, version: fiche.version })
         }
@@ -119,7 +132,7 @@ export default function useRessourceApi({ chemin, initial = [], source = 'api', 
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enMemoire, chemin, appliquer, echec])
+  }, [enMemoire, chemin, appliquer, echec, preparer])
 
   const majStatut = useCallback((id, statut, extra = {}) => {
     appliquer((prev) => prev.map((i) => (i.id === idReel(id) ? { ...i, statut, updatedAt: maintenant() } : i)))
@@ -134,7 +147,7 @@ export default function useRessourceApi({ chemin, initial = [], source = 'api', 
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enMemoire, chemin, appliquer, echec])
+  }, [enMemoire, chemin, appliquer, echec, preparer])
 
   return { items, setItems: appliquer, chargement, erreur, recharger, creer, modifier, majStatut, enMemoire }
 }
@@ -143,10 +156,15 @@ export default function useRessourceApi({ chemin, initial = [], source = 'api', 
 // qui la verifie, la redimensionne, retire ses metadonnees et renvoie son
 // adresse definitive. Une adresse https deja enregistree est gardee telle quelle.
 export async function avecPhotoEnvoyee(data) {
-  const url = data?.photoUrl
-  if (!url || !(url.startsWith('blob:') || url.startsWith('data:'))) return data
+  return { ...data, photoUrl: await imageEnvoyee(data?.photoUrl) }
+}
+
+// Adresse definitive d'une image : envoyee sur POST /photos si elle n'existe
+// encore que dans le navigateur (blob:/data:), gardee telle quelle sinon.
+export async function imageEnvoyee(url) {
+  if (!url || !(url.startsWith('blob:') || url.startsWith('data:'))) return url
   const fichier = await (await fetch(url)).blob()
   const extension = fichier.type === 'image/png' ? 'png' : 'jpg'
   const { url: definitive } = await apiEnvoyerFichier('/photos', 'fichier', fichier, `photo.${extension}`)
-  return { ...data, photoUrl: definitive }
+  return definitive
 }

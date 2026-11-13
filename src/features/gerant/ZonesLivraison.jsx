@@ -4,32 +4,23 @@ import Toast from '../../components/Toast.jsx'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import CarteSenegal from './CarteSenegal.jsx'
 import { regionLabel } from './senegalZones.js'
-import {
-  activerRegion,
-  ajouterZone,
-  arrondissementsDe,
-  definirPrix,
-  desactiverRegion,
-  regionsActives,
-  supprimerZone,
-  zonesLivraison,
-} from './zonesLivraisonData.js'
+import useZonesLivraison from './useZonesLivraison.js'
 
 // Page "Zones de livraison" (Gerant, 24/10/2026) - carte des 14 regions,
 // activables une a la fois (plusieurs regions actives en parallele sont
 // possibles, voir cadrage), puis prix de livraison par arrondissement une
-// fois une region "cadree". Entierement mockee (voir zonesLivraisonData.js) -
+// fois une region "cadree". Donnees servies par l'API (voir useZonesLivraison.js) -
 // voir brainstorming-chez-ketchup.md pour le cadrage complet.
 function formatPrix(prix) {
   return `${Number(prix).toLocaleString('fr-FR')} F CFA`
 }
 
-export default function ZonesLivraison() {
-  const [actives, setActives] = useState(() => regionsActives())
+export default function ZonesLivraison({ source = 'api' }) {
+  const zones = useZonesLivraison(source)
+  const actives = zones.actives
   const [regionOuverte, setRegionOuverte] = useState(null)
   const [confirmation, setConfirmation] = useState(null)
   const [toast, setToast] = useState(null)
-  const [version, setVersion] = useState(0)
   const [departementsOuverts, setDepartementsOuverts] = useState(() => new Set())
   const [zoneEnSaisie, setZoneEnSaisie] = useState({})
 
@@ -37,6 +28,12 @@ export default function ZonesLivraison() {
     setDepartementsOuverts(new Set())
     setZoneEnSaisie({})
   }, [regionOuverte])
+
+  // Zones de la region ouverte, chargees depuis le serveur.
+  const { chargerSecteurs } = zones
+  useEffect(() => {
+    chargerSecteurs(regionOuverte)
+  }, [regionOuverte, chargerSecteurs])
 
   function toggleDepartement(nomDepartement) {
     setDepartementsOuverts((precedent) => {
@@ -59,15 +56,13 @@ export default function ZonesLivraison() {
       notify('error', `« ${nom} » existe déjà dans ${departement}.`)
       return
     }
-    ajouterZone(regionOuverte, departement, nom)
+    zones.ajouter(regionOuverte, departement, nom)
     setZoneEnSaisie((precedent) => ({ ...precedent, [departement]: '' }))
-    setVersion((v) => v + 1)
     notify('success', `Zone « ${nom} » ajoutée à ${departement}.`)
   }
 
   function retirerZone(nomZone) {
-    supprimerZone(regionOuverte, nomZone)
-    setVersion((v) => v + 1)
+    zones.retirer(regionOuverte, nomZone)
     notify('success', `Zone « ${nomZone} » retirée.`)
   }
 
@@ -85,8 +80,7 @@ export default function ZonesLivraison() {
 
   function confirmerActivation() {
     const code = confirmation.code
-    activerRegion(code)
-    setActives(regionsActives())
+    zones.activer(code)
     setRegionOuverte(code)
     setConfirmation(null)
     notify('success', `Zone de livraison activée pour la région de ${regionLabel(code)}.`)
@@ -98,8 +92,7 @@ export default function ZonesLivraison() {
 
   function confirmerDesactivation() {
     const code = confirmation.code
-    desactiverRegion(code)
-    setActives(regionsActives())
+    zones.desactiver(code)
     setRegionOuverte((current) => (current === code ? null : current))
     setConfirmation(null)
     notify('success', `Zone de livraison désactivée pour la région de ${regionLabel(code)}.`)
@@ -107,13 +100,11 @@ export default function ZonesLivraison() {
 
   function changerPrix(code, nomArrondissement, valeur) {
     const prix = Math.max(0, Math.round(Number(valeur) || 0))
-    definirPrix(code, nomArrondissement, prix)
-    setVersion((v) => v + 1)
+    zones.definirPrix(code, nomArrondissement, prix)
   }
 
-  const regionDetail = regionOuverte ? arrondissementsDe(regionOuverte) : null
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const prixRegion = useMemo(() => (regionOuverte ? zonesLivraison[regionOuverte] || {} : {}), [regionOuverte, version])
+  const regionDetail = regionOuverte ? zones.arrondissementsDe(regionOuverte) : null
+  const prixRegion = regionOuverte ? zones.prixDe(regionOuverte) : {}
 
   const departementsRegroupes = useMemo(() => {
     if (!regionDetail) return []
@@ -153,14 +144,14 @@ export default function ZonesLivraison() {
           </div>
           <ul className="zones-actives-liste">
             {actives.map((code) => {
-              const valeurs = Object.values(zonesLivraison[code] || {})
+              const valeurs = Object.values(zones.prixDe(code))
               const min = valeurs.length ? Math.min(...valeurs) : 0
               const max = valeurs.length ? Math.max(...valeurs) : 0
               return (
                 <li key={code} className="zones-actives-item">
                   <div>
                     <strong>{regionLabel(code)}</strong>
-                    <span>{arrondissementsDe(code).length} arrondissements · {formatPrix(min)}{min !== max ? ` – ${formatPrix(max)}` : ''}</span>
+                    <span>{zones.arrondissementsDe(code).length} arrondissements · {formatPrix(min)}{min !== max ? ` – ${formatPrix(max)}` : ''}</span>
                   </div>
                   <div className="zones-actives-actions">
                     <button className="crud-action" type="button" onClick={() => setRegionOuverte(code)}>
@@ -278,7 +269,7 @@ export default function ZonesLivraison() {
       {confirmation?.kind === 'activer' && (
         <ConfirmModal
           title="Activer cette zone de livraison ?"
-          message={`Les ${arrondissementsDe(confirmation.code).length} arrondissements de la région de ${regionLabel(confirmation.code)} seront ajoutés avec un prix par défaut de ${formatPrix(1000)}, modifiable ensuite arrondissement par arrondissement.`}
+          message={`Les ${zones.arrondissementsDe(confirmation.code).length} arrondissements de la région de ${regionLabel(confirmation.code)} seront ouverts à la livraison. Vérifiez ensuite leur prix, arrondissement par arrondissement.`}
           confirmLabel="Activer"
           tone="info"
           icon="fa-map-location-dot"

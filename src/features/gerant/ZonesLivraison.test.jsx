@@ -27,7 +27,7 @@ afterEach(() => {
 
 describe('Zones de livraison', () => {
   it('affiche les 14 régions, Dakar déjà active avec ses arrondissements', () => {
-    render(<ZonesLivraison />)
+    render(<ZonesLivraison source="memoire" />)
 
     expect(REGIONS).toHaveLength(14)
     for (const region of REGIONS) {
@@ -43,7 +43,7 @@ describe('Zones de livraison', () => {
   })
 
   it('replie les départements par défaut et révèle les arrondissements au clic', () => {
-    render(<ZonesLivraison />)
+    render(<ZonesLivraison source="memoire" />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Dakar' }))
     expect(screen.getByRole('heading', { name: /Dakar — prix par arrondissement/ })).toBeInTheDocument()
@@ -66,7 +66,7 @@ describe('Zones de livraison', () => {
   })
 
   it('active une nouvelle région après confirmation, avec un prix par défaut sur chaque arrondissement', () => {
-    render(<ZonesLivraison />)
+    render(<ZonesLivraison source="memoire" />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Thiès' }))
     expect(screen.getByText(/Activer cette zone de livraison/)).toBeInTheDocument()
@@ -85,7 +85,7 @@ describe('Zones de livraison', () => {
   })
 
   it('modifie le prix d’un arrondissement de la région ouverte', () => {
-    render(<ZonesLivraison />)
+    render(<ZonesLivraison source="memoire" />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Dakar' }))
     fireEvent.click(screen.getByRole('button', { name: /^Rufisque.*arrondissement/ }))
@@ -98,7 +98,7 @@ describe('Zones de livraison', () => {
   })
 
   it('permet d’ajouter puis de supprimer une zone personnalisée dans un département', () => {
-    render(<ZonesLivraison />)
+    render(<ZonesLivraison source="memoire" />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Dakar' }))
     fireEvent.click(screen.getByRole('button', { name: /^Dakar.*arrondissement/ }))
@@ -116,7 +116,7 @@ describe('Zones de livraison', () => {
   })
 
   it('désactive une région après confirmation et revient à la vue d’ensemble', () => {
-    render(<ZonesLivraison />)
+    render(<ZonesLivraison source="memoire" />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Dakar' }))
     fireEvent.click(screen.getByRole('button', { name: /Désactiver cette région/ }))

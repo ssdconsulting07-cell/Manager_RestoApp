@@ -1,0 +1,5 @@
+# Fichiers executes dans les conteneurs Linux : toujours en fins de ligne
+# Unix, meme dans un clone Windows (core.autocrlf=true).
+*.sh text eol=lf
+docker/*.template text eol=lf
+Dockerfile text eol=lf

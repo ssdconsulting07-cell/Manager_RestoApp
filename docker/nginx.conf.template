@@ -1,0 +1,66 @@
+# Serveur du back-office Manager (build Vite statique). Modele traite au demarrage
+# par l'image nginx officielle (envsubst) : seules les variables definies
+# dans l'environnement du conteneur (${API_UPSTREAM}, ${NGINX_RESOLVER})
+# sont remplacees.
+
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+
+    # Resolution DNS a la demande (proxy_pass avec variable) : le conteneur
+    # demarre meme si le backend n'est pas encore joignable.
+    resolver ${NGINX_RESOLVER} valid=10s ipv6=off;
+
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml application/manifest+json;
+    gzip_min_length 1024;
+
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+
+    # Sonde de sante du conteneur (HEALTHCHECK).
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    # API du backend sur la meme adresse que l'app (pas de CORS, HTTPS unique,
+    # fonctionne derriere un tunnel). Origin retire : pour le navigateur la
+    # requete est deja "meme origine" ; l'API s'authentifie par jeton, pas par
+    # cookie, donc pas de risque CSRF.
+    location /api/ {
+        set $api_upstream ${API_UPSTREAM};
+        proxy_pass $api_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header Origin "";
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 30s;
+    }
+
+    # Fichiers compiles (nom avec empreinte) : cache long.
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options nosniff always;
+        try_files $uri =404;
+    }
+
+    # Jamais en cache : configuration et page.
+    location ~ ^/(config\.js|index\.html)$ {
+        add_header Cache-Control "no-cache";
+        add_header X-Content-Type-Options nosniff always;
+        try_files $uri =404;
+    }
+
+    # Application monopage : toute route inconnue sert index.html.
+    location / {
+        add_header Cache-Control "no-cache";
+        add_header X-Content-Type-Options nosniff always;
+        try_files $uri $uri/ /index.html;
+    }
+}

@@ -3,9 +3,11 @@
 // Contrairement a l'App Client, le staff est authentifie : une fois le token
 // stocke via setAuthToken() (apres /auth/login), il est attache automatiquement
 // a chaque appel.
+import { configuration } from '../config/runtime.js'
 import { signalerRequete } from '../utils/reseau.js'
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1'
+// Docker : API_BASE_URL dans /config.js (voir config/runtime.js).
+export const API_BASE_URL = configuration('API_BASE_URL', import.meta.env.VITE_API_BASE_URL, 'http://localhost:8080/api/v1')
 const TOKEN_KEY = 'senyummies_manager_token'
 // Emis quand l'API repond 401 alors qu'un token etait envoye (token expire ou revoque).
 export const SESSION_EXPIRED_EVENT = 'senyummies:session-expired'

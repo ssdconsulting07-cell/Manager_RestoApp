@@ -1,0 +1,26 @@
+# Back-office Manager en conteneur.
+#
+#   docker compose up -d --build      -> http://localhost:8082
+#
+# L'API est relayee par nginx sous /api/ (meme adresse que l'app : pas de
+# CORS). Par defaut vers le backend lance sur la machine
+# (Backend_RestoApp : docker compose up, port 8080). Variables reglables
+# dans un fichier .env a cote de ce fichier (voir .env.example, section
+# Docker).
+name: senyummies-manager
+
+services:
+  manager:
+    build: .
+    image: senyummies/manager:${IMAGE_TAG:-local}
+    ports:
+      - "${MANAGER_PORT:-8082}:80"
+    environment:
+      API_BASE_URL: /api/v1
+      API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:8080}
+      SUPPORT_TELEPHONE: ${SUPPORT_TELEPHONE:-}
+      SUPPORT_EMAIL: ${SUPPORT_EMAIL:-}
+    extra_hosts:
+      # host.docker.internal aussi sous Linux (backend lance sur la machine).
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

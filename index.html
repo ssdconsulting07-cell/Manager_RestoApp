@@ -13,6 +13,9 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Configuration de l'environnement (generee au demarrage en Docker,
+         vide en developpement) : voir src/config/runtime.js. -->
+    <script src="/config.js"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

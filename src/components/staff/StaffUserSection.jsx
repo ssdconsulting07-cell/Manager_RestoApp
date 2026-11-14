@@ -332,6 +332,25 @@ function StaffUserDetailModal({ user, onClose }) {
   )
 }
 
+// Note moyenne donnee par les clients apres livraison (livreurs seulement) :
+// etoiles (icones), moyenne sur 5 et nombre d'avis.
+function NoteClient({ user }) {
+  if (user.role !== 'LIVREUR') return <span className="staff-users-note-vide">—</span>
+  if (!user.nombreAvis) return <span className="staff-users-note-vide">Pas encore d’avis</span>
+  const moyenne = Number(user.noteMoyenne || 0)
+  return (
+    <span className="staff-users-note" aria-label={`${moyenne.toLocaleString('fr-FR')} sur 5, ${user.nombreAvis} avis`}>
+      <span className="staff-users-note-etoiles" aria-hidden="true">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <i key={n} className={`fa-${moyenne >= n - 0.25 ? 'solid fa-star' : moyenne >= n - 0.75 ? 'solid fa-star-half-stroke' : 'regular fa-star'}`} />
+        ))}
+      </span>
+      <strong>{moyenne.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</strong>
+      <span className="staff-users-note-nombre">({user.nombreAvis} avis)</span>
+    </span>
+  )
+}
+
 export default function StaffUserSection({
   roles,
   assignableRoles,
@@ -535,7 +554,7 @@ export default function StaffUserSection({
         <div className="staff-users-table-wrap">
           <table className="staff-users-table">
             <thead>
-              <tr><th>Nom</th><th>Identifiant</th><th>Rôle</th><th>Téléphone</th><th>Statut</th><th>Actions</th></tr>
+              <tr><th>Nom</th><th>Identifiant</th><th>Rôle</th><th>Note client</th><th>Téléphone</th><th>Statut</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {visibleUsers.map((user) => (
@@ -543,6 +562,7 @@ export default function StaffUserSection({
                   <td><strong>{displayName(user)}</strong>{user.username === currentUsername && <span className="staff-users-self">Vous</span>}</td>
                   <td>{user.username}</td>
                   <td>{ROLE_LABELS[user.role]}</td>
+                  <td><NoteClient user={user} /></td>
                   <td>{user.phone || '—'}</td>
                   <td>
                     {compactStatusActions && !readOnly && !protectedRoles.includes(user.role) ? (

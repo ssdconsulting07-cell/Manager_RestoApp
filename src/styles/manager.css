@@ -492,7 +492,9 @@
   /* A partir d'ici : patron de navigation mobile commun a tous les roles
      (onglets en bas + header minimal), plus le menu hamburger/tiroir. */
   .manager-mobile-menu { display: none; }
-  .manager-notification-wrap > .manager-header-action { display: none; }
+  /* Cloche visible aussi sur telephone (avant : masquee, aucune nouvelle
+     notification n'etait visible pour le Livreur ou le Vendeur). */
+  .manager-notification-menu { position: fixed; top: 76px; right: 12px; left: 12px; width: auto; max-width: none; }
   .manager-theme-toggle { display: none; }
   .manager-header-mobile-brand { display: flex; }
   .manager-profile-menu-mobile-only { display: block; }
@@ -1091,3 +1093,61 @@
 .network-banner { position: fixed; left: 50%; bottom: 20px; z-index: 19; display: flex; align-items: center; gap: 8px; margin: 0; transform: translateX(-50%); border-radius: 999px; padding: 9px 16px; color: #fff; background: rgb(20 20 20 / 90%); box-shadow: 0 10px 28px rgb(20 20 20 / 25%); font-family: 'Poppins', Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 600; white-space: nowrap; pointer-events: none; }
 .network-banner i { color: #ff9aa8; }
 @media (max-width: 760px) { .network-banner { bottom: calc(82px + env(safe-area-inset-bottom, 0px)); max-width: calc(100vw - 32px); white-space: normal; text-align: center; } }
+
+/* Personnel sur telephone : le tableau (1120px de large) devient une liste
+   de cartes, une ligne par champ avec son libelle. Avant : seules les 3
+   premieres colonnes etaient visibles, Statut et Actions hors de l'ecran. */
+@media (max-width: 760px) {
+  .staff-users-table-wrap { overflow-x: visible; border: 0; background: transparent; }
+  .staff-users-table { min-width: 0; }
+  .staff-users-table thead { display: none; }
+  .staff-users-table,
+  .staff-users-table tbody,
+  .staff-users-table tr,
+  .staff-users-table td { display: block; width: 100%; }
+  .staff-users-table tr { margin-bottom: 12px; border: 1px solid #e5e5e3; border-radius: 12px; padding: 6px 14px; background: #fff; }
+  .staff-users-table td { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #f0efed; padding: 10px 0; font-size: 13px; text-align: right; }
+  .staff-users-table tbody tr td:last-child { border-bottom: 0; }
+  .staff-users-table td::before { flex-shrink: 0; color: #6b6b6b; font-size: 11px; font-weight: 750; text-align: left; }
+  .staff-users-table td:nth-child(1)::before { content: "Nom"; }
+  .staff-users-table td:nth-child(2)::before { content: "Identifiant"; }
+  .staff-users-table td:nth-child(3)::before { content: "Rôle"; }
+  .staff-users-table td:nth-child(4)::before { content: "Téléphone"; }
+  .staff-users-table td:nth-child(5)::before { content: "Statut"; }
+  .staff-users-table td:nth-child(6) { display: block; text-align: left; }
+  .staff-users-table td:nth-child(6)::before { content: "Actions"; display: block; margin-bottom: 8px; }
+  .staff-users-actions .crud-action { min-height: 40px; padding: 9px 12px; font-size: 12px; }
+  .manager-shell.is-dark .staff-users-table tr { border-color: #2a2a2e; background: #1c1c20; }
+  .manager-shell.is-dark .staff-users-table td::before { color: #aaa; }
+}
+
+/* Scan de livraison : attente (demarrage camera, validation) et lien de secours. */
+.scan-livraison-zone { position: relative; }
+.scan-livraison-attente { position: absolute; inset: 4px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border-radius: 10px; color: #fff; background: rgb(10 10 10 / 82%); font-size: 14px; font-weight: 700; }
+.scan-livraison-attente-texte { display: flex; align-items: center; gap: 10px; margin: 10px 0 0; color: #333; font-size: 13px; font-weight: 700; }
+.scan-livraison-spinner { width: 28px; height: 28px; border: 3px solid rgb(255 255 255 / 30%); border-top-color: #fff; border-radius: 50%; animation: scan-livraison-tourne .8s linear infinite; }
+.scan-livraison-attente-texte .scan-livraison-spinner { width: 18px; height: 18px; border-color: #e5e5e3; border-top-color: #a6192e; }
+@keyframes scan-livraison-tourne { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .scan-livraison-spinner { animation-duration: 2.4s; } }
+.scan-livraison-lien-secours { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 12px; border: 0; padding: 8px 0; color: #a6192e; background: none; font-size: 13px; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.manager-shell.is-dark .scan-livraison-attente-texte { color: #c7c7cb; }
+
+/* Filet de securite (components/FiletErreur.jsx). */
+.filet-erreur { display: grid; min-height: 100dvh; place-items: center; padding: 24px 16px; background: #f5f4f2; }
+.filet-erreur-carte { max-width: 440px; border: 1px solid #e5e5e3; border-radius: 16px; padding: 28px 22px; background: #fff; text-align: center; }
+.filet-erreur-carte i { color: #a6192e; font-size: 32px; }
+.filet-erreur-carte h1 { margin: 12px 0 8px; font-size: 22px; }
+.filet-erreur-carte p { margin: 0 0 20px; color: #555; }
+.filet-erreur-actions { display: flex; flex-direction: column; gap: 10px; }
+
+/* Champs des fenetres : la largeur inclut marges et bordure (avant : 100 %
+   + marges, le champ depassait a droite, ex. « Nom de la chaine » sur mobile). */
+.manager-modal-form input,
+.manager-modal-form textarea,
+.manager-modal-form select { box-sizing: border-box; max-width: 100%; min-width: 0; }
+
+/* Telephone : un seul defilement (la fenetre), pas de zone de slides qui
+   defile a part (haut des slides coupe, boutons Annuler / Publier caches). */
+@media (max-width: 760px) {
+  .crud-annonce-slides { max-height: none; overflow: visible; padding-right: 0; }
+}

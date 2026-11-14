@@ -1,3 +1,4 @@
+import { etapesHoraires, formatDateHeureComplete, formatMontant, montantsCommande, paiementCommande } from './detailCommande.js'
 import { useState } from 'react'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import {
@@ -108,6 +109,9 @@ export default function CommandeRow({
 }) {
   const [deplie, setDeplie] = useState(false)
   const [confirmation, setConfirmation] = useState(null)
+  const montants = montantsCommande(commande, produits)
+  const paiement = paiementCommande(commande)
+  const etapes = etapesHoraires(commande)
   const note = noteCommande(commande)
   const urgente = showDuree && estUrgente(commande)
   const enPreparation = commande.statut === 'EN_PREPARATION'
@@ -241,7 +245,7 @@ export default function CommandeRow({
               <span className="cuisine-row-client-item"><i className="fa-solid fa-user" aria-hidden="true" /> {nomClient}</span>
             )}
             {telClient && (
-              <a className="cuisine-row-client-item is-link" href={`tel:${telClient.replace(/[^d+]/g, '')}`} onClick={(event) => event.stopPropagation()}>
+              <a className="cuisine-row-client-item is-link" href={`tel:${telClient.replace(/[^\d+]/g, '')}`} onClick={(event) => event.stopPropagation()}>
                 <i className="fa-solid fa-phone" aria-hidden="true" /> {telClient}
               </a>
             )}
@@ -269,6 +273,7 @@ export default function CommandeRow({
             <p className="cuisine-row-section-title">Plats commandés ({totalPlats})</p>
             <ul className="cuisine-row-lines">
               {lignes.map((ligne, i) => {
+                const chiffrees = montants.lignes
                 const perso = textePersonnalisation(ligne)
                 const accompagnement = texteAccompagnement(ligne)
                 return (
@@ -279,6 +284,9 @@ export default function CommandeRow({
                     </span>
                     <div className="cuisine-row-line-copy">
                       <strong>{ligne.quantite}× {nomProduit(produits, ligne)}</strong>
+                      <span className="cuisine-row-line-prix">
+                        {ligne.quantite} × {formatMontant(chiffrees[i]?.prixUnitaire)} = <b>{formatMontant(chiffrees[i]?.total)}</b>
+                      </span>
                       {accompagnement && (
                         <span className="cuisine-row-line-accomp">
                           <i className="fa-solid fa-utensils" aria-hidden="true" /> Avec {accompagnement}
@@ -295,6 +303,34 @@ export default function CommandeRow({
               })}
             </ul>
           </div>
+
+          <div className="cuisine-row-section">
+            <p className="cuisine-row-section-title">Montants et paiement</p>
+            <dl className="cuisine-row-montants">
+              <div><dt>Commandée le</dt><dd>{formatDateHeureComplete(commande.creeLe)}</dd></div>
+              <div><dt>Articles</dt><dd>{montants.articles}</dd></div>
+              <div><dt>Sous-total</dt><dd>{formatMontant(montants.sousTotal)}</dd></div>
+              {montants.frais > 0 && <div><dt>Frais de livraison</dt><dd>{formatMontant(montants.frais)}</dd></div>}
+              <div className="is-total"><dt>Total</dt><dd>{formatMontant(montants.total)}</dd></div>
+              {paiement.moyen && <div><dt>Paiement</dt><dd>{paiement.moyen}{paiement.statut ? ` · ${paiement.statut}` : ''}</dd></div>}
+              {paiement.montantRecu != null && <div><dt>Montant reçu</dt><dd>{formatMontant(paiement.montantRecu)}</dd></div>}
+              {paiement.monnaieRendue != null && <div><dt>Monnaie rendue</dt><dd>{formatMontant(paiement.monnaieRendue)}</dd></div>}
+            </dl>
+          </div>
+
+          {etapes.length > 0 && (
+            <div className="cuisine-row-section">
+              <p className="cuisine-row-section-title">Suivi</p>
+              <ol className="cuisine-row-etapes">
+                {etapes.map((e) => (
+                  <li key={`${e.statut}-${e.le}`}>
+                    <span className="cuisine-row-etape-heure">{e.heure}</span>
+                    <span>{e.libelle}{e.par ? <span className="cuisine-row-etape-par"> · {e.par}</span> : null}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
 
           {note && (
             <div className="cuisine-row-note">

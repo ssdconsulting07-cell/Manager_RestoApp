@@ -31,6 +31,7 @@ function construireHtmlTicket(vente, vendeurLabel) {
       <span>
         ${ligne.quantite}&times; ${echapperHtml(ligne.nom)}
         ${ligne.accompagnementNom ? `<span class="accomp"> + ${echapperHtml(ligne.accompagnementNom)}</span>` : ''}
+        <span class="accomp">${ligne.quantite} &times; ${echapperHtml(formatFCFA(ligne.prix))}</span>
       </span>
       <span>${echapperHtml(formatFCFA(ligne.prix * ligne.quantite))}</span>
     </li>`,
@@ -95,11 +96,15 @@ function construireHtmlTicket(vente, vendeurLabel) {
 </style>
 </head>
 <body>
-  <p class="eyebrow">Reçu de vente</p>
+  <p class="eyebrow">SenYummies · Chez Ketchup</p>
   <h2>Ticket n° ${echapperHtml(vente.numero)}</h2>
   <p class="meta">${echapperHtml(formatDate(vente.createdAt))} à ${echapperHtml(formatHeure(vente.createdAt))} · ${echapperHtml(vendeurLabel)}</p>
   <ul>${lignesHtml}</ul>
   <div class="totaux">
+    <div class="row">
+      <span>Articles</span>
+      <span>${vente.lignes.reduce((n, l) => n + l.quantite, 0)}</span>
+    </div>
     <div class="row total">
       <span>Total</span>
       <span>${echapperHtml(formatFCFA(vente.total))}</span>
@@ -161,6 +166,7 @@ export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente })
               {ligne.accompagnementNom && (
                 <span className="vendeur-recu-ligne-accomp"> + {ligne.accompagnementNom}</span>
               )}
+              <span className="vendeur-recu-ligne-accomp"> · {ligne.quantite} × {formatFCFA(ligne.prix)}</span>
             </span>
             <span className="vendeur-recu-ligne-prix">{formatFCFA(ligne.prix * ligne.quantite)}</span>
           </li>
@@ -168,6 +174,10 @@ export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente })
       </ul>
 
       <div className="vendeur-recu-totaux">
+        <div className="vendeur-recu-total-row">
+          <span>Articles</span>
+          <span>{vente.lignes.reduce((n, l) => n + l.quantite, 0)}</span>
+        </div>
         <div className="vendeur-recu-total-row is-total">
           <span>Total</span>
           <strong>{formatFCFA(vente.total)}</strong>

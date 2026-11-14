@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { createContext, createElement, useContext, useEffect, useRef, useState } from 'react'
 import { API_BASE_URL, getAuthToken } from '../api/client.js'
 
 // Flux temps reel des commandes (GET /temps-reel/commandes, Server-Sent
@@ -12,7 +12,7 @@ import { API_BASE_URL, getAuthToken } from '../api/client.js'
 // surEvenement({ type, commande }) est appele a chaque evenement "commande"
 // (COMMANDE_PAYEE, STATUT_CHANGE). Renvoie true tant que le flux est ouvert :
 // les ecrans espacent alors leur rafraichissement de secours.
-export default function useFluxCommandes(surEvenement, { actif = true } = {}) {
+function useFluxPrive(surEvenement, actif) {
   const [connecte, setConnecte] = useState(false)
   const rappel = useRef(surEvenement)
   rappel.current = surEvenement
@@ -91,4 +91,36 @@ export default function useFluxCommandes(surEvenement, { actif = true } = {}) {
   }, [actif])
 
   return connecte
+}
+
+// --- Flux partage -------------------------------------------------------------
+// Une seule connexion par session (FluxCommandesProvider, monte dans App) :
+// la cloche de notifications et les tableaux (Cuisine, Livreur, Retraits)
+// s'y abonnent au lieu d'ouvrir chacun leur propre flux.
+const FluxCommandesContext = createContext(null)
+
+export function FluxCommandesProvider({ actif = true, children }) {
+  const abonnes = useRef(new Set())
+  const connecte = useFluxPrive((evenement) => {
+    abonnes.current.forEach((rappel) => {
+      try { rappel(evenement) } catch { /* un abonne en erreur ne bloque pas les autres */ }
+    })
+  }, actif)
+  const valeur = useRef({ abonner: (rappel) => { abonnes.current.add(rappel); return () => abonnes.current.delete(rappel) } }).current
+  return createElement(FluxCommandesContext.Provider, { value: { ...valeur, connecte } }, children)
+}
+
+// surEvenement({ type, commande }) a chaque evenement "commande". Renvoie true
+// tant que le flux est ouvert. Sans FluxCommandesProvider (tests, ecran
+// isole), ouvre son propre flux.
+export default function useFluxCommandes(surEvenement, { actif = true } = {}) {
+  const partage = useContext(FluxCommandesContext)
+  const rappel = useRef(surEvenement)
+  rappel.current = surEvenement
+  useEffect(() => {
+    if (!partage || !actif) return undefined
+    return partage.abonner((evenement) => rappel.current?.(evenement))
+  }, [partage, actif])
+  const connectePrive = useFluxPrive(surEvenement, actif && !partage)
+  return partage ? partage.connecte : connectePrive
 }

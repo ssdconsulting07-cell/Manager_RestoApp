@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { tempsEcoule, useNotifications } from '../notifications/NotificationsContext.jsx'
 import { ROLE_LABELS } from '../auth/roles.js'
 import { useAuth } from '../auth/AuthContext.jsx'
 import Toast from './Toast.jsx'
@@ -89,22 +90,16 @@ function formatLastConnection(timestamp) {
   }
 
 const NOTIFICATION_ICONS = {
-  crown: 'fa-crown',
-  assignment: 'fa-clipboard-check',
-  status: 'fa-circle-info',
+  commande: 'fa-receipt',
+  prete: 'fa-bell-concierge',
+  livraison: 'fa-motorcycle',
+  annulee: 'fa-ban',
 }
 
 function NotificationIcon({ kind }) {
   return <i className={`fa-solid ${NOTIFICATION_ICONS[kind] || 'fa-bell'} manager-notification-icon`} aria-hidden="true" />
 }
 
-const INITIAL_NOTIFICATIONS = [
-  { id: 1, kind: 'crown', title: 'Nouveau service', text: 'Une nouvelle information concerne votre espace de travail et vous aide à prioriser votre activité de la journée.', time: 'À l’instant', target: '/commandes', unread: true },
-  { id: 2, kind: 'assignment', title: 'Activité de votre équipe', text: 'Une action récente nécessite votre attention, notamment la validation de livraisons en attente et les changements de statut.', time: 'Il y a 3 h', target: '/livraisons', unread: true },
-  { id: 3, kind: 'status', title: 'Mise à jour du service', text: 'Le statut d’une opération vient d’être actualisé et les équipes ont été informées du changement.', time: 'Hier', target: '/journal-audit', unread: false },
-  { id: 4, kind: 'crown', title: 'Priorité de la journée', text: 'Le planning de service a été revu. Consultez les tâches urgentes avant la prochaine tournée.', time: 'Il y a 1 j', target: '/dashboard', unread: true },
-  { id: 5, kind: 'status', title: 'Validation nécessaire', text: 'Une demande de validation est en attente dans votre espace pour éviter tout retard sur la préparation.', time: 'Il y a 2 j', target: '/commandes', unread: false },
-]
 
 // Libelles courts pour les 3 onglets du bas (espace Livreur, mobile) : les
 // intitules complets de la sidebar ("Tableau de bord", "Historique des
@@ -229,7 +224,9 @@ export default function Layout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS)
+  // Notifications reelles (flux temps reel des commandes, voir NotificationsContext).
+  const { notifications, marquerLue, toutMarquerLu, supprimer } = useNotifications()
+  const navigate = useNavigate()
   const [notificationPage, setNotificationPage] = useState(0)
   const [expandedNotificationIds, setExpandedNotificationIds] = useState([])
   const [passwordOpen, setPasswordOpen] = useState(false)
@@ -316,11 +313,11 @@ export default function Layout({ children }) {
   }
 
   function markNotificationsRead() {
-    setNotifications((current) => current.map((notification) => ({ ...notification, unread: false })))
+    toutMarquerLu()
   }
 
   function dismissNotification(id) {
-    setNotifications((current) => current.filter((notification) => notification.id !== id))
+    supprimer(id)
     setExpandedNotificationIds((current) => current.filter((notificationId) => notificationId !== id))
   }
 
@@ -485,8 +482,14 @@ export default function Layout({ children }) {
                                 className="manager-notification-main"
                                 type="button"
                                 onClick={() => {
-                                  setNotifications((current) => current.map((item) => item.id === notification.id ? { ...item, unread: false } : item))
-                                  if (isLong) toggleNotification(notification.id)
+                                  marquerLue(notification.id)
+                                  // Ouvre l'ecran concerne (commandes, livraisons, caisse...).
+                                  if (notification.target && notification.target !== location.pathname) {
+                                    setNotificationsOpen(false)
+                                    navigate(notification.target)
+                                  } else if (isLong) {
+                                    toggleNotification(notification.id)
+                                  }
                                 }}
                               >
                                 <span className="manager-notification-symbol"><NotificationIcon kind={notification.kind} /></span>
@@ -501,7 +504,7 @@ export default function Layout({ children }) {
                                       {isExpanded ? 'Voir moins' : 'Voir plus'}
                                     </button>
                                   )}
-                                  <small>{notification.time}</small>
+                                  <small>{notification.createdAt ? tempsEcoule(notification.createdAt) : notification.time}</small>
                                 </span>
                               </button>
                               <button className="manager-notification-close" type="button" aria-label="Fermer la notification" onClick={() => dismissNotification(notification.id)}><i className="fa-solid fa-xmark" aria-hidden="true" /></button>

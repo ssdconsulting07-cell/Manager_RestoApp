@@ -648,3 +648,36 @@
 @media (pointer: coarse) {
   .cuisine-row-client-item.is-link { min-height: 40px; display: inline-flex; align-items: center; }
 }
+
+/* Ecran etroit (telephone) : la zone ticket + badges garde au moins 240px
+   avant de partager sa ligne ; sinon les boutons d'action passent a la
+   ligne en dessous (avant : la zone se reduisait a quelques pixels et les
+   boutons recouvraient les badges canal / mode / heure). */
+.cuisine-row-info {
+  flex: 1 1 240px;
+}
+
+@media (max-width: 640px) {
+  .cuisine-row-primary {
+    flex: 1 1 auto;
+  }
+
+  .cuisine-row-primary .manager-button {
+    flex: 1 1 auto;
+  }
+}
+
+/* Detail chiffre de la commande (carte depliee). */
+.cuisine-row-line-prix { color: #6b6b6b; font-size: 12px; }
+.cuisine-row-line-prix b { color: #141414; }
+.cuisine-row-montants { display: flex; flex-direction: column; gap: 6px; margin: 0; }
+.cuisine-row-montants > div { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+.cuisine-row-montants dt { color: #6b6b6b; }
+.cuisine-row-montants dd { margin: 0; color: #141414; font-weight: 600; text-align: right; }
+.cuisine-row-montants > div.is-total { padding-top: 6px; border-top: 1px dashed #e5e5e3; font-size: 15px; }
+.cuisine-row-montants > div.is-total dd { font-weight: 800; }
+.cuisine-row-etapes { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.cuisine-row-etapes li { display: flex; gap: 12px; font-size: 13px; }
+.cuisine-row-etape-heure { min-width: 44px; color: #a6192e; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cuisine-row-etape-par { color: #6b6b6b; }
+.manager-shell.is-dark .cuisine-row-montants dd, .manager-shell.is-dark .cuisine-row-line-prix b { color: #f2f2f2; }

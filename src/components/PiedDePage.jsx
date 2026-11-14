@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SUPPORT_EMAIL, SUPPORT_TELEPHONE, telephoneLisible } from '../config/support.js'
+import { marque } from '../config/marque.js'
 import './pied-de-page.css'
 
 // Pied de page discret : version a gauche, lien "Besoin d'aide ?" a droite
@@ -34,7 +35,7 @@ function FeuilleAide({ onFermer }) {
     }
   }, [onFermer])
 
-  const sujet = encodeURIComponent(`Besoin d'aide - SenYummies Manager v${__APP_VERSION__}`)
+  const sujet = encodeURIComponent(`Besoin d'aide - ${marque.nom} Manager v${__APP_VERSION__}`)
   const lignes = [
     { href: `tel:${SUPPORT_TELEPHONE.replace(/\s/g, '')}`, icone: 'fa-phone', titre: 'Appeler le support', detail: telephoneLisible(SUPPORT_TELEPHONE) },
     { href: `mailto:${SUPPORT_EMAIL}?subject=${sujet}`, icone: 'fa-envelope', titre: 'Écrire au support', detail: SUPPORT_EMAIL },

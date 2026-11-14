@@ -1,5 +1,6 @@
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
 import { libelleModePaiement } from './modesPaiement.jsx'
+import { marque, signatureTicket } from '../../config/marque.js'
 
 function formatHeure(iso) {
   return new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
@@ -68,7 +69,7 @@ function construireHtmlTicket(vente, vendeurLabel) {
   }
   .eyebrow {
     margin: 0;
-    color: #a6192e;
+    color: ${marque.couleur};
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
@@ -96,7 +97,7 @@ function construireHtmlTicket(vente, vendeurLabel) {
 </style>
 </head>
 <body>
-  <p class="eyebrow">SenYummies · Chez Ketchup</p>
+  <p class="eyebrow">${echapperHtml(signatureTicket())}</p>
   <h2>Ticket n° ${echapperHtml(vente.numero)}</h2>
   <p class="meta">${echapperHtml(formatDate(vente.createdAt))} à ${echapperHtml(formatHeure(vente.createdAt))} · ${echapperHtml(vendeurLabel)}</p>
   <ul>${lignesHtml}</ul>
@@ -115,7 +116,7 @@ function construireHtmlTicket(vente, vendeurLabel) {
     </div>
     ${especesHtml}
   </div>
-  <p class="merci">Merci de votre visite — à bientôt chez SenYummies !</p>
+  <p class="merci">Merci de votre visite — à bientôt chez ${echapperHtml(marque.nom)} !</p>
 </body>
 </html>`
 }
@@ -200,7 +201,7 @@ export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente })
         )}
       </div>
 
-      <p className="vendeur-recu-merci">Merci de votre visite — à bientôt chez SenYummies !</p>
+      <p className="vendeur-recu-merci">Merci de votre visite — à bientôt chez {marque.nom} !</p>
 
       <div className="vendeur-recu-actions">
         {onNouvelleVente && (

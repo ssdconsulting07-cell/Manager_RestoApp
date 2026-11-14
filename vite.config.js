@@ -2,8 +2,11 @@ import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Version de l'app (package.json), affichee en pied de page.
-const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'))
+// Version de l'app, affichee en pied de page : APP_VERSION fournie a la
+// construction (tag Git, voir Dockerfile), sinon celle de package.json.
+// Jamais a retaper dans le code.
+const versionPaquet = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version
+const version = (process.env.APP_VERSION || '').trim().replace(/^v/, '') || versionPaquet
 
 // Relais de l'API sous /api, vers le backend de la machine : avec
 // VITE_API_BASE_URL=/api/v1, l'app et l'API passent par le meme port.

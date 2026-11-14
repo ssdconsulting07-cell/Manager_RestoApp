@@ -34,8 +34,8 @@ const CATEGORIE_FILTRES = [
     key: 'plats',
     label: 'Plats',
     icon: 'fa-burger',
-    accent: '#a6192e',
-    accentBg: '#fbeaec',
+    accent: 'var(--marque)',
+    accentBg: 'var(--marque-pale)',
     // Plats chauds : burgers ET wraps / chawarmas (categorie ajoutee le
     // 12/11/2026) - sinon ces produits n'apparaissaient dans aucun filtre.
     match: (produit, ids) => produit.categorieId === ids.burgers || produit.categorieId === ids.wraps,

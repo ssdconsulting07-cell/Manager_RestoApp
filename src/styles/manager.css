@@ -492,7 +492,9 @@
   /* A partir d'ici : patron de navigation mobile commun a tous les roles
      (onglets en bas + header minimal), plus le menu hamburger/tiroir. */
   .manager-mobile-menu { display: none; }
-  .manager-notification-wrap > .manager-header-action { display: none; }
+  /* Cloche visible aussi sur telephone (avant : masquee, aucune nouvelle
+     notification n'etait visible pour le Livreur ou le Vendeur). */
+  .manager-notification-menu { position: fixed; top: 76px; right: 12px; left: 12px; width: auto; max-width: none; }
   .manager-theme-toggle { display: none; }
   .manager-header-mobile-brand { display: flex; }
   .manager-profile-menu-mobile-only { display: block; }

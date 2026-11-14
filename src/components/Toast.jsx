@@ -67,10 +67,13 @@ export default function Toast({ toast, onClose }) {
         onMouseEnter={pauseToast}
         onMouseLeave={resumeToast}
       >
-        <span className="toast-icon" aria-hidden="true">{isSuccess ? '✓' : isInfo ? '🔔' : '!'}</span>
+        {/* Icones (Font Awesome), jamais d'emojis : rendu identique sur tous les appareils. */}
+        <span className="toast-icon" aria-hidden="true">
+          <i className={`fa-solid ${isSuccess ? 'fa-check' : isInfo ? 'fa-bell' : isWarning ? 'fa-triangle-exclamation' : 'fa-exclamation'}`} />
+        </span>
         <p>{toast.message}</p>
         <button type="button" aria-label="Fermer la notification" onClick={onClose}>
-          ×
+          <i className="fa-solid fa-xmark" aria-hidden="true" />
         </button>
         <span className="toast-timeline" aria-hidden="true" />
       </div>

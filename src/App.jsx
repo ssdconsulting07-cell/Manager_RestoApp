@@ -7,6 +7,8 @@ import { AccompagnementsCondimentsProvider } from './features/gerant/Accompagnem
 import { AnnoncesProvider } from './features/gerant/AnnoncesContext.jsx'
 import AlertesApi from './components/AlertesApi.jsx'
 import FiletErreur from './components/FiletErreur.jsx'
+import { FluxCommandesProvider } from './hooks/useFluxCommandes.js'
+import { NotificationsProvider } from './notifications/NotificationsContext.jsx'
 import { ROLE_HOME, ROUTE_ROLES } from './auth/roles.js'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import NetworkStatus from './components/NetworkStatus.jsx'
@@ -43,9 +45,21 @@ function RoleHome() {
   return <Navigate to={role ? ROLE_HOME[role] : '/login'} replace />
 }
 
+// Services de la session du personnel : un seul flux temps reel (partage par
+// les tableaux et la cloche) et les notifications, actifs une fois connecte.
+function ServicesSession({ children }) {
+  const { role } = useAuth()
+  return (
+    <FluxCommandesProvider actif={Boolean(role)}>
+      <NotificationsProvider>{children}</NotificationsProvider>
+    </FluxCommandesProvider>
+  )
+}
+
 export default function App() {
   return (
     <AuthProvider>
+      <ServicesSession>
       <MenuDataProvider>
         <AccompagnementsCondimentsProvider>
         <AnnoncesProvider>
@@ -101,6 +115,7 @@ export default function App() {
         </AnnoncesProvider>
         </AccompagnementsCondimentsProvider>
       </MenuDataProvider>
+      </ServicesSession>
     </AuthProvider>
   )
 }

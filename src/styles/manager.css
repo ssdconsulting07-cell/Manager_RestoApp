@@ -1112,10 +1112,11 @@
   .staff-users-table td:nth-child(1)::before { content: "Nom"; }
   .staff-users-table td:nth-child(2)::before { content: "Identifiant"; }
   .staff-users-table td:nth-child(3)::before { content: "Rôle"; }
-  .staff-users-table td:nth-child(4)::before { content: "Téléphone"; }
-  .staff-users-table td:nth-child(5)::before { content: "Statut"; }
-  .staff-users-table td:nth-child(6) { display: block; text-align: left; }
-  .staff-users-table td:nth-child(6)::before { content: "Actions"; display: block; margin-bottom: 8px; }
+  .staff-users-table td:nth-child(4)::before { content: "Note client"; }
+  .staff-users-table td:nth-child(5)::before { content: "Téléphone"; }
+  .staff-users-table td:nth-child(6)::before { content: "Statut"; }
+  .staff-users-table td:nth-child(7) { display: block; text-align: left; }
+  .staff-users-table td:nth-child(7)::before { content: "Actions"; display: block; margin-bottom: 8px; }
   .staff-users-actions .crud-action { min-height: 40px; padding: 9px 12px; font-size: 12px; }
   .manager-shell.is-dark .staff-users-table tr { border-color: #2a2a2e; background: #1c1c20; }
   .manager-shell.is-dark .staff-users-table td::before { color: #aaa; }
@@ -1151,3 +1152,10 @@
 @media (max-width: 760px) {
   .crud-annonce-slides { max-height: none; overflow: visible; padding-right: 0; }
 }
+
+/* Note client des livreurs (gestion du personnel). */
+.staff-users-note { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.staff-users-note-etoiles { display: inline-flex; gap: 1px; color: #e0a100; font-size: 11px; }
+.staff-users-note strong { color: #141414; font-size: 12px; }
+.staff-users-note-nombre, .staff-users-note-vide { color: #6b6b6b; font-size: 11px; }
+.manager-shell.is-dark .staff-users-note strong { color: #f2f2f2; }

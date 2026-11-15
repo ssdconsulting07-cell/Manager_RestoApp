@@ -1,0 +1,12 @@
+/* Couleur de marque par defaut (SenYummies), remplacee au demarrage par
+   src/config/marque.js. Toutes les feuilles de style utilisent ces
+   variables : aucune couleur de marque n'est ecrite en dur ailleurs. */
+:root {
+  --marque: #a6192e;
+  --marque-rgb: 166 25 46;
+  --marque-vif: #e14b64;
+  --marque-vif-rgb: 225 75 100;
+  --marque-pale: #fbeaec;
+  --marque-bordure: #e6c2c9;
+  --marque-rose: #f3b0bb;
+}

@@ -11,7 +11,11 @@ name: senyummies-manager
 
 services:
   manager:
-    build: .
+    build:
+      context: .
+      args:
+        # Version affichee dans l'app (tag Git de la livraison, ex. v1.2.0).
+        APP_VERSION: ${APP_VERSION:-}
     image: senyummies/manager:${IMAGE_TAG:-local}
     ports:
       - "${MANAGER_PORT:-8082}:8080"
@@ -20,6 +24,17 @@ services:
       API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:8080}
       SUPPORT_TELEPHONE: ${SUPPORT_TELEPHONE:-}
       SUPPORT_EMAIL: ${SUPPORT_EMAIL:-}
+      # Marque du restaurant (vide = SenYummies) : voir README, section Docker.
+      MARQUE_NOM: ${MARQUE_NOM:-}
+      MARQUE_NOM_ACCENT: ${MARQUE_NOM_ACCENT:-}
+      MARQUE_INITIALES: ${MARQUE_INITIALES:-}
+      MARQUE_LOGO_URL: ${MARQUE_LOGO_URL:-}
+      MARQUE_ETABLISSEMENT: ${MARQUE_ETABLISSEMENT:-}
+      MARQUE_COULEUR: ${MARQUE_COULEUR:-}
+      MARQUE_COULEUR_CLAIRE: ${MARQUE_COULEUR_CLAIRE:-}
+    # Logo du restaurant (facultatif) : decommenter.
+    # volumes:
+    #   - ./marque:/marque:ro
     extra_hosts:
       # host.docker.internal aussi sous Linux (backend lance sur la machine).
       - "host.docker.internal:host-gateway"

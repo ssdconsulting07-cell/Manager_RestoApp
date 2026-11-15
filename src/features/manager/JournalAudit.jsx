@@ -35,7 +35,7 @@ export function roleDepuisSlug(slug) {
 // n’ayant pas d’equivalent ailleurs dans l’appli. Pas de carte Categorie ni
 // Toutes (retour utilisateur 23/10/2026 : seulement 4 cartes).
 const DOMAINE_ACCENTS = {
-  COMMANDE: { accent: '#a6192e', accentBg: '#f8e9ec' },
+  COMMANDE: { accent: 'var(--marque)', accentBg: 'var(--marque-pale)' },
   PRODUIT: { accent: '#2f6fed', accentBg: '#e8eefc' },
   ANNONCE: { accent: '#6a3fa0', accentBg: '#efe7f7' },
   PERSONNEL: { accent: '#1f6f57', accentBg: '#e2f2ec' },

@@ -32,10 +32,38 @@ Prérequis : le backend tourne (`Backend_RestoApp` : `docker compose up`, port 8
 | `API_BASE_URL` | Adresse de l'API vue par le navigateur | `/api/v1` |
 | `API_UPSTREAM` | Où nginx relaie `/api/` (le backend) | `http://host.docker.internal:8080` |
 | `SUPPORT_TELEPHONE`, `SUPPORT_EMAIL` | Contact « Besoin d'aide ? » | coordonnées de démonstration |
+| `MARQUE_*` | Marque du restaurant (voir ci-dessous) | SenYummies |
 
 - **L'API passe par la même adresse que l'app** (`/api/` relayé par nginx) : pas de CORS à configurer côté backend pour cette adresse, un seul certificat HTTPS.
 - Les données de démonstration Cuisine / Livreur n'existent qu'en développement : en conteneur, ces écrans lisent le vrai backend.
 - Pour le développement, on garde `npm run dev`. Docker sert au déploiement et aux démos.
+
+## Marque blanche : une installation par restaurant
+
+La même image sert tous les restaurants. Le nom, le logo et la couleur sont lus au démarrage du conteneur : **aucune modification du code**. Ce sont les mêmes variables que l'App Client.
+
+| Variable | Rôle | Défaut |
+|---|---|---|
+| `MARQUE_NOM` | Nom affiché (menu latéral, connexion, onglet, tickets) | `SenYummies` |
+| `MARQUE_NOM_ACCENT` | Fin du nom écrite dans la couleur de marque | `Yummies` pour SenYummies, sinon aucune |
+| `MARQUE_INITIALES` | Monogramme (menu réduit, mobile, favicon) | déduit du nom (`SY`) |
+| `MARQUE_LOGO_URL` | Image qui remplace le monogramme (ex. `/marque/logo.png`) | aucune |
+| `MARQUE_ETABLISSEMENT` | Nom du restaurant sous la marque, sur les tickets | `Chez Ketchup` pour SenYummies, sinon aucun |
+| `MARQUE_COULEUR` | Couleur principale `#RRGGBB` ; les teintes (fonds, bordures, mode sombre) en sont dérivées | `#A6192E` |
+| `MARQUE_COULEUR_CLAIRE` | Accent sur fond sombre | calculé depuis la couleur |
+
+Au démarrage, le conteneur génère `/config.js`, le titre de l'onglet et le favicon (initiales sur la couleur de marque). Le logo du restaurant se monte en lecture seule sur `/marque`.
+
+Les rouges d'**erreur** et d'**alerte** ne dépendent pas de la marque : ils restent rouges pour tous les restaurants.
+
+En développement, les mêmes champs se règlent dans `.env` avec le préfixe `VITE_` (`VITE_MARQUE_NOM`…).
+
+## Version de l'app
+
+La version affichée (pied de page, mail d'aide) n'est jamais écrite dans le code :
+
+- en Docker, c'est le tag Git de la livraison, passé à la construction : `APP_VERSION=v1.2.0 docker compose build` ou `--build-arg APP_VERSION=...` ;
+- à défaut, c'est la version de `package.json`.
 
 ## Organisation — par rôle
 

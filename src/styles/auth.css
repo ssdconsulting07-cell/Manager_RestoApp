@@ -62,13 +62,13 @@ body,
 }
 
 .auth-form-logo-accent {
-  color: #a6192e;
+  color: var(--marque);
 }
 
 .auth-form-kicker,
 .auth-eyebrow {
   margin: 0 0 10px;
-  color: #a6192e;
+  color: var(--marque);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
@@ -131,8 +131,8 @@ body,
 }
 
 .auth-field input:focus {
-  border-color: #a6192e;
-  box-shadow: 0 0 0 3px rgb(166 25 46 / 12%);
+  border-color: var(--marque);
+  box-shadow: 0 0 0 3px rgb(var(--marque-rgb) / 12%);
 }
 
 .auth-password-control {
@@ -163,7 +163,7 @@ body,
 }
 
 .auth-password-toggle:hover {
-  color: #a6192e;
+  color: var(--marque);
   background: #f2f2f2;
 }
 
@@ -189,7 +189,7 @@ body,
 }
 
 .auth-reset-notice {
-  border-left: 3px solid #a6192e;
+  border-left: 3px solid var(--marque);
   border-radius: 0 6px 6px 0;
   padding: 12px 14px;
   color: #4d4d4d;
@@ -222,8 +222,8 @@ body,
 }
 
 .auth-otp-input:focus {
-  border-color: #a6192e;
-  box-shadow: 0 0 0 3px rgb(166 25 46 / 12%);
+  border-color: var(--marque);
+  box-shadow: 0 0 0 3px rgb(var(--marque-rgb) / 12%);
 }
 
 .auth-submit {
@@ -237,7 +237,7 @@ body,
   border-radius: 6px;
   padding: 14px 16px;
   color: #fff;
-  background: #a6192e;
+  background: var(--marque);
   cursor: pointer;
   font: inherit;
   font-size: 14px;
@@ -260,7 +260,7 @@ body,
 }
 
 .auth-submit:hover:not(:disabled) {
-  background: #871524;
+  background: color-mix(in srgb, var(--marque) 81%, black);
   transform: translateY(-1px);
 }
 
@@ -280,7 +280,7 @@ body,
 .auth-secondary-row button {
   border: 0;
   padding: 0;
-  color: #a6192e;
+  color: var(--marque);
   background: transparent;
   cursor: pointer;
   font: inherit;
@@ -291,7 +291,7 @@ body,
   align-self: flex-start;
   border: 0;
   padding: 0;
-  color: #a6192e;
+  color: var(--marque);
   background: transparent;
   cursor: pointer;
   font: inherit;
@@ -300,7 +300,7 @@ body,
 }
 
 .auth-back-link:hover {
-  color: #871524;
+  color: color-mix(in srgb, var(--marque) 81%, black);
 }
 
 .auth-top-back {
@@ -309,14 +309,14 @@ body,
 
 .auth-alert {
   margin: -4px 0 0;
-  color: #a6192e;
+  color: var(--marque);
   font-size: 13px;
   line-height: 1.5;
 }
 
 .auth-inline-error {
   margin: -10px 0 0;
-  color: #a6192e;
+  color: var(--marque);
   font-size: 12px;
   line-height: 1.4;
 }
@@ -353,7 +353,7 @@ body,
 }
 
 .toast-success { border-left-color: #2f8055; }
-.toast-error { border-left-color: #a6192e; }
+.toast-error { border-left-color: var(--marque); }
 .toast-info { border-left-color: #1f5fa8; }
 
 .toast-icon {
@@ -369,7 +369,7 @@ body,
 }
 
 .toast-success .toast-icon { background: #2f8055; }
-.toast-error .toast-icon { background: #a6192e; }
+.toast-error .toast-icon { background: var(--marque); }
 .toast-info .toast-icon { background: #1f5fa8; font-size: 12px; }
 
 .toast p {
@@ -406,7 +406,7 @@ body,
 }
 
 .toast-success .toast-timeline { background: #2f8055; }
-.toast-error .toast-timeline { background: #a6192e; }
+.toast-error .toast-timeline { background: var(--marque); }
 .toast-info .toast-timeline { background: #1f5fa8; }
 
 @keyframes toast-in {
@@ -466,6 +466,11 @@ body,
   font-size: 20px;
   font-weight: 800;
   letter-spacing: 1.5px;
+}
+
+/* Fin du nom dans la couleur de marque (SEN + YUMMIES). */
+.auth-brand-nom > span {
+  color: var(--marque);
 }
 
 .auth-slide-copy {
@@ -618,7 +623,7 @@ body,
 .auth-code-meta button {
   border: 0;
   padding: 0;
-  color: #a6192e;
+  color: var(--marque);
   background: transparent;
   cursor: pointer;
   font: inherit;
@@ -651,14 +656,14 @@ body,
 
 .auth-shell.is-dark .auth-form-logo-accent,
 .auth-shell.is-dark .auth-code-meta button:not(:disabled) {
-  color: #f3b0bb;
+  color: var(--marque-rose);
 }
 
 .auth-shell.is-dark .auth-form-logo-accent,
 .auth-shell.is-dark .auth-form-kicker,
 .auth-shell.is-dark .auth-secondary-row button,
 .auth-shell.is-dark .auth-back-link {
-  color: #a6192e;
+  color: var(--marque);
 }
 
 .auth-shell.is-dark .auth-form-header p:last-child,
@@ -670,8 +675,8 @@ body,
 }
 
 .auth-shell.is-dark .auth-reset-notice {
-  border-color: #c45a6b;
-  background: #2b2022;
+  border-color: color-mix(in srgb, var(--marque) 71%, white);
+  background: color-mix(in srgb, var(--marque) 11%, #1c1c20);
 }
 
 .auth-shell.is-dark .auth-copyright {
@@ -685,7 +690,7 @@ body,
 }
 
 .auth-shell.is-dark .auth-field input:focus {
-  border-color: #d97888;
+  border-color: color-mix(in srgb, var(--marque-vif) 74%, #f2f2f2);
   box-shadow: 0 0 0 3px rgb(217 120 136 / 18%);
 }
 
@@ -694,13 +699,13 @@ body,
 }
 
 .auth-shell.is-dark .auth-password-toggle:hover {
-  color: #f3b0bb;
+  color: var(--marque-rose);
   background: #303030;
 }
 
 .auth-shell.is-dark .auth-inline-error,
 .auth-shell.is-dark .auth-alert {
-  color: #ffadb8;
+  color: color-mix(in srgb, var(--marque-vif) 45%, white);
 }
 
 .auth-shell.is-dark .auth-success {

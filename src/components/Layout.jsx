@@ -4,6 +4,7 @@ import { tempsEcoule, useNotifications } from '../notifications/NotificationsCon
 import { ROLE_LABELS } from '../auth/roles.js'
 import { useAuth } from '../auth/AuthContext.jsx'
 import Toast from './Toast.jsx'
+import { Initiales, NomMarque } from './Marque.jsx'
 import ConfirmModal from './crud/ConfirmModal.jsx'
 import '../styles/manager.css'
 import PiedDePage from './PiedDePage.jsx'
@@ -347,8 +348,8 @@ export default function Layout({ children }) {
     <div className={`manager-shell ${darkMode ? 'is-dark' : ''} ${collapsed ? 'is-collapsed' : ''} ${mobileOpen ? 'is-mobile-open' : ''}`}>
       <aside className="manager-sidebar" aria-label="Navigation principale">
         <div className="manager-sidebar-brand">
-          <span className="manager-brand-full">SEN<span>YUMMIES</span></span>
-          <span className="manager-brand-short">SY</span>
+          <NomMarque className="manager-brand-full" />
+          <Initiales className="manager-brand-short" />
           <button className="manager-collapse-button" type="button" aria-label={mobileOpen ? 'Fermer la navigation' : 'Réduire la navigation'} onClick={toggleSidebar}>
             <i className={`fa-solid ${mobileOpen ? 'fa-chevron-left' : collapsed ? 'fa-chevron-right' : 'fa-chevron-left'}`} aria-hidden="true" />
           </button>
@@ -437,7 +438,7 @@ export default function Layout({ children }) {
       <div className="manager-main">
         <header className="manager-header">
           <span className="manager-header-mobile-brand" aria-hidden="true">
-            <span className="manager-header-mobile-brand-mark">SY</span>
+            <Initiales className="manager-header-mobile-brand-mark" />
             <span className="manager-header-mobile-brand-role">{ROLE_LABELS[role]}</span>
           </span>
           <div className="manager-header-context">

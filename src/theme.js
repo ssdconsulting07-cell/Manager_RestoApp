@@ -1,6 +1,7 @@
 // Meme identite que l'app client (voir Code/app-client/src/theme.js)
 export const colors = {
-  red: '#A6192E',
+  // Couleur de marque : variable CSS (src/config/marque.js).
+  red: 'var(--marque)',
   black: '#141414',
   white: '#FFFFFF',
   gray100: '#F2F2F2',

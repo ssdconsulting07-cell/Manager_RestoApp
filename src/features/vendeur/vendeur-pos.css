@@ -31,28 +31,28 @@
   flex: 0 0 auto;
   align-items: center;
   gap: 8px;
-  border: 1px solid #a6192e;
+  border: 1px solid var(--marque);
   border-radius: 999px;
   padding: 10px 18px;
-  background: #a6192e;
+  background: var(--marque);
   color: #fff;
   cursor: pointer;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
-  box-shadow: 0 10px 22px rgb(166 25 46 / 20%);
+  box-shadow: 0 10px 22px rgb(var(--marque-rgb) / 20%);
   transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
 }
 
 .vendeur-pos-cart-button:hover {
-  background: #8f1526;
-  border-color: #8f1526;
+  background: color-mix(in srgb, var(--marque) 85%, black);
+  border-color: color-mix(in srgb, var(--marque) 85%, black);
   transform: translateY(-1px);
 }
 
 .vendeur-pos-cart-button:disabled {
-  background: #d8a4ad;
-  border-color: #d8a4ad;
+  background: color-mix(in srgb, var(--marque) 35%, #f2f2f2);
+  border-color: color-mix(in srgb, var(--marque) 35%, #f2f2f2);
   box-shadow: none;
   cursor: not-allowed;
   transform: none;
@@ -70,7 +70,7 @@
   border-radius: 999px;
   padding: 0 5px;
   background: #fff;
-  color: #a6192e;
+  color: var(--marque);
   font-size: 11px;
   font-weight: 700;
 }
@@ -110,7 +110,7 @@
   border-radius: 10px;
   padding: 9px 16px;
   background: #fff;
-  color: #a6192e;
+  color: var(--marque);
   cursor: pointer;
   font: inherit;
   font-size: 13px;
@@ -118,8 +118,8 @@
 }
 
 .vendeur-annuler-bouton:hover {
-  background: #fbeaec;
-  border-color: #e6c2c9;
+  background: var(--marque-pale);
+  border-color: var(--marque-bordure);
 }
 
 /* Stepper (Panier -> Paiement) */
@@ -171,8 +171,8 @@
 }
 
 .vendeur-stepper-step.is-active .vendeur-stepper-bullet {
-  border-color: #a6192e;
-  background: #a6192e;
+  border-color: var(--marque);
+  background: var(--marque);
   color: #fff;
 }
 
@@ -188,7 +188,7 @@
 }
 
 .vendeur-stepper-step.is-active .vendeur-stepper-label {
-  color: #a6192e;
+  color: var(--marque);
 }
 
 /* Corps de chaque etape de PanierPage : pleine largeur partout (les lignes
@@ -261,11 +261,11 @@
   align-self: flex-start;
   align-items: center;
   gap: 6px;
-  border: 1px dashed #d8b9bf;
+  border: 1px dashed color-mix(in srgb, var(--marque) 27%, #f2f2f2);
   border-radius: 999px;
   padding: 4px 10px;
-  background: #fbeaec;
-  color: #a6192e;
+  background: var(--marque-pale);
+  color: var(--marque);
   cursor: pointer;
   font: inherit;
   font-size: 11px;
@@ -282,13 +282,13 @@
    burgers, un seul avec frites). */
 .vendeur-panier-ligne-accomp-bouton.is-selected {
   border-style: solid;
-  border-color: #a6192e;
-  background: #a6192e;
+  border-color: var(--marque);
+  background: var(--marque);
   color: #fff;
 }
 
 .vendeur-panier-ligne-accomp-bouton.is-selected:hover {
-  background: #8a1426;
+  background: color-mix(in srgb, var(--marque) 83%, black);
 }
 
 .vendeur-panier-ligne-total {
@@ -339,7 +339,7 @@
 }
 
 .vendeur-pos-panier-retirer:hover {
-  color: #a6192e;
+  color: var(--marque);
 }
 
 .vendeur-pos-panier-empty {
@@ -392,14 +392,14 @@
 
 .vendeur-paiement-mode:hover {
   transform: translateY(-2px);
-  border-color: #e6c2c9;
+  border-color: var(--marque-bordure);
 }
 
 .vendeur-paiement-mode.is-selected {
-  border-color: #a6192e;
-  background: #fbeaec;
-  color: #a6192e;
-  box-shadow: 0 10px 22px rgb(166 25 46 / 12%);
+  border-color: var(--marque);
+  background: var(--marque-pale);
+  color: var(--marque);
+  box-shadow: 0 10px 22px rgb(var(--marque-rgb) / 12%);
 }
 
 .vendeur-paiement-mode-carte-icones {
@@ -449,7 +449,7 @@
 }
 
 .vendeur-paiement-mode.is-selected .fa-money-bill-wave {
-  color: #a6192e;
+  color: var(--marque);
 }
 
 /* Formulaire Paiement — reutilise par l'etape Paiement de PanierPage. */
@@ -479,8 +479,8 @@
 }
 
 .vendeur-paiement-form input:focus {
-  border-color: #a6192e;
-  box-shadow: 0 0 0 3px rgb(166 25 46 / 12%);
+  border-color: var(--marque);
+  box-shadow: 0 0 0 3px rgb(var(--marque-rgb) / 12%);
 }
 
 .vendeur-paiement-lecture-seule {
@@ -498,7 +498,7 @@
 
 .vendeur-pos-paiement-total strong {
   font-size: 20px;
-  color: #a6192e;
+  color: var(--marque);
 }
 
 /* Catalogue — grille de produits */
@@ -526,8 +526,8 @@
 
 .vendeur-pos-card:hover {
   transform: translateY(-2px);
-  border-color: #e6c2c9;
-  box-shadow: 0 14px 28px rgb(166 25 46 / 10%);
+  border-color: var(--marque-bordure);
+  box-shadow: 0 14px 28px rgb(var(--marque-rgb) / 10%);
 }
 
 .vendeur-pos-card-photo {
@@ -558,7 +558,7 @@
 
 .vendeur-pos-card-prix {
   margin-top: 2px;
-  color: #a6192e;
+  color: var(--marque);
   font-size: 13px;
   font-weight: 700;
 }
@@ -628,13 +628,13 @@
 }
 
 .vendeur-accomp-choix:hover {
-  border-color: #e6c2c9;
+  border-color: var(--marque-bordure);
 }
 
 .vendeur-accomp-choix.is-selected {
-  border-color: #a6192e;
-  background: #fbeaec;
-  color: #a6192e;
+  border-color: var(--marque);
+  background: var(--marque-pale);
+  color: var(--marque);
 }
 
 .vendeur-accomp-choix-prix {
@@ -647,7 +647,7 @@
 }
 
 .vendeur-accomp-choix.is-selected .vendeur-accomp-choix-prix {
-  color: #a6192e;
+  color: var(--marque);
 }
 
 /* Reçu */
@@ -755,7 +755,7 @@
   border-radius: 16px;
   padding: 16px 18px;
   background:
-    radial-gradient(100% 120% at 100% 0%, rgba(166, 25, 46, 0.08) 0%, transparent 50%),
+    radial-gradient(100% 120% at 100% 0%, rgb(var(--marque-rgb) / 0.08) 0%, transparent 50%),
     #fff;
 }
 
@@ -831,7 +831,7 @@
 
 .vendeur-historique-ligne:hover {
   transform: translateY(-1px);
-  border-color: #e6c2c9;
+  border-color: var(--marque-bordure);
 }
 
 .vendeur-historique-numero {
@@ -845,7 +845,7 @@
 }
 
 .vendeur-historique-total {
-  color: #a6192e;
+  color: var(--marque);
   font-weight: 700;
 }
 
@@ -872,19 +872,19 @@
 }
 
 .manager-shell.is-dark .vendeur-pos-cart-button {
-  border-color: #e14b64;
-  background: #e14b64;
+  border-color: var(--marque-vif);
+  background: var(--marque-vif);
   color: #141414;
 }
 
 .manager-shell.is-dark .vendeur-pos-cart-button:hover {
-  background: #c93f55;
-  border-color: #c93f55;
+  background: color-mix(in srgb, var(--marque-vif) 88%, black);
+  border-color: color-mix(in srgb, var(--marque-vif) 88%, black);
 }
 
 .manager-shell.is-dark .vendeur-pos-cart-button:disabled {
-  background: #5c3038;
-  border-color: #5c3038;
+  background: color-mix(in srgb, var(--marque-vif) 33%, #1c1c20);
+  border-color: color-mix(in srgb, var(--marque-vif) 33%, #1c1c20);
   color: #9a9a9e;
 }
 
@@ -894,18 +894,18 @@
 
 .manager-shell.is-dark .vendeur-pos-cart-badge {
   background: #141414;
-  color: #e14b64;
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .vendeur-annuler-bouton {
-  border-color: #5c3038;
+  border-color: color-mix(in srgb, var(--marque-vif) 33%, #1c1c20);
   background: #1c1c20;
-  color: #e14b64;
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .vendeur-annuler-bouton:hover {
-  background: #2a1a1d;
-  border-color: #e14b64;
+  background: color-mix(in srgb, var(--marque) 10%, #1c1c20);
+  border-color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .vendeur-panier-modal-fermer:hover {
@@ -918,19 +918,19 @@
 }
 
 .manager-shell.is-dark .vendeur-panier-ligne-accomp-bouton {
-  border-color: #5c3038;
-  background: #2a1a1d;
-  color: #e14b64;
+  border-color: color-mix(in srgb, var(--marque-vif) 33%, #1c1c20);
+  background: color-mix(in srgb, var(--marque) 10%, #1c1c20);
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .vendeur-panier-ligne-accomp-bouton.is-selected {
-  border-color: #e14b64;
-  background: #e14b64;
+  border-color: var(--marque-vif);
+  background: var(--marque-vif);
   color: #1a1a1d;
 }
 
 .manager-shell.is-dark .vendeur-panier-ligne-accomp-bouton.is-selected:hover {
-  background: #c93f56;
+  background: color-mix(in srgb, var(--marque-vif) 88%, black);
 }
 
 .manager-shell.is-dark .vendeur-panier-ligne-total,
@@ -945,9 +945,9 @@
 }
 
 .manager-shell.is-dark .vendeur-paiement-mode.is-selected {
-  border-color: #e14b64;
-  background: #2a1a1d;
-  color: #e14b64;
+  border-color: var(--marque-vif);
+  background: color-mix(in srgb, var(--marque) 10%, #1c1c20);
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .vendeur-paiement-mode .fa-money-bill-wave {
@@ -955,7 +955,7 @@
 }
 
 .manager-shell.is-dark .vendeur-paiement-mode.is-selected .fa-money-bill-wave {
-  color: #e14b64;
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .vendeur-paiement-lecture-seule {
@@ -970,9 +970,9 @@
 }
 
 .manager-shell.is-dark .vendeur-accomp-choix.is-selected {
-  border-color: #e14b64;
-  background: #2a1a1d;
-  color: #e14b64;
+  border-color: var(--marque-vif);
+  background: color-mix(in srgb, var(--marque) 10%, #1c1c20);
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .vendeur-stepper-step {
@@ -990,24 +990,24 @@
 }
 
 .manager-shell.is-dark .vendeur-stepper-step.is-active .vendeur-stepper-bullet {
-  border-color: #e14b64;
-  background: #e14b64;
+  border-color: var(--marque-vif);
+  background: var(--marque-vif);
   color: #141414;
 }
 
 .manager-shell.is-dark .vendeur-stepper-step.is-active .vendeur-stepper-label {
-  color: #e14b64;
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .vendeur-pos-card-prix,
 .manager-shell.is-dark .vendeur-recu-total-row.is-total,
 .manager-shell.is-dark .vendeur-historique-numero,
 .manager-shell.is-dark .vendeur-historique-total {
-  color: #e14b64;
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .vendeur-pos-paiement-total strong {
-  color: #e14b64;
+  color: var(--marque-vif);
 }
 
 @media (max-width: 980px) {
@@ -1071,7 +1071,7 @@
   gap: 10px;
   margin-bottom: 18px;
   padding: 14px 16px;
-  border: 1px solid #f1c6cd;
+  border: 1px solid color-mix(in srgb, var(--marque-vif) 26%, #f2f2f2);
   border-radius: 14px;
   background: #fdf3f4;
 }
@@ -1081,7 +1081,7 @@
   align-items: center;
   gap: 8px;
   margin: 0;
-  color: #a6192e;
+  color: var(--marque);
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
@@ -1089,10 +1089,10 @@
 }
 
 .manager-shell.is-dark .vendeur-retraits-panel {
-  border-color: #5a2630;
-  background: #241316;
+  border-color: color-mix(in srgb, var(--marque-vif) 35%, #121214);
+  background: color-mix(in srgb, var(--marque) 12%, #121214);
 }
 
 .manager-shell.is-dark .vendeur-retraits-titre {
-  color: #e8778a;
+  color: color-mix(in srgb, var(--marque-vif) 76%, white);
 }

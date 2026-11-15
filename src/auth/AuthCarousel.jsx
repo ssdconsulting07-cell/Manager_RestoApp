@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { colors, fontFamily } from '../theme.js'
+import { fontFamily } from '../theme.js'
+import { marque } from '../config/marque.js'
+import { NomMarque } from '../components/Marque.jsx'
 
 const slides = [
   {
@@ -19,7 +21,7 @@ const slides = [
   {
     image:
       'https://images.unsplash.com/photo-1521305916504-4a1121188589?auto=format&fit=crop&w=1600&q=85',
-    eyebrow: 'L’expérience SenYummies',
+    eyebrow: `L’expérience ${marque.nom}`,
     title: 'Le goût du travail bien fait.',
     description: 'Un espace simple pour chaque rôle, pensé pour les journées qui vont vite.',
   },
@@ -39,7 +41,7 @@ export default function AuthCarousel() {
   const slide = slides[activeIndex]
 
   return (
-    <aside className="auth-carousel" aria-label="Présentation SenYummies">
+    <aside className="auth-carousel" aria-label={`Présentation ${marque.nom}`}>
       {slides.map((item, index) => (
         <div
           className={`auth-slide-image ${index === activeIndex ? 'is-active' : ''}`}
@@ -50,8 +52,8 @@ export default function AuthCarousel() {
       ))}
       <div className="auth-carousel-overlay" />
       <div className="auth-carousel-content" style={{ fontFamily }}>
-        <div className="auth-brand-mark" aria-label="SenYummies">
-          SEN<span style={{ color: colors.red }}>YUMMIES</span>
+        <div className="auth-brand-mark" aria-label={marque.nom}>
+          <NomMarque className="auth-brand-nom" />
         </div>
         <div className="auth-slide-copy" key={slide.title}>
           <p className="auth-eyebrow">{slide.eyebrow}</p>

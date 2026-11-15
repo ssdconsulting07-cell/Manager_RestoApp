@@ -1,6 +1,6 @@
 .cuisine-board-error {
   margin: 0 0 12px;
-  color: #a6192e;
+  color: var(--marque);
   font-size: 13px;
 }
 
@@ -90,10 +90,10 @@
 }
 
 .cuisine-row.is-urgent {
-  --card-accent: #a6192e;
-  border-color: #e6c2c9;
+  --card-accent: var(--marque);
+  border-color: var(--marque-bordure);
   border-left-color: var(--card-accent);
-  box-shadow: 0 12px 26px rgb(166 25 46 / 10%);
+  box-shadow: 0 12px 26px rgb(var(--marque-rgb) / 10%);
 }
 
 /* Toute la barre deplie/replie au clic (retour utilisateur : d'abord
@@ -167,7 +167,7 @@
 }
 
 .cuisine-row-client-item i {
-  color: #a6192e;
+  color: var(--marque);
 }
 
 .cuisine-row-id {
@@ -203,13 +203,13 @@
 }
 
 .cuisine-row-pill.is-time {
-  color: #a6192e;
-  background: #f8e9ec;
+  color: var(--marque);
+  background: var(--marque-pale);
 }
 
 .cuisine-row-pill.is-late {
   color: #fff;
-  background: #a6192e;
+  background: var(--marque);
 }
 
 /* Bouton(s) d'action toujours visibles a cote du resume (retour utilisateur
@@ -273,8 +273,8 @@
 }
 
 .cuisine-row-toggle:hover {
-  color: #a6192e;
-  border-color: #e6c2c9;
+  color: var(--marque);
+  border-color: var(--marque-bordure);
 }
 
 /* Bouton d'impression du recu (espace Livreur, voir onImprimer dans
@@ -295,8 +295,8 @@
 }
 
 .cuisine-row-print:hover {
-  color: #a6192e;
-  border-color: #e6c2c9;
+  color: var(--marque);
+  border-color: var(--marque-bordure);
 }
 
 .cuisine-row-toggle i {
@@ -421,7 +421,7 @@
   place-items: center;
   border-radius: 999px;
   border: 2px solid #fff;
-  background: #a6192e;
+  background: var(--marque);
   color: #fff;
   font-size: 11px;
   font-weight: 800;
@@ -465,7 +465,7 @@
 }
 
 .cuisine-row-line-perso i {
-  color: #a6192e;
+  color: var(--marque);
 }
 
 .cuisine-row-note {
@@ -483,7 +483,7 @@
 
 .cuisine-row-note i {
   margin-top: 3px;
-  color: #a6192e;
+  color: var(--marque);
 }
 
 .cuisine-row-note-title {
@@ -513,7 +513,7 @@
 }
 
 .manager-shell.is-dark .cuisine-row.is-urgent {
-  border-color: rgba(225, 75, 100, 0.4);
+  border-color: rgb(var(--marque-vif-rgb) / 0.4);
 }
 
 .manager-shell.is-dark .cuisine-row.is-prep {
@@ -552,8 +552,8 @@
 }
 
 .manager-shell.is-dark .cuisine-row-pill.is-time {
-  background: rgba(225, 75, 100, 0.16);
-  color: #e14b64;
+  background: rgb(var(--marque-vif-rgb) / 0.16);
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .cuisine-row-ready-note {
@@ -578,8 +578,8 @@
 }
 
 .manager-shell.is-dark .cuisine-row-toggle:hover {
-  color: #e14b64;
-  border-color: rgba(225, 75, 100, 0.35);
+  color: var(--marque-vif);
+  border-color: rgb(var(--marque-vif-rgb) / 0.35);
 }
 
 .manager-shell.is-dark .cuisine-row-section-title {
@@ -615,7 +615,7 @@
 }
 
 .manager-shell.is-dark .cuisine-row-line-perso i {
-  color: #e14b64;
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .cuisine-row-summary {
@@ -627,7 +627,7 @@
 }
 
 .manager-shell.is-dark .cuisine-row-client-item i {
-  color: #e14b64;
+  color: var(--marque-vif);
 }
 
 .manager-shell.is-dark .cuisine-row-note {
@@ -678,6 +678,6 @@
 .cuisine-row-montants > div.is-total dd { font-weight: 800; }
 .cuisine-row-etapes { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .cuisine-row-etapes li { display: flex; gap: 12px; font-size: 13px; }
-.cuisine-row-etape-heure { min-width: 44px; color: #a6192e; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cuisine-row-etape-heure { min-width: 44px; color: var(--marque); font-weight: 700; font-variant-numeric: tabular-nums; }
 .cuisine-row-etape-par { color: #6b6b6b; }
 .manager-shell.is-dark .cuisine-row-montants dd, .manager-shell.is-dark .cuisine-row-line-prix b { color: #f2f2f2; }

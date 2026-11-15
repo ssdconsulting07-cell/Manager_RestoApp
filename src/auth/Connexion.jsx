@@ -4,6 +4,7 @@ import { useAuth } from './AuthContext.jsx'
 import { ROLE_HOME, ROUTE_ROLES } from './roles.js'
 import AuthLayout from './AuthLayout.jsx'
 import Toast from '../components/Toast.jsx'
+import { NomMarque } from '../components/Marque.jsx'
 
 // Apres connexion : retour a l'ecran demande s'il est permis pour ce role,
 // sinon espace par defaut du role (ROLE_HOME).
@@ -117,9 +118,7 @@ export default function Connexion() {
         </button>
       )}
       <div className="auth-form-header">
-        <span className="auth-form-logo">
-          SEN<span className="auth-form-logo-accent">YUMMIES</span>
-        </span>
+        <NomMarque className="auth-form-logo" accentClassName="auth-form-logo-accent" />
         <p className="auth-form-kicker">Espace du personnel</p>
         <h1>
           {mode === 'login'

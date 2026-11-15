@@ -4,6 +4,7 @@
 // prix unitaire, total), sous-total, frais de livraison, total, moyen et
 // statut du paiement, heure de chaque etape. Montants du serveur (prix figes
 // a la commande). Nouvel onglet dedie, CSS isole.
+import { marque } from '../../config/marque.js'
 import {
   adresseLivraison,
   positionLivraison,
@@ -63,7 +64,7 @@ function construireHtmlRecuCommande(commande, produits) {
   .ticket { margin: 8px 0 2px; font-size: 22px; font-weight: 800; text-align: center; }
   .meta { margin: 0 0 8px; color: #333; font-size: 11.5px; text-align: center; }
   .bloc { display: flex; flex-direction: column; gap: 3px; padding: 7px 0; border-top: 1px dashed #bbb; }
-  .titre { margin: 0 0 2px; color: #a6192e; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .titre { margin: 0 0 2px; color: ${marque.couleur}; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
   .row { display: flex; justify-content: space-between; gap: 10px; }
   .row span:first-child { color: #555; }
   .row span:last-child { text-align: right; font-weight: 600; }
@@ -77,8 +78,8 @@ function construireHtmlRecuCommande(commande, produits) {
 </style>
 </head>
 <body>
-  <h1>SenYummies</h1>
-  <p class="sous-titre">Chez Ketchup</p>
+  <h1>${echapperHtml(marque.nom)}</h1>
+  ${marque.etablissement && marque.etablissement !== marque.nom ? `<p class="sous-titre">${echapperHtml(marque.etablissement)}</p>` : ''}
   <p class="ticket">Ticket n° ${echapperHtml(idTicket)}</p>
   <p class="meta">${echapperHtml(formatDateHeureComplete(commande.creeLe))}<br />${echapperHtml(modeLabel(commande.mode) || '')}</p>
 

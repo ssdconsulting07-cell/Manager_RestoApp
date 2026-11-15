@@ -167,7 +167,7 @@ function StaffUserFormModal({ user, currentUsername, assignableRoles, formTitle,
     !firstName.trim() && 'le prénom',
     !lastName.trim() && 'le nom',
     !address.trim() && 'l’adresse',
-    cni.length !== 14 && 'la CNI (14 chiffres)',
+    cni.length !== 13 && 'la CNI (13 chiffres)',
     chiffresTel.length < 9 && 'le téléphone',
     username.trim().length < 3 && 'l’identifiant (3 caractères min.)',
   ].filter(Boolean)
@@ -217,12 +217,12 @@ function StaffUserFormModal({ user, currentUsername, assignableRoles, formTitle,
             <input
               type="text"
               inputMode="numeric"
-              pattern="[0-9]{14}"
-              title="La CNI doit contenir exactement 14 chiffres."
+              pattern="[0-9]{13}"
+              title="La CNI doit contenir exactement 13 chiffres."
               value={cni}
-              onChange={(event) => setCni(event.target.value.replace(/\D/g, '').slice(0, 14))}
-              minLength={14}
-              maxLength={14}
+              onChange={(event) => setCni(event.target.value.replace(/\D/g, '').slice(0, 13))}
+              minLength={13}
+              maxLength={13}
               required
             />
           </label>

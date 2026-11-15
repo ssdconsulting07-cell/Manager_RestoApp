@@ -106,6 +106,17 @@ export default function CommandeRow({
   // rendre au client (demande du 24/10/2026, voir recuCommande.js). Non
   // fourni => pas de bouton (Cuisine n'imprime rien depuis cet ecran).
   onImprimer = null,
+  // Cuisine : appele au clic « Envoyer » (confirmation de PRETE ->
+  // EN_LIVRAISON), dans le geste de l'utilisateur pour que le navigateur
+  // autorise l'onglet d'impression du ticket.
+  onEnvoiLivreur = null,
+  // Livreur : commande partie de la cuisine, pas encore prise. Le bouton
+  // « Je la prends » remplace les actions ; le premier livreur qui la
+  // prend l'obtient (le serveur tranche, 409 sinon).
+  aPrendre = false,
+  onPrendre = null,
+  // Livreur : nom du livreur qui l'a (affiche quand ce n'est pas soi).
+  noteLivreur = null,
 }) {
   const [deplie, setDeplie] = useState(false)
   const [confirmation, setConfirmation] = useState(null)
@@ -168,7 +179,28 @@ export default function CommandeRow({
           </div>
 
           <div className="cuisine-row-primary">
-            {transitions.length > 0 ? (
+            {aPrendre && onPrendre ? (
+              <button
+                type="button"
+                disabled={pending}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onPrendre(commande)
+                }}
+                className="manager-button manager-button-primary"
+              >
+                {pending ? '…' : (
+                  <>
+                    <i className="fa-solid fa-hand" aria-hidden="true" /> Je la prends
+                  </>
+                )}
+              </button>
+            ) : noteLivreur ? (
+              <span className="cuisine-row-ready-note">
+                <i className="fa-solid fa-motorcycle" aria-hidden="true" />
+                {noteLivreur}
+              </span>
+            ) : transitions.length > 0 ? (
               transitions.map((t) => (
                 <button
                   key={t.to}
@@ -355,12 +387,15 @@ export default function CommandeRow({
               ? `La commande #${idTicket} sera marquée « Annulée » et disparaîtra du tableau. Cette action est définitive.`
               : confirmationLivreur
                 ? `La commande #${idTicket} sera marquée « En livraison ». Cette action ne peut pas être annulée.`
-                : `La commande #${idTicket} sera marquée « En livraison » et restera visible sous « Prêtes » jusqu'à sa livraison. Cette action ne peut pas être annulée.`
+                : `La commande #${idTicket} sera marquée « En livraison », son ticket s'imprime, et le premier livreur disponible la prend. Cette action ne peut pas être annulée.`
           }
-          confirmLabel={confirmation.to === 'ANNULEE' ? 'Annuler la commande' : confirmationLivreur ? 'Récupéré' : 'Envoyer'}
+          confirmLabel={confirmation.to === 'ANNULEE' ? 'Annuler la commande' : confirmationLivreur ? 'Récupéré' : 'Envoyer et imprimer'}
           tone={confirmation.to === 'ANNULEE' ? 'danger' : 'warning'}
           icon={confirmation.to === 'ANNULEE' ? 'fa-ban' : 'fa-motorcycle'}
           onConfirm={() => {
+            if (confirmation.to === 'EN_LIVRAISON' && !confirmationLivreur && onEnvoiLivreur) {
+              onEnvoiLivreur(commande)
+            }
             onTransition(confirmation.to)
             setConfirmation(null)
           }}

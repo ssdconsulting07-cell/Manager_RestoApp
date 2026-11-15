@@ -1159,3 +1159,51 @@
 .staff-users-note strong { color: #141414; font-size: 12px; }
 .staff-users-note-nombre, .staff-users-note-vide { color: #6b6b6b; font-size: 11px; }
 .manager-shell.is-dark .staff-users-note strong { color: #f2f2f2; }
+
+/* --- Plats du jour : services et jours (feedbacks nov. 2026) ------------- */
+.plat-choix { margin: 0; padding: 0; border: 0; min-width: 0; }
+.plat-choix legend { margin-bottom: 8px; color: #141414; font-size: 13px; font-weight: 600; }
+.plat-choix-aide { color: #6b6b6b; font-weight: 400; }
+.plat-choix-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.plat-choix-option { display: inline-flex; min-height: 40px; align-items: center; gap: 8px; padding: 0 14px; border: 1px solid #d8d8d8; border-radius: 999px; background: #fff; color: #141414; font-size: 13px; font-weight: 600; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.plat-choix-option input { position: absolute; opacity: 0; pointer-events: none; }
+.plat-choix-option.is-active { border-color: var(--marque); background: var(--marque-pale); color: var(--marque); }
+.plat-choix-option:focus-within { outline: 2px solid var(--marque); outline-offset: 2px; }
+.plat-choix-options.is-jours .plat-choix-option { padding: 0 12px; }
+.plat-choix-tous { margin-top: 8px; padding: 0; border: 0; background: none; color: var(--marque); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: underline; }
+
+.horaires-services { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; margin: 0 0 22px; padding: 18px 20px; border: 1px solid #e5e5e3; border-radius: 16px; background: #fff; }
+.horaires-services-texte { flex: 1 1 260px; min-width: 0; }
+.horaires-services-texte h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; font-size: 16px; }
+.horaires-services-texte h2 i { color: var(--marque); }
+.horaires-services-texte p { margin: 0; color: #6b6b6b; font-size: 13px; line-height: 1.5; }
+.horaires-services-champs { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; }
+.horaires-services fieldset { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; margin: 0; padding: 10px 12px; border: 1px solid #ececea; border-radius: 12px; }
+.horaires-services legend { padding: 0 4px; font-size: 13px; font-weight: 700; }
+.horaires-services legend i { color: var(--marque); }
+.horaires-services label { display: flex; flex-direction: column; gap: 4px; color: #6b6b6b; font-size: 12px; font-weight: 600; }
+.horaires-services input[type="time"] { min-height: 40px; padding: 0 10px; border: 1px solid #d8d8d8; border-radius: 8px; font: inherit; color: #141414; }
+.horaires-services small { flex-basis: 100%; color: var(--marque); font-size: 11px; font-weight: 600; }
+.manager-shell.is-dark .horaires-services { border-color: #2f2f33; background: #1c1c20; }
+.manager-shell.is-dark .horaires-services fieldset { border-color: #2f2f33; }
+.manager-shell.is-dark .horaires-services input[type="time"] { border-color: #2f2f33; background: #121214; color: #f2f2f2; }
+.manager-shell.is-dark .plat-choix legend { color: #f2f2f2; }
+.manager-shell.is-dark .plat-choix-option { border-color: #2f2f33; background: #1c1c20; color: #f2f2f2; }
+.manager-shell.is-dark .plat-choix-option.is-active { border-color: var(--marque-vif); background: rgb(var(--marque-vif-rgb) / 16%); color: var(--marque-rose); }
+@media (max-width: 640px) {
+  .horaires-services { padding: 14px; }
+  .horaires-services-champs { width: 100%; }
+  .horaires-services-champs .manager-button { width: 100%; }
+}
+
+/* Badge Tendance : Auto / Oui / Non (liste des produits) */
+.crud-tendance-choix { position: relative; gap: 6px; cursor: pointer; }
+.crud-tendance-choix select { appearance: none; border: 0; background: transparent; color: inherit; font: inherit; font-weight: 600; cursor: pointer; padding-right: 14px; }
+.crud-tendance-choix::after { content: "▾"; position: absolute; right: 8px; font-size: 10px; pointer-events: none; }
+.crud-tendance-choix select:focus-visible { outline: none; }
+.crud-tendance-choix:focus-within { outline: 2px solid var(--marque); outline-offset: 2px; }
+.vendeur-accomp-aide { margin: -6px 0 12px; color: #6b6b6b; font-size: 13px; }
+.manager-modal-form .categorie-accomp { flex-direction: row; align-items: flex-start; gap: 10px; cursor: pointer; }
+.categorie-accomp input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--marque); flex: none; }
+.categorie-accomp span { display: flex; flex-direction: column; gap: 2px; font-weight: 600; }
+.categorie-accomp small { color: #6b6b6b; font-size: 12px; font-weight: 400; line-height: 1.4; }

@@ -25,7 +25,7 @@ export default function Produits() {
     categoriesSelectionnables,
     majStatutProduit,
     toggleDisponibiliteProduit,
-    toggleMiseEnAvantProduit,
+    changerTendanceProduit,
     creerProduit,
     modifierProduit,
     supprimerProduit,
@@ -90,9 +90,14 @@ export default function Produits() {
     setModal(null)
   }
 
-  function handleToggleMiseEnAvant(produit, miseEnAvant, label) {
-    toggleMiseEnAvantProduit(produit.id, miseEnAvant)
-    notify('success', `« ${produit.nom} » ${produit[miseEnAvant] ? `retiré de « ${label} »` : `ajouté à « ${label} »`}.`)
+  function handleTendance(produit, mode) {
+    changerTendanceProduit(produit.id, mode)
+    const textes = {
+      AUTO: 'reçoit le badge « Tendance » automatiquement s’il fait partie des plus commandés',
+      OUI: 'affiche toujours le badge « Tendance »',
+      NON: 'n’affiche jamais le badge « Tendance »',
+    }
+    notify('success', `« ${produit.nom} » ${textes[mode]}.`)
   }
 
   function handleSave(data) {
@@ -182,14 +187,22 @@ export default function Produits() {
 
                   {produit.statut !== 'ARCHIVE' && (
                     <>
-                      <button
-                        className={`crud-action crud-highlight-action is-trending ${produit.tendance ? 'is-active' : ''}`}
-                        type="button"
-                        aria-pressed={Boolean(produit.tendance)}
-                        onClick={() => handleToggleMiseEnAvant(produit, 'tendance', 'Tendance')}
+                      <label
+                        className={`crud-action crud-highlight-action is-trending crud-tendance-choix ${produit.tendance ? 'is-active' : ''}`}
+                        title="Auto : les plus commandés des 30 derniers jours"
                       >
-                        <i className="fa-solid fa-fire" aria-hidden="true" /> Tendance
-                      </button>
+                        <i className="fa-solid fa-fire" aria-hidden="true" />
+                        
+                        <select
+                          aria-label={`Badge Tendance de ${produit.nom}`}
+                          value={produit.tendanceMode || (produit.tendance ? 'OUI' : 'AUTO')}
+                          onChange={(e) => handleTendance(produit, e.target.value)}
+                        >
+                          <option value="AUTO">Tendance : auto</option>
+                          <option value="OUI">Tendance : oui</option>
+                          <option value="NON">Tendance : non</option>
+                        </select>
+                      </label>
                     </>
                   )}
 

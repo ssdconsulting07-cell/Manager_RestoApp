@@ -1,4 +1,6 @@
-// Recu imprime d'une commande en livraison (espace Livreur, Livraisons.jsx) :
+// Ticket imprime d'une commande en livraison, lance par la CUISINE au clic
+// « Envoyer au livreur » (Commandes.jsx) ; noir et blanc, logo et nom du
+// restaurant, client (nom, prenom, telephone, zone) et detail complet :
 // ticket 80 mm detaille, comme un vrai ticket de caisse. Numero, date et
 // heure, mode, client et adresse de livraison, chaque article (quantite,
 // prix unitaire, total), sous-total, frais de livraison, total, moyen et
@@ -64,7 +66,7 @@ function construireHtmlRecuCommande(commande, produits) {
   .ticket { margin: 8px 0 2px; font-size: 22px; font-weight: 800; text-align: center; }
   .meta { margin: 0 0 8px; color: #333; font-size: 11.5px; text-align: center; }
   .bloc { display: flex; flex-direction: column; gap: 3px; padding: 7px 0; border-top: 1px dashed #bbb; }
-  .titre { margin: 0 0 2px; color: ${marque.couleur}; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .titre { margin: 0 0 2px; color: #141414; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
   .row { display: flex; justify-content: space-between; gap: 10px; }
   .row span:first-child { color: #555; }
   .row span:last-child { text-align: right; font-weight: 600; }
@@ -73,11 +75,14 @@ function construireHtmlRecuCommande(commande, produits) {
   .detail { display: block; color: #6b6b6b; font-size: 10.5px; }
   .total { padding-top: 4px; border-top: 1px solid #141414; font-size: 15px; }
   .total span { color: #141414 !important; font-weight: 800 !important; }
-  .note { margin: 0; padding: 6px; border-radius: 4px; background: #f6ecd9; color: #6b4a0c; font-size: 11px; }
+  .note { margin: 0; padding: 6px; border: 1px solid #141414; border-radius: 4px; color: #141414; font-size: 11px; }
+  .logo { display: block; width: 18mm; height: 18mm; margin: 0 auto 4px; object-fit: contain; filter: grayscale(1); }
+  .monogramme { display: flex; width: 14mm; height: 14mm; margin: 0 auto 4px; align-items: center; justify-content: center; border: 2px solid #141414; border-radius: 4mm; font-size: 20px; font-weight: 800; }
   .merci { margin: 10px 0 0; color: #6b6b6b; font-size: 10.5px; font-style: italic; text-align: center; }
 </style>
 </head>
 <body>
+  ${marque.logo ? `<img class="logo" src="${echapperHtml(new URL(marque.logo, window.location.origin).href)}" alt="" />` : `<div class="monogramme">${echapperHtml(marque.initiales)}</div>`}
   <h1>${echapperHtml(marque.nom)}</h1>
   ${marque.etablissement && marque.etablissement !== marque.nom ? `<p class="sous-titre">${echapperHtml(marque.etablissement)}</p>` : ''}
   <p class="ticket">Ticket n° ${echapperHtml(idTicket)}</p>
@@ -118,6 +123,22 @@ export function imprimerRecuCommande(commande, produits) {
   fenetre.document.write(construireHtmlRecuCommande(commande, produits))
   fenetre.document.close()
   fenetre.focus()
-  fenetre.print()
   fenetre.onafterprint = () => fenetre.close()
+  // Le logo doit etre charge avant l'impression (1,5 s au plus).
+  const images = [...fenetre.document.images].filter((img) => !img.complete)
+  if (!images.length) {
+    fenetre.print()
+    return
+  }
+  let fait = false
+  const imprimer = () => {
+    if (fait) return
+    fait = true
+    fenetre.print()
+  }
+  images.forEach((img) => {
+    img.onload = () => images.every((i) => i.complete) && imprimer()
+    img.onerror = imprimer
+  })
+  setTimeout(imprimer, 1500)
 }

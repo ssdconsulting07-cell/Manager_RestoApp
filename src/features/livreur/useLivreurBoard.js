@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { apiGet, apiPatch } from '../../api/client.js'
+import { apiGet, apiPatch, apiPost } from '../../api/client.js'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { STATUT_LABELS } from '../../auth/transitions.js'
 import { avecDemoSiVide, getDemoCommandes, isDemoId, mergeProduitsDemo, patchDemoStatut } from '../cuisine/cuisineDemo.js'
@@ -22,7 +22,7 @@ function estLivraison(commande) {
 }
 
 export function useLivreurBoard() {
-  const { role } = useAuth()
+  const { role, username } = useAuth()
   const [commandes, setCommandes] = useState([])
   // Commandes livrees (mode LIVRAISON, statut LIVREE) — alimente a la fois
   // le KPI "Livrées aujourd'hui" du tableau de bord et l'ecran Historique
@@ -44,7 +44,12 @@ export function useLivreurBoard() {
     // Date de livraison : champ livreeLe (donnees de demo) ou, cote serveur,
     // horodatage de l'etape LIVREE de l'historique (le backend n'envoie pas
     // de champ dedie). Sans elle, « Livrées aujourd'hui » restait a 0.
-    const livraisons = liste.filter(estLivraison).map((c) => (
+    // Une commande prise par un AUTRE livreur ne s'affiche plus ici (le
+    // premier qui la prend l'a) ; les commandes pas encore prises, et les
+    // siennes, restent visibles.
+    const aMoi = (c) => !c.livreur?.identifiant || !username
+      || c.livreur.identifiant.toLowerCase() === username.toLowerCase()
+    const livraisons = liste.filter((c) => estLivraison(c) && aMoi(c)).map((c) => (
       c.livreeLe || c.statut !== 'LIVREE'
         ? c
         : { ...c, livreeLe: (c.historique || []).find((h) => h.statut === 'LIVREE')?.le || null }
@@ -55,7 +60,7 @@ export function useLivreurBoard() {
         .sort((a, b) => new Date(a.creeLe) - new Date(b.creeLe)),
     )
     setLivrees(livraisons.filter((c) => c.statut === 'LIVREE'))
-  }, [])
+  }, [username])
 
   // Detecte les commandes nouvellement passees en EN_LIVRAISON (equivalent
   // livreur de la detection des nouvelles PAYEE cote Cuisine, voir
@@ -141,8 +146,27 @@ export function useLivreurBoard() {
     }
   }
 
+  // « Je la prends » : le premier livreur qui prend une commande envoyee
+  // par la cuisine l'obtient ; si un collegue a ete plus rapide, le serveur
+  // repond 409 avec son nom et le tableau est recharge.
+  async function prendreEnCharge(commande) {
+    setPendingId(commande.id)
+    setError(null)
+    try {
+      const maj = await apiPost(`/commandes/${commande.id}/prise-en-charge`, {})
+      mutationVersion.current += 1
+      apply([...commandes, ...livrees].map((c) => (c.id === commande.id ? maj : c)), demo)
+    } catch (err) {
+      if (err.status === 409) charger()
+      setError(err.message)
+    } finally {
+      setPendingId(null)
+    }
+  }
+
   return {
     role,
+    prendreEnCharge,
     commandes,
     livrees,
     produits,

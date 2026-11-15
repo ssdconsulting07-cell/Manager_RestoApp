@@ -6,7 +6,8 @@ import useFluxCommandes from '../hooks/useFluxCommandes.js'
 // (GET /temps-reel/commandes, deja filtre par role cote serveur). Chaque role
 // ne recoit que ce qui le concerne :
 //   CUISINE         : nouvelle commande payee ;
-//   LIVREUR         : livraison prete a recuperer, livraison qui lui est confiee ;
+//   LIVREUR         : commande envoyee par la cuisine, a prendre (le premier
+//                     qui la prend l'a), commande prete en cuisine ;
 //   VENDEUR         : commande a emporter prete a remettre ;
 //   GERANT, MANAGER : nouvelle commande, commande annulee, livraison effectuee.
 // Gardees sur l'appareil (50 dernieres, par utilisateur), avec leur etat lu / non lu.
@@ -35,7 +36,8 @@ export function notificationPour(role, { type, commande } = {}) {
   }
   if (role === 'LIVREUR' && livraison) {
     if (statut === 'PRETE') return { ...base, kind: 'prete', title: `Commande ${ticket(commande)} prête`, text: `À récupérer en cuisine${commande.adresseLivraison ? `, livraison à ${commande.adresseLivraison}` : ''}.`, target: '/livraisons' }
-    if (statut === 'EN_LIVRAISON') return { ...base, kind: 'livraison', title: `Livraison ${ticket(commande)} en route`, text: `Commande confiée au livreur${commande.adresseLivraison ? ` pour ${commande.adresseLivraison}` : ''}.`, target: '/livraisons' }
+    // Envoyee par la cuisine, pas encore prise : premier arrive, premier servi.
+    if (statut === 'EN_LIVRAISON' && !commande.livreur) return { ...base, kind: 'livraison', title: `Commande ${ticket(commande)} à prendre`, text: `Envoyée par la cuisine${commande.adresseLivraison ? `, livraison à ${commande.adresseLivraison}` : ''}. Le premier qui la prend l'a.`, target: '/livraisons' }
   }
   if (role === 'VENDEUR' && !livraison && statut === 'PRETE') {
     return { ...base, kind: 'prete', title: `Commande ${ticket(commande)} prête`, text: 'À remettre au client au comptoir.', target: '/vente' }
@@ -68,11 +70,40 @@ function lire(cle) {
   }
 }
 
+// Signal sonore court (deux notes) a l'arrivee d'une notification, sans
+// fichier audio. Desactivable : localStorage senyummies_manager_son = "0".
+let contexteAudio = null
+export function jouerSonNotification() {
+  try {
+    if (localStorage.getItem('senyummies_manager_son') === '0') return
+    const Ctx = window.AudioContext || window.webkitAudioContext
+    if (!Ctx) return
+    contexteAudio = contexteAudio || new Ctx()
+    const t = contexteAudio.currentTime
+    ;[880, 1320].forEach((frequence, i) => {
+      const osc = contexteAudio.createOscillator()
+      const gain = contexteAudio.createGain()
+      osc.type = 'sine'
+      osc.frequency.value = frequence
+      gain.gain.setValueAtTime(0.0001, t + i * 0.16)
+      gain.gain.exponentialRampToValueAtTime(0.25, t + i * 0.16 + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.16 + 0.15)
+      osc.connect(gain).connect(contexteAudio.destination)
+      osc.start(t + i * 0.16)
+      osc.stop(t + i * 0.16 + 0.16)
+    })
+  } catch {
+    // audio indisponible (navigateur, autoplay bloque) : la cloche suffit
+  }
+}
+
 export function NotificationsProvider({ children }) {
   const { role, username } = useAuth()
   const cleStockage = username ? `senyummies_manager_notifications_${username}` : null
   const [notifications, setNotifications] = useState(() => (cleStockage ? lire(cleStockage) : []))
   const cleCourante = useRef(cleStockage)
+  const listeRef = useRef(notifications)
+  listeRef.current = notifications
 
   // Changement d'utilisateur (deconnexion / autre compte) : sa propre liste.
   useEffect(() => {
@@ -88,10 +119,19 @@ export function NotificationsProvider({ children }) {
   useFluxCommandes((evenement) => {
     const n = notificationPour(role, evenement)
     if (!n) return
+    // Doublon (meme commande, meme statut, ex. evenement rattrape) : rien.
+    if (listeRef.current.some((x) => x.cle === n.cle)) return
+    const nouvelle = true
+    listeRef.current = [{ cle: n.cle }, ...listeRef.current]
     setNotifications((liste) => {
       if (liste.some((x) => x.cle === n.cle)) return liste
       return [{ ...n, id: `${n.cle}-${Date.now()}`, createdAt: new Date().toISOString(), unread: true }, ...liste].slice(0, MAX)
     })
+    // Pas de son pour les evenements rattrapes de plus de 10 minutes
+    // (reconnexion apres une coupure).
+    const recente = !evenement.commande?.creeLe || Date.now() - new Date(evenement.commande.creeLe).getTime() < 10 * 60_000
+      || evenement.commande?.statut !== 'PAYEE'
+    if (nouvelle && recente) jouerSonNotification()
   }, { actif: Boolean(role) })
 
   const marquerLue = useCallback((id) => setNotifications((l) => l.map((n) => (n.id === id ? { ...n, unread: false } : n))), [])

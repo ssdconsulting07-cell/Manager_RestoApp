@@ -16,8 +16,12 @@ function versLignesCommande(panier) {
   return panier.map((l) => ({
     produitId: l.produitId,
     quantite: l.quantite,
-    ...(l.accompagnementId ? { accompagnementId: l.accompagnementId } : {}),
-    ...(l.accompagnementNom ? { accompagnementNom: l.accompagnementNom } : {}),
+    ...((l.accompagnements || []).length
+      ? { accompagnementIds: l.accompagnements.map((a) => a.id) }
+      : {
+          ...(l.accompagnementId ? { accompagnementId: l.accompagnementId } : {}),
+          ...(l.accompagnementNom ? { accompagnementNom: l.accompagnementNom } : {}),
+        }),
   }))
 }
 

@@ -212,14 +212,16 @@ export function textePersonnalisation(ligne) {
  * par ligne. */
 export function texteAccompagnement(ligne) {
   if (!ligne) return null
-  if (typeof ligne.accompagnementNom === 'string' && ligne.accompagnementNom.trim()) {
-    return ligne.accompagnementNom.trim()
-  }
+  // Liste complete (plusieurs accompagnements) avant l'ancien champ unique,
+  // qui ne garde que le premier.
   if (Array.isArray(ligne.accompagnements) && ligne.accompagnements.length) {
     return ligne.accompagnements
       .map((a) => (typeof a === 'string' ? a : a?.nom))
       .filter(Boolean)
       .join(', ')
+  }
+  if (typeof ligne.accompagnementNom === 'string' && ligne.accompagnementNom.trim()) {
+    return ligne.accompagnementNom.trim()
   }
   return null
 }

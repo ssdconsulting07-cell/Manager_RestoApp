@@ -40,7 +40,9 @@ export function lignesChiffrees(commande, produits = {}) {
       prixUnitaire,
       total: prixUnitaire * quantite,
       accompagnement: texteAccompagnement(ligne),
-      accompagnementPrix: ligne.accompagnementPrix ? Number(ligne.accompagnementPrix) : null,
+      accompagnementPrix: Array.isArray(ligne.accompagnements) && ligne.accompagnements.length
+        ? ligne.accompagnements.reduce((t, a) => t + Number(a?.prix || 0), 0) || null
+        : ligne.accompagnementPrix ? Number(ligne.accompagnementPrix) : null,
       personnalisation: textePersonnalisation(ligne),
     }
   })

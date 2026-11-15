@@ -5,6 +5,7 @@ import PageSkeleton, { CommandeRowsSkeleton } from '../../components/PageSkeleto
 import Toast from '../../components/Toast.jsx'
 import Pagination from '../../components/crud/Pagination.jsx'
 import StatFilterCards from '../../components/crud/StatFilterCards.jsx'
+import { imprimerRecuCommande } from '../livreur/recuCommande.js'
 import CommandeRow from './CommandeRow.jsx'
 import { STATUT_META, comparerPriorite, nomProduit, noteCommande } from './cuisineUtils.js'
 import { useAlerteNouvelleCommande } from './useAlerteNouvelleCommande.js'
@@ -259,6 +260,9 @@ export default function Commandes() {
                 transitions={allowedTransitions(commande, role)}
                 pending={pendingId === commande.id}
                 onTransition={(statut) => changerStatut(commande, statut)}
+                // Envoi au livreur : impression directe du ticket (logo, nom
+                // du restaurant, client, detail) — deplace de l'espace Livreur.
+                onEnvoiLivreur={(cmd) => imprimerRecuCommande(cmd, produits)}
                 emptyActionLabel={EMPTY_ACTION[commande.statut]?.label ?? null}
                 emptyActionIcon={EMPTY_ACTION[commande.statut]?.icon}
               />

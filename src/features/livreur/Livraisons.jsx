@@ -11,7 +11,6 @@ import '../cuisine/cuisine-board.css'
 import ScanLivraisonModal from './ScanLivraisonModal.jsx'
 import { useAlerteNouvelleLivraison } from './useAlerteNouvelleLivraison.js'
 import { useLivreurBoard } from './useLivreurBoard.js'
-import { imprimerRecuCommande } from './recuCommande.js'
 
 // Ecran principal du livreur, sur le meme patron que Commandes.jsx cote
 // Cuisine (cartes-filtres qui servent aussi de compteurs, recherche,
@@ -53,6 +52,7 @@ export default function Livraisons() {
     nouvelleAlerte,
     charger,
     changerStatut,
+    prendreEnCharge,
     clearAlerte,
   } = useLivreurBoard()
 
@@ -211,7 +211,9 @@ export default function Livraisons() {
                 // Adresse affiches a la place - demande du 24/10/2026.
                 showCanalEtMode={false}
                 showClient
-                onImprimer={(cmd) => imprimerRecuCommande(cmd, produits)}
+                // Le ticket s'imprime maintenant en cuisine, a l'envoi.
+                aPrendre={commande.statut === 'EN_LIVRAISON' && !commande.livreur}
+                onPrendre={prendreEnCharge}
                 transitions={allowedTransitions(commande, role)}
                 pending={pendingId === commande.id}
                 onTransition={(statut) => changerStatut(commande, statut)}

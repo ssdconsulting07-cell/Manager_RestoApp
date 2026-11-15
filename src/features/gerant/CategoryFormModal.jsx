@@ -6,8 +6,12 @@ export default function CategoryFormModal({ categorie, onSave, onClose }) {
   const isEdit = Boolean(categorie)
   const [nom, setNom] = useState(categorie?.nom || '')
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
+  // Les produits de cette categorie proposent des accompagnements (App
+  // Client et caisse) : un ou plusieurs par article.
+  const [accompagnementPropose, setAccompagnementPropose] = useState(Boolean(categorie?.accompagnementPropose))
   const initialNom = useRef(categorie?.nom || '')
-  const isDirty = nom !== initialNom.current
+  const initialAccomp = useRef(Boolean(categorie?.accompagnementPropose))
+  const isDirty = nom !== initialNom.current || accompagnementPropose !== initialAccomp.current
 
   function requestClose() {
     if (isDirty) {
@@ -19,7 +23,7 @@ export default function CategoryFormModal({ categorie, onSave, onClose }) {
 
   function submit(e) {
     e.preventDefault()
-    onSave({ nom: nom.trim() })
+    onSave({ nom: nom.trim(), accompagnementPropose })
   }
 
   return (
@@ -39,6 +43,13 @@ export default function CategoryFormModal({ categorie, onSave, onClose }) {
           <label>
             Nom de la catégorie
             <input type="text" value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Ex : Burgers" required autoFocus />
+          </label>
+          <label className="categorie-accomp">
+            <input type="checkbox" checked={accompagnementPropose} onChange={(e) => setAccompagnementPropose(e.target.checked)} />
+            <span>
+              Proposer des accompagnements
+              <small>Les clients et la caisse pourront ajouter un ou plusieurs accompagnements aux produits de cette catégorie.</small>
+            </span>
           </label>
           <AideFormulaire manquants={[!nom.trim() && 'le nom de la catégorie']} />
           <div className="manager-modal-actions">

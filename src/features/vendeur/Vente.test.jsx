@@ -108,7 +108,8 @@ describe('Vente (caisse Vendeur)', () => {
 
     const sousModal = screen.getByRole('dialog')
     expect(within(sousModal).getByText(/Ketchup Burger Classique/)).toBeInTheDocument()
-    fireEvent.click(within(sousModal).getByRole('button', { name: /Frites maison/ }))
+    fireEvent.click(within(sousModal).getByRole('checkbox', { name: /Frites maison/ }))
+    fireEvent.click(screen.getByRole('button', { name: /^Valider/ }))
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Accompagnement : Frites maison/ })).toBeInTheDocument()
@@ -132,7 +133,8 @@ describe('Vente (caisse Vendeur)', () => {
     // reste sans accompagnement — les deux burgers gardent des choix
     // indépendants plutôt qu'un changement groupé silencieux.
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter un accompagnement' }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Frites maison/ }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('checkbox', { name: /Frites maison/ }))
+    fireEvent.click(screen.getByRole('button', { name: /^Valider/ }))
 
     expect(screen.getByRole('button', { name: /Accompagnement : Frites maison/ })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Ajouter un accompagnement' })).toBeInTheDocument()
@@ -231,7 +233,8 @@ describe('Vente (caisse Vendeur)', () => {
     cliquerProduit('Ketchup Burger Classique')
     ouvrirPanier()
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter un accompagnement' }))
-    fireEvent.click(screen.getByRole('button', { name: /Frites maison/ }))
+    fireEvent.click(screen.getByRole('checkbox', { name: /Frites maison/ }))
+    fireEvent.click(screen.getByRole('button', { name: /^Valider/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Continuer →' }))
     fireEvent.click(screen.getByRole('radio', { name: 'Espèces' }))
     fireEvent.change(screen.getByLabelText(/Montant reçu/), { target: { value: '5000' } })

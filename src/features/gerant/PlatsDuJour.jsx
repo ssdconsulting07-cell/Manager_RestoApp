@@ -6,9 +6,14 @@ import Pagination from '../../components/crud/Pagination.jsx'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import StatusBadge from '../../components/crud/StatusBadge.jsx'
 import PlatDuJourFormModal from './PlatDuJourFormModal.jsx'
+import HorairesServices from './HorairesServices.jsx'
 import useRessourceApi from '../../hooks/useRessourceApi.js'
 import {
   JOURS_SEMAINE,
+  joursDuPlat,
+  joursLabel,
+  servicesDuPlat,
+  servicesLabel,
   PLATS_DU_JOUR_INITIAUX,
   STATUT_LABELS,
   countByStatut,
@@ -55,7 +60,7 @@ export default function PlatsDuJour({ source = 'api' }) {
     const query = search.trim().toLowerCase()
     return plats
       .filter((p) => p.statut === filter)
-      .filter((p) => !query || p.nom.toLowerCase().includes(query) || jourLabel(p.jour).toLowerCase().includes(query))
+      .filter((p) => !query || p.nom.toLowerCase().includes(query) || joursDuPlat(p).some((j) => jourLabel(j).toLowerCase().includes(query)))
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
   }, [plats, filter, search])
   const pageCount = Math.max(1, Math.ceil(filtres.length / rows))
@@ -113,9 +118,11 @@ export default function PlatsDuJour({ source = 'api' }) {
         <div>
           <p className="manager-eyebrow">Gérance</p>
           <h1>Plat du jour</h1>
-          <p>Gérez les plats du jour, chacun rattaché à un jour de la semaine — le site les affiche automatiquement le jour venu.</p>
+          <p>Gérez les plats du jour : un ou plusieurs jours, au déjeuner, au dîner ou aux deux. Le site les commande pendant leur service.</p>
         </div>
       </section>
+
+      <HorairesServices source={source} notify={notify} />
 
       <section>
         <StatFilterCards
@@ -151,7 +158,8 @@ export default function PlatsDuJour({ source = 'api' }) {
                 {plat.photoUrl ? <img src={plat.photoUrl} alt="" /> : <i className="fa-solid fa-image" aria-hidden="true" />}
                 <StatusBadge statut={plat.statut} label={STATUT_LABELS[plat.statut]} />
                 <div className="crud-product-highlight-badges">
-                  <span className="crud-product-highlight is-daily"><i className="fa-solid fa-calendar-day" aria-hidden="true" /> {jourLabel(plat.jour)}</span>
+                  <span className="crud-product-highlight is-daily"><i className="fa-solid fa-calendar-day" aria-hidden="true" /> {joursLabel(plat)}</span>
+                  <span className="crud-product-highlight is-daily"><i className={`fa-solid ${servicesDuPlat(plat).dejeuner && !servicesDuPlat(plat).diner ? 'fa-sun' : 'fa-moon'}`} aria-hidden="true" /> {servicesLabel(plat)}</span>
                 </div>
               </div>
 

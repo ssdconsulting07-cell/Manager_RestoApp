@@ -31,6 +31,30 @@ export function jourLabel(id) {
   return JOURS_SEMAINE.find((jour) => jour.id === id)?.nom || id
 }
 
+// Un plat peut etre propose plusieurs jours (jours[]) ; les anciennes fiches
+// n'ont que le champ jour.
+export const joursDuPlat = (p) => (Array.isArray(p?.jours) && p.jours.length ? p.jours : p?.jour ? [p.jour] : [])
+
+const ABREGE = { LUNDI: 'Lun', MARDI: 'Mar', MERCREDI: 'Mer', JEUDI: 'Jeu', VENDREDI: 'Ven', SAMEDI: 'Sam', DIMANCHE: 'Dim' }
+
+/** « Lundi », « Lun, Mer, Ven » ou « Tous les jours ». */
+export function joursLabel(p) {
+  const jours = JOURS_SEMAINE.map((j) => j.id).filter((id) => joursDuPlat(p).includes(id))
+  if (jours.length === 7) return 'Tous les jours'
+  if (jours.length === 1) return jourLabel(jours[0])
+  return jours.map((id) => ABREGE[id]).join(', ')
+}
+
+// Services : absents = les deux (anciennes fiches).
+export const servicesDuPlat = (p) => ({ dejeuner: p?.dejeuner !== false, diner: p?.diner !== false })
+
+/** « Déjeuner », « Dîner » ou « Déjeuner et dîner ». */
+export function servicesLabel(p) {
+  const { dejeuner, diner } = servicesDuPlat(p)
+  if (dejeuner && diner) return 'Déjeuner et dîner'
+  return dejeuner ? 'Déjeuner' : 'Dîner'
+}
+
 export const PLATS_DU_JOUR_INITIAUX = [
   {
     id: 'plat-jour-1',

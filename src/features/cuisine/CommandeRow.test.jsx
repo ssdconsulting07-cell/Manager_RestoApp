@@ -57,14 +57,49 @@ describe('CommandeRow — envoi au livreur', () => {
     expect(onTransition).not.toHaveBeenCalled()
   })
 
-  it('seul « Envoyer » dans la modale déclenche onTransition(EN_LIVRAISON)', () => {
+  it('seul « Envoyer et imprimer » dans la modale déclenche onTransition(EN_LIVRAISON)', () => {
     const { onTransition } = renderRow()
 
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer au livreur' }))
-    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Envoyer' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Envoyer et imprimer' }))
 
     expect(onTransition).toHaveBeenCalledTimes(1)
     expect(onTransition).toHaveBeenCalledWith('EN_LIVRAISON')
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('imprime le ticket (onEnvoiLivreur) au moment de l’envoi, puis change le statut', () => {
+    const onTransition = vi.fn()
+    const onEnvoiLivreur = vi.fn()
+    render(
+      <CommandeRow
+        commande={commandePreteLivraison}
+        produits={{}}
+        transitions={allowedTransitions(commandePreteLivraison, 'CUISINE')}
+        pending={false}
+        onTransition={onTransition}
+        onEnvoiLivreur={onEnvoiLivreur}
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer au livreur' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Envoyer et imprimer' }))
+
+    expect(onEnvoiLivreur).toHaveBeenCalledWith(commandePreteLivraison)
+    expect(onTransition).toHaveBeenCalledWith('EN_LIVRAISON')
+  })
+})
+
+describe('CommandeRow — prise en charge par un livreur', () => {
+  const partie = { ...commandePreteLivraison, id: 'c-2002', statut: 'EN_LIVRAISON' }
+
+  it('« Je la prends » remplace les actions tant qu’aucun livreur ne l’a prise', () => {
+    const onPrendre = vi.fn()
+    render(
+      <CommandeRow commande={partie} produits={{}} transitions={allowedTransitions(partie, 'LIVREUR')}
+        pending={false} onTransition={vi.fn()} aPrendre onPrendre={onPrendre} />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: /Je la prends/ }))
+    expect(onPrendre).toHaveBeenCalledWith(partie)
+    expect(screen.queryByRole('button', { name: /Livrée/ })).not.toBeInTheDocument()
   })
 })

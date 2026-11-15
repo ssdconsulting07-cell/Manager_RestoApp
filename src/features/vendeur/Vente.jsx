@@ -156,11 +156,16 @@ export default function Vente() {
       // l'autre, impossible de fusionner (chaque unite doit pouvoir garder
       // le sien — deux burgers peuvent avoir deux accompagnements
       // differents, Controle explicite).
-      const existant = current.find((l) => l.produitId === produit.id && !l.accompagnementId)
+      const existant = current.find((l) => l.produitId === produit.id && !(l.accompagnements || []).length)
       if (existant) {
         return current.map((l) => (l.ligneId === existant.ligneId ? { ...l, quantite: l.quantite + 1 } : l))
       }
-      const accompagnementEligible = produit.categorieId === categorieIds.burgers
+      // Reglage de la categorie (Gerant, « accompagnement propose ») ; repli
+      // sur la categorie Burgers pour les donnees sans ce champ (demonstration).
+      const categorie = categories.find((c) => c.id === produit.categorieId)
+      const accompagnementEligible = typeof categorie?.accompagnementPropose === 'boolean'
+        ? categorie.accompagnementPropose
+        : produit.categorieId === categorieIds.burgers
       return [...current, {
         ligneId: nextLigneId(),
         produitId: produit.id,
@@ -170,6 +175,7 @@ export default function Vente() {
         prixBase: produit.prix,
         prix: produit.prix,
         accompagnementEligible,
+        accompagnements: [],
         accompagnementId: null,
         accompagnementNom: null,
         quantite: 1,
@@ -199,18 +205,26 @@ export default function Vente() {
   // burgers peuvent ainsi garder des accompagnements differents (Controle
   // explicite : jamais d'application groupee silencieuse sur des unites que
   // l'utilisateur n'a pas individuellement choisies).
-  function choisirAccompagnement(ligneId, accompagnementId) {
+  // Plusieurs accompagnements par unite : ids = liste choisie (vide = aucun).
+  // accompagnementId / accompagnementNom restent remplis (premier id, noms
+  // separes par des virgules) pour le ticket et l'affichage.
+  function choisirAccompagnement(ligneId, ids) {
     setPanier((current) => {
       const ligne = current.find((l) => l.ligneId === ligneId)
       if (!ligne) return current
 
-      const accompagnement = accompagnementId
-        ? accompagnementsDisponibles.find((a) => a.id === accompagnementId)
-        : null
+      const liste = (Array.isArray(ids) ? ids : ids ? [ids] : [])
+        .map((id) => accompagnementsDisponibles.find((a) => a.id === id))
+        .filter(Boolean)
+        .map((a) => ({ id: a.id, nom: a.nom, prix: Number(a.prix || 0) }))
 
-      const appliquer = (l) => (accompagnement
-        ? { ...l, prix: l.prixBase + accompagnement.prix, accompagnementId: accompagnement.id, accompagnementNom: accompagnement.nom }
-        : { ...l, prix: l.prixBase, accompagnementId: null, accompagnementNom: null })
+      const appliquer = (l) => ({
+        ...l,
+        accompagnements: liste,
+        prix: l.prixBase + liste.reduce((s, a) => s + a.prix, 0),
+        accompagnementId: liste[0]?.id || null,
+        accompagnementNom: liste.length ? liste.map((a) => a.nom).join(', ') : null,
+      })
 
       if (ligne.quantite <= 1) {
         return current.map((l) => (l.ligneId === ligneId ? appliquer(l) : l))

@@ -51,6 +51,15 @@ export function MenuDataProvider({ children, source = 'api' }) {
     return prods.modifier(id, { [miseEnAvant]: !produit[miseEnAvant] })
   }
 
+  // Badge Tendance : AUTO (les plus commandes, recalcule chaque heure par le
+  // serveur), OUI ou NON (force par le Gerant).
+  function changerTendanceProduit(id, mode) {
+    const produit = produits.find((p) => p.id === id)
+    if (!produit || !['AUTO', 'OUI', 'NON'].includes(mode)) return undefined
+    const tendance = mode === 'OUI' ? true : mode === 'NON' ? false : Boolean(produit.tendanceAuto ?? produit.tendance)
+    return prods.modifier(id, { tendanceMode: mode, tendance })
+  }
+
   function creerProduit(data) {
     return prods.creer(data)
   }
@@ -115,6 +124,7 @@ export function MenuDataProvider({ children, source = 'api' }) {
     majStatutProduit,
     toggleDisponibiliteProduit,
     toggleMiseEnAvantProduit,
+    changerTendanceProduit,
     creerProduit,
     modifierProduit,
     supprimerProduit,

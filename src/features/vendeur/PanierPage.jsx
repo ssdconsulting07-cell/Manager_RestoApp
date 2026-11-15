@@ -250,8 +250,8 @@ export default function PanierPage({
         <AccompagnementModal
           ligne={ligneOuverte}
           accompagnementsDisponibles={accompagnementsDisponibles}
-          onChoisir={(accompagnementId) => {
-            onChoisirAccompagnement(ligneOuverte.ligneId, accompagnementId)
+          onChoisir={(ids) => {
+            onChoisirAccompagnement(ligneOuverte.ligneId, ids)
             setLigneAccompagnementOuverte(null)
           }}
           onFermer={() => setLigneAccompagnementOuverte(null)}

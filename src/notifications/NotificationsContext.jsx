@@ -51,6 +51,11 @@ export function notificationPour(role, { type, commande } = {}) {
 }
 
 // "À l'instant", "Il y a 5 min", "Il y a 2 h", "Hier", "Il y a 3 j".
+/** Le chemin courant est-il la page visee par une notification ? */
+export function estSurPage(chemin, cible) {
+  return chemin === cible || chemin.startsWith(`${cible}/`)
+}
+
 export function tempsEcoule(iso, maintenant = Date.now()) {
   const min = Math.max(0, Math.floor((maintenant - new Date(iso).getTime()) / 60000))
   if (min < 1) return 'À l’instant'
@@ -136,12 +141,18 @@ export function NotificationsProvider({ children }) {
 
   const marquerLue = useCallback((id) => setNotifications((l) => l.map((n) => (n.id === id ? { ...n, unread: false } : n))), [])
   const toutMarquerLu = useCallback(() => setNotifications((l) => l.map((n) => ({ ...n, unread: false }))), [])
+  // Page ouverte : ses notifications sont vues (le badge du menu s'efface).
+  const marquerLuesPour = useCallback((chemin) => setNotifications((l) => (
+    l.some((n) => n.unread && n.target && estSurPage(chemin, n.target))
+      ? l.map((n) => (n.unread && n.target && estSurPage(chemin, n.target) ? { ...n, unread: false } : n))
+      : l
+  )), [])
   const supprimer = useCallback((id) => setNotifications((l) => l.filter((n) => n.id !== id)), [])
 
-  const valeur = useMemo(() => ({ notifications, marquerLue, toutMarquerLu, supprimer }), [notifications, marquerLue, toutMarquerLu, supprimer])
+  const valeur = useMemo(() => ({ notifications, marquerLue, toutMarquerLu, marquerLuesPour, supprimer }), [notifications, marquerLue, toutMarquerLu, marquerLuesPour, supprimer])
   return <NotificationsContext.Provider value={valeur}>{children}</NotificationsContext.Provider>
 }
 
 export function useNotifications() {
-  return useContext(NotificationsContext) || { notifications: [], marquerLue: () => {}, toutMarquerLu: () => {}, supprimer: () => {} }
+  return useContext(NotificationsContext) || { notifications: [], marquerLue: () => {}, toutMarquerLu: () => {}, marquerLuesPour: () => {}, supprimer: () => {} }
 }

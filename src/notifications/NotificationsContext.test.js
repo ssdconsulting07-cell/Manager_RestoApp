@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { notificationPour, tempsEcoule } from './NotificationsContext.jsx'
+import { estSurPage, notificationPour, tempsEcoule } from './NotificationsContext.jsx'
 
 const livraison = { id: '1042', mode: 'LIVRAISON', canal: 'APP', total: 7000, adresseLivraison: 'Almadies' }
 const retrait = { id: '1043', mode: 'RETRAIT', canal: 'COMPTOIR', total: 3500 }
@@ -50,5 +50,14 @@ describe('temps ecoule', () => {
     [60 * 24 * 3, 'Il y a 3 j'],
   ])('%i min -> %s', (min, attendu) => {
     expect(tempsEcoule(new Date(t0 - min * 60000).toISOString(), t0)).toBe(attendu)
+  })
+})
+
+describe('page ouverte', () => {
+  it('la page de la notification et ses sous-pages seulement', () => {
+    expect(estSurPage('/commandes', '/commandes')).toBe(true)
+    expect(estSurPage('/journal-audit/cuisine', '/journal-audit/cuisine')).toBe(true)
+    expect(estSurPage('/commandes-x', '/commandes')).toBe(false)
+    expect(estSurPage('/dashboard', '/commandes')).toBe(false)
   })
 })

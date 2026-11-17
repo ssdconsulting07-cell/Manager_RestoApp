@@ -226,7 +226,7 @@ export default function Layout({ children }) {
   const [profileOpen, setProfileOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   // Notifications reelles (flux temps reel des commandes, voir NotificationsContext).
-  const { notifications, marquerLue, toutMarquerLu, supprimer } = useNotifications()
+  const { notifications, marquerLue, toutMarquerLu, marquerLuesPour, supprimer } = useNotifications()
   const navigate = useNavigate()
   const [notificationPage, setNotificationPage] = useState(0)
   const [expandedNotificationIds, setExpandedNotificationIds] = useState([])
@@ -235,6 +235,9 @@ export default function Layout({ children }) {
   const [now, setNow] = useState(() => new Date())
   const [toast, setToast] = useState(null)
   const location = useLocation()
+  // Ouvrir la page d'une notification la marque vue : le badge rouge du menu
+  // disparait (y compris pour celles qui arrivent pendant qu'on y est).
+  useEffect(() => { marquerLuesPour(location.pathname) }, [location.pathname, notifications, marquerLuesPour])
   // Groupes de nav depliables (voir NAV_ITEMS : "children") - ouverts par
   // defaut si on est deja sur une de leurs sous-pages au montage.
   const [openGroups, setOpenGroups] = useState(() => {

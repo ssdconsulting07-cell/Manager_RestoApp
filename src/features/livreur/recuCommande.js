@@ -6,7 +6,7 @@
 // prix unitaire, total), sous-total, frais de livraison, total, moyen et
 // statut du paiement, heure de chaque etape. Montants du serveur (prix figes
 // a la commande). Nouvel onglet dedie, CSS isole.
-import { marque } from '../../config/marque.js'
+import { coordonneesTicket, marque } from '../../config/marque.js'
 import {
   adresseLivraison,
   positionLivraison,
@@ -85,6 +85,7 @@ function construireHtmlRecuCommande(commande, produits) {
   ${marque.logo ? `<img class="logo" src="${echapperHtml(new URL(marque.logo, window.location.origin).href)}" alt="" />` : `<div class="monogramme">${echapperHtml(marque.initiales)}</div>`}
   <h1>${echapperHtml(marque.nom)}</h1>
   ${marque.etablissement && marque.etablissement !== marque.nom ? `<p class="sous-titre">${echapperHtml(marque.etablissement)}</p>` : ''}
+  ${coordonneesTicket() ? `<p class="sous-titre">${echapperHtml(coordonneesTicket())}</p>` : ''}
   <p class="ticket">Ticket n° ${echapperHtml(idTicket)}</p>
   <p class="meta">${echapperHtml(formatDateHeureComplete(commande.creeLe))}<br />${echapperHtml(modeLabel(commande.mode) || '')}</p>
 

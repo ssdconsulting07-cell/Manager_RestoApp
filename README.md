@@ -51,12 +51,17 @@ La même image sert tous les restaurants. Le nom, le logo et la couleur sont lus
 | `MARQUE_ETABLISSEMENT` | Nom du restaurant sous la marque, sur les tickets | `Chez Ketchup` pour SenYummies, sinon aucun |
 | `MARQUE_COULEUR` | Couleur principale `#RRGGBB` ; les teintes (fonds, bordures, mode sombre) en sont dérivées | `#A6192E` |
 | `MARQUE_COULEUR_CLAIRE` | Accent sur fond sombre | calculé depuis la couleur |
+| `MARQUE_CONNEXION_IMAGES` | Photos de l'écran de connexion, séparées par des virgules (ex. `/marque/connexion-1.jpg`) | photos par défaut |
+| `MARQUE_PAIEMENTS` | Moyens acceptés à la caisse : `wave,orange-money,mixx-yas,carte,especes` | tous |
+| `MARQUE_ADRESSE`, `MARQUE_TELEPHONE` | Coordonnées en pied des tickets et reçus | aucune |
+
+**Pour un nouveau restaurant, ne pas remplir ces variables à la main** : l'outil de personnalisation de Backend_RestoApp les génère depuis un seul dossier (`npm run client -- <restaurant>`, voir `PERSONNALISER-UN-RESTAURANT.md`). Un fichier `/marque/favicon.svg` remplace le favicon de l'onglet.
 
 Au démarrage, le conteneur génère `/config.js`, le titre de l'onglet et le favicon (initiales sur la couleur de marque). Le logo du restaurant se monte en lecture seule sur `/marque`.
 
 Les rouges d'**erreur** et d'**alerte** ne dépendent pas de la marque : ils restent rouges pour tous les restaurants.
 
-En développement, les mêmes champs se règlent dans `.env` avec le préfixe `VITE_` (`VITE_MARQUE_NOM`…).
+En développement, les mêmes champs se règlent dans `.env.local` avec le préfixe `VITE_` (`VITE_MARQUE_NOM`…) : `npm run client -- <restaurant> --dev` le génère, et son dossier `marque/` se copie dans `public/marque/` (ignoré par git).
 
 ## Version de l'app
 

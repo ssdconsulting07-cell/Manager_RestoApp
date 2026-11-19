@@ -27,25 +27,32 @@ const slides = [
   },
 ]
 
+// Photos du restaurant (MARQUE_CONNEXION_IMAGES) a la place des photos par
+// defaut, dans l'ordre ; s'il y en a moins que de slides, elles se repetent.
+const photos = marque.connexionImages
+const slidesDuRestaurant = photos.length
+  ? slides.map((s, i) => ({ ...s, image: photos[i % photos.length], cle: `${i}-${photos[i % photos.length]}` }))
+  : slides.map((s) => ({ ...s, cle: s.image }))
+
 export default function AuthCarousel() {
   const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % slides.length)
+      setActiveIndex((current) => (current + 1) % slidesDuRestaurant.length)
     }, 6500)
 
     return () => window.clearInterval(timer)
   }, [])
 
-  const slide = slides[activeIndex]
+  const slide = slidesDuRestaurant[activeIndex]
 
   return (
     <aside className="auth-carousel" aria-label={`Présentation ${marque.nom}`}>
-      {slides.map((item, index) => (
+      {slidesDuRestaurant.map((item, index) => (
         <div
           className={`auth-slide-image ${index === activeIndex ? 'is-active' : ''}`}
-          key={item.image}
+          key={item.cle}
           style={{ backgroundImage: `url(${item.image})` }}
           aria-hidden={index !== activeIndex}
         />

@@ -1,6 +1,6 @@
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
 import { libelleModePaiement } from './modesPaiement.jsx'
-import { marque, signatureTicket } from '../../config/marque.js'
+import { coordonneesTicket, marque, signatureTicket } from '../../config/marque.js'
 
 function formatHeure(iso) {
   return new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' }).format(new Date(iso))
@@ -117,6 +117,7 @@ function construireHtmlTicket(vente, vendeurLabel) {
     ${especesHtml}
   </div>
   <p class="merci">Merci de votre visite — à bientôt chez ${echapperHtml(marque.nom)} !</p>
+  ${coordonneesTicket() ? `<p class="merci">${echapperHtml(coordonneesTicket())}</p>` : ''}
 </body>
 </html>`
 }
@@ -202,6 +203,7 @@ export default function Recu({ vente, vendeurLabel, onFermer, onNouvelleVente })
       </div>
 
       <p className="vendeur-recu-merci">Merci de votre visite — à bientôt chez {marque.nom} !</p>
+      {coordonneesTicket() && <p className="vendeur-recu-merci">{coordonneesTicket()}</p>}
 
       <div className="vendeur-recu-actions">
         {onNouvelleVente && (

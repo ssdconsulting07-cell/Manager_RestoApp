@@ -40,7 +40,8 @@ RUN H=/usr/share/nginx/html M=/usr/share/nginx/modeles \
 USER nginx
 
 # Configuration de l'app (lue par le navigateur via /config.js).
-# MARQUE_* : marque du restaurant (marque blanche), voir README section Docker.
+# MARQUE_* : marque du restaurant (marque blanche), generees par l'outil de
+# personnalisation (Backend_RestoApp : npm run client), voir README section Docker.
 ENV API_BASE_URL=/api/v1 \
     SUPPORT_TELEPHONE= \
     SUPPORT_EMAIL= \
@@ -50,7 +51,11 @@ ENV API_BASE_URL=/api/v1 \
     MARQUE_LOGO_URL= \
     MARQUE_ETABLISSEMENT= \
     MARQUE_COULEUR= \
-    MARQUE_COULEUR_CLAIRE=
+    MARQUE_COULEUR_CLAIRE= \
+    MARQUE_CONNEXION_IMAGES= \
+    MARQUE_PAIEMENTS= \
+    MARQUE_ADRESSE= \
+    MARQUE_TELEPHONE=
 # Configuration nginx : ou relayer /api/.
 ENV API_UPSTREAM=http://host.docker.internal:8080 \
     NGINX_RESOLVER=127.0.0.11

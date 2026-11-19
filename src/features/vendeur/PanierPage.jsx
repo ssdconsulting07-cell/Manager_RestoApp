@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Layout from '../../components/Layout.jsx'
 import ConfirmModal from '../../components/crud/ConfirmModal.jsx'
 import AccompagnementModal from './AccompagnementModal.jsx'
-import { MODES_PAIEMENT } from './modesPaiement.jsx'
+import { MODES_PROPOSES } from './modesPaiement.jsx'
 import { formatFCFA } from '../../components/dashboard/DashboardWidgets.jsx'
 import AideFormulaire from '../../components/crud/AideFormulaire.jsx'
 
@@ -183,7 +183,7 @@ export default function PanierPage({
           <div className="vendeur-panier-corps vendeur-panier-corps-paiement">
             <h2>Mode de paiement</h2>
             <div className="vendeur-paiement-modes" role="radiogroup" aria-label="Mode de paiement">
-              {MODES_PAIEMENT.map((mode) => (
+              {MODES_PROPOSES.map((mode) => (
                 <button
                   type="button"
                   key={mode.key}

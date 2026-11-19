@@ -48,3 +48,36 @@ describe('marque d un autre restaurant', () => {
     expect(document.title).toBe('Le Baobab Manager')
   })
 })
+
+describe('fiche complete d un restaurant (npm run client)', () => {
+  it('par defaut : toutes les photos et tous les moyens de paiement', async () => {
+    const { marque, coordonneesTicket } = await charger()
+    expect(marque.connexionImages).toEqual([])
+    expect(marque.paiements).toEqual(['wave', 'orange-money', 'mixx-yas', 'carte', 'especes'])
+    expect(coordonneesTicket()).toBe('')
+  })
+
+  it('photos de connexion, caisse filtree et coordonnees des tickets', async () => {
+    const { marque, coordonneesTicket } = await charger({
+      MARQUE_NOM: 'Kër Saveurs',
+      MARQUE_CONNEXION_IMAGES: '/marque/connexion-1.jpg, /marque/connexion-2.jpg',
+      MARQUE_PAIEMENTS: 'especes,wave,orange-money',
+      MARQUE_ADRESSE: 'Thiès Nord',
+      MARQUE_TELEPHONE: '+221330000000',
+    })
+    expect(marque.connexionImages).toEqual(['/marque/connexion-1.jpg', '/marque/connexion-2.jpg'])
+    expect(marque.paiements).toEqual(['wave', 'orange-money', 'especes'])
+    expect(coordonneesTicket()).toBe('Thiès Nord · +221330000000')
+    const { MODES_PROPOSES, libelleModePaiement } = await import('../features/vendeur/modesPaiement.jsx')
+    expect(MODES_PROPOSES.map((m) => m.key)).toEqual(['wave', 'orange-money', 'especes'])
+    // Historique : un ancien paiement par carte garde son libelle.
+    expect(libelleModePaiement('carte')).toBe('Carte bancaire')
+  })
+
+  it('applique la marque : titre de l onglet et couleur', async () => {
+    const { marque, appliquerMarque } = await charger({ MARQUE_NOM: 'Kër Saveurs', MARQUE_COULEUR: '#1F7A4D' })
+    appliquerMarque(marque, document)
+    expect(document.title).toBe('Kër Saveurs Manager')
+    expect(document.documentElement.style.getPropertyValue('--marque')).toBe('#1F7A4D')
+  })
+})

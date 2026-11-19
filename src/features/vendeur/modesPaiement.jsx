@@ -25,6 +25,8 @@
 //
 // Les logos Wave et Mixx by Yas sont des fichiers statiques (public/), dans
 // le meme badge arrondi 26x26 que les logos SVG inline des autres modes.
+import { marque } from '../../config/marque.js'
+
 function WaveLogo() {
   return (
     <span className="vendeur-paiement-logo-badge" aria-hidden="true">
@@ -115,6 +117,10 @@ export const MODES_PAIEMENT = [
   { key: 'carte', label: 'Carte bancaire', Logo: CarteBancaireLogo },
   { key: 'especes', label: 'Espèces', Logo: EspecesLogo },
 ]
+
+// Caisse : seulement les moyens proposes par le restaurant (restaurant.json).
+// libelleModePaiement garde TOUS les libelles (historique des ventes).
+export const MODES_PROPOSES = MODES_PAIEMENT.filter((m) => marque.paiements.includes(m.key))
 
 export function libelleModePaiement(key) {
   return MODES_PAIEMENT.find((m) => m.key === key)?.label ?? 'Espèces'

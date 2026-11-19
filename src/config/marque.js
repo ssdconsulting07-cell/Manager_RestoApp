@@ -48,6 +48,21 @@ export function nuance(rgb, part) {
   return rgb.map((c) => Math.round(c + (cible - c) * p))
 }
 
+/** Codes communs a l'App Client et au backend (MoyenPaiement.java). */
+export const TOUS_LES_PAIEMENTS = ['wave', 'orange-money', 'mixx-yas', 'carte', 'especes']
+
+/** "wave, carte" -> ['wave', 'carte'] (ordre canonique, codes inconnus ignores) ; vide -> tous. */
+export function listeDe(texte, connus) {
+  const liste = String(texte || '')
+    .split(',')
+    .map((x) => x.trim().toLowerCase())
+    .filter((x) => connus.includes(x))
+  return liste.length ? connus.filter((x) => liste.includes(x)) : [...connus]
+}
+
+/** "/marque/a.jpg, /marque/b.jpg" -> ['/marque/a.jpg', '/marque/b.jpg'] */
+export const urlsDe = (texte) => String(texte || '').split(',').map((u) => u.trim()).filter(Boolean)
+
 export const hexDe = (rgb) => `#${rgb.map((c) => c.toString(16).padStart(2, '0')).join('')}`.toUpperCase()
 
 const couleurRgb =
@@ -77,6 +92,13 @@ export const marque = Object.freeze({
   pale: hexDe(decliner(DEFAUT.pale, 0.9)),
   bordure: hexDe(decliner(DEFAUT.bordure, 0.72)),
   rose: hexDe(decliner(DEFAUT.rose, 0.62)),
+  // Photos de l'ecran de connexion (vide = photos par defaut).
+  connexionImages: urlsDe(configuration('MARQUE_CONNEXION_IMAGES', env.VITE_MARQUE_CONNEXION_IMAGES, '')),
+  // Moyens de paiement proposes (caisse du Vendeur) ; le backend refuse les autres.
+  paiements: listeDe(configuration('MARQUE_PAIEMENTS', env.VITE_MARQUE_PAIEMENTS, ''), TOUS_LES_PAIEMENTS),
+  // Coordonnees imprimees en pied des tickets et recus.
+  adresse: configuration('MARQUE_ADRESSE', env.VITE_MARQUE_ADRESSE, ''),
+  telephone: configuration('MARQUE_TELEPHONE', env.VITE_MARQUE_TELEPHONE, ''),
 })
 
 /** Nom decoupe pour l'affichage en deux tons : { debut, accent }. */
@@ -91,6 +113,11 @@ export function nomEnDeuxTons(m = marque) {
 /** En-tete des tickets : "SenYummies · Chez Ketchup", ou le nom seul. */
 export function signatureTicket(m = marque) {
   return m.etablissement && m.etablissement !== m.nom ? `${m.nom} · ${m.etablissement}` : m.nom
+}
+
+/** Pied des tickets : "Adresse · +221 33 000 00 00", ou vide si non renseigne. */
+export function coordonneesTicket(m = marque) {
+  return [m.adresse, m.telephone].filter(Boolean).join(' · ')
 }
 
 /**
